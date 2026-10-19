@@ -447,7 +447,7 @@ function updateLandingScores(){
 }
 // Both rating lists are rendered directly by renderScores; no DOM-copy observer needed.
 updateLandingScores();
-$('landingStart').addEventListener('click',()=>{$('landingPage').style.display='none';$('intro').style.display='flex';$('intro').style.zIndex='1000';window.scrollTo(0,0);setTimeout(()=>$('playerName').focus({preventScroll:true}),0)});
+$('landingStart').addEventListener('click',()=>{musicUnlocked=true;if(musicEnabled&&!songPlaylistEnabled){musicScene='calm';playBackgroundMusic()}$('landingPage').style.display='none';$('intro').style.display='flex';$('intro').style.zIndex='1000';window.scrollTo(0,0);setTimeout(()=>$('playerName').focus({preventScroll:true}),0)});
 
 
 function openGameMenu(){if($('gameMenu').style.display==='flex')return;$('menuScoreLine').textContent='Текущий счёт: '+xp+' очков';$('menuFeedback').textContent='';$('gameMenu').style.display='flex';if(mode==='play')mode='paused'}
