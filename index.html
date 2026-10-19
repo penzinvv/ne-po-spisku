@@ -121,6 +121,7 @@ body.game-active #actionMobile{display:none;position:fixed;right:22px;bottom:cal
 <div class="stats"><div class="pill">⏱ <b id="clock">02:00</b></div><div class="pill">⭐ <b id="xp">0</b></div><div class="pill">🍽 <b id="rep">100%</b></div></div></header>
 <div class="layout"><section class="panel"><div class="canvaswrap"><canvas id="game" width="800" height="520"></canvas>
 <div class="overlay" id="intro"><div class="modal"><h2>Смена начинается!</h2><p>Сначала проберись на кухню, забери поднос и доставь его в большой зал через служебные коридоры и двери. Коллеги носятся по проходам, тележки мешают, а узкие двери требуют аккуратности. После доставки Люба попросит спасти посуду!</p><p>Выбери смену, выполни задания и открой следующий уровень. Прогресс уровней сохраняется на этом устройстве.</p><div class="levelGrid" id="levelGrid" aria-label="Выбор уровня"><button type="button" class="levelBtn selected" data-level="1"><strong>⭐ Уровень 1</strong><small>Первая смена</small></button><button type="button" class="levelBtn" data-level="2" disabled><strong>⚡ Уровень 2</strong><small>Скоро откроется</small></button><button type="button" class="levelBtn" data-level="3" disabled><strong>🔥 Уровень 3</strong><small>Скоро откроется</small></button><button type="button" class="levelBtn" data-level="4"><strong>✨ Бонус</strong><small>Чистая посуда</small></button></div><div class="levelHint" id="levelHint">Начни с первой смены — дальше будет сложнее!</div><input class="nameinput" id="playerName" maxlength="18" autocomplete="nickname" placeholder="Твоё имя" aria-label="Имя игрока"><p><b>WASD / стрелки</b> — движение · <b>E</b> — действие. На телефоне используй экранные стрелки.</p><div class="actions"><button id="start">Начать смену</button></div></div></div>
+<div id="cleanupIntro"><div class="panel"><h2>Люба · Чистая кухня</h2><p>«Новенький? Сколько посуды много набил. Ну ничего, я спишу битую посуду, а ты возьми веник и собери всё стекло в совок, чтобы никто не поранился».</p><p>Управляй веником как змейкой: собирай осколки по 3 очка, избегай мебели и собственного хвоста.</p><button id="cleanupStart" type="button">Взять веник</button></div></div>
 <div class="overlay" id="storyDialog" style="display:none;z-index:1200"><div class="modal"><canvas id="dialogPortrait" width="96" height="96" aria-label="Пиксельный портрет персонажа" style="display:none;width:96px;height:96px;image-rendering:pixelated;margin:0 auto 12px;border:3px solid #8e7bab;background:#17102a"></canvas><p id="storySpeaker" style="color:#ffe66d;font-weight:bold;font-size:18px"></p><h2 id="storyTitle"></h2><p id="storyLine"></p><div id="storyChoices" class="actions" style="display:grid;gap:8px"></div></div></div><div class="overlay" id="result" style="display:none"><div class="modal"><h2 id="resultTitle">Смена завершена</h2><p id="resultText"></p><div class="actions"><button id="saveLevelScore">Сохранить общий результат в онлайн-рейтинг</button><button id="again">Продолжить</button></div></div></div></div>
 <div class="controls"><span id="objective">Цель: взять поднос на кухне</span><span id="hint">Найди кухню слева сверху, подойди к стойке и нажми E</span></div></section>
 <aside class="panel"><div class="sideTitle">Твои задачи</div>
@@ -191,7 +192,7 @@ let cleanupActive=false,cleanupHead={x:400,y:210},cleanupDir={x:1,y:0},cleanupTr
 function spawnShard(){cleanupShards.push({x:30+Math.random()*(W-60),y:30+Math.random()*(H-60)})}
 function startCleanup(){cleanupActive=true;stage=3;cleanupHead={x:400,y:210};cleanupDir={x:1,y:0};cleanupTrail=[];cleanupShards=[];cleanupStep=0;cleanupMove=0;for(let i=0;i<10;i++)cleanupTrail.push({x:400-i*18,y:210});for(let i=0;i<18;i++)spawnShard();$('cleanupIntro').style.display='none';setMobileControls(true,false);mode='play';$('taskTitle').textContent='3. Чистая кухня';$('taskDesc').textContent='Собери осколки веником. Не врезайся в мебель и хвост!';$('objective').textContent='Каждый осколок: +3 очка';$('hint').textContent='Управляй джойстиком, собирай осколки.';$('statusText').textContent='Люба: «Кухню надо содержать в чистоте!»'}
 function drawCleanup(){g.clearRect(0,0,W,H);for(let y=0;y<H;y+=32)for(let x=0;x<W;x+=32)rr(x,y,31,31,1,((x+y)/32)%2?'#29303d':'#34394a');[[130,90,100,65],[570,70,130,75],[220,300,110,70],[590,300,120,70],[60,350,70,40]].forEach(o=>rr(o[0],o[1],o[2],o[3],5,'#725843'));cleanupShards.forEach(s=>{g.fillStyle='#d8f4ff';g.beginPath();g.moveTo(s.x,s.y-7);g.lineTo(s.x+7,s.y+3);g.lineTo(s.x-5,s.y+5);g.closePath();g.fill()});cleanupTrail.forEach((p,i)=>{g.fillStyle=i===0?'#f3c65c':'#b9a1ce';g.fillRect(p.x-7,p.y-7,14,14)});g.fillStyle='#ffe66d';g.font='bold 18px system-ui';g.fillText('Осколки: '+cleanupStep+'   Очки: +'+(cleanupStep*3),20,24)}
-function finishCleanup(){cleanupActive=false;cleanupShards=[];showSimpleDialogue('Люба','Чистая кухня','Вот видишь какой молодец! Кухню надо содержать в чистоте.',function(){end(true,'Кухня чистая!','Собрано осколков: '+cleanupStep+'. Получено очков: '+(cleanupStep*3)+'. Ты переходишь дальше!')})}
+function finishCleanup(){cleanupActive=false;cleanupShards=[];setMobileControls(false,false);showSimpleDialogue('Люба','Чистая кухня','Вот видишь какой молодец! Кухню надо содержать в чистоте.',function(){stage=4;mode='task-complete';$('result').classList.remove('result-fail');$('result').classList.add('result-success');$('resultTitle').textContent='Кухня чистая!';$('resultText').textContent=playerName+', собрано осколков: '+cleanupStep+'. Получено очков: '+(cleanupStep*3)+'. Общий счёт: '+xp+'. Смена продолжается — можно переходить на следующий уровень.';$('again').textContent='Продолжить на следующий уровень';$('result').style.display='flex';ui()})}
 $('cleanupStart').onclick=startCleanup;
 
 function draw(){if(stage===3&&currentLevel===1)drawCleanup();else if(stage===2&&currentLevel===4)drawBonusDish();else if(stage===2&&currentLevel===3&&level3Step===2)drawLevel3Cloakroom();else if(stage===2&&currentLevel===3&&level3Step===3)drawLevel3Wine();else if(stage===2&&currentLevel===3)drawPuzzle();else if(stage===2&&currentLevel===2&&level2Step===1)drawServing();else if(stage===2&&currentLevel===2&&level2Step===2)drawLevel2Fold();else if(stage===2&&currentLevel===2&&level2Step===3)drawLevel2Memory();else if(stage===2)drawMini();else drawWorld();if(flash>0){g.fillStyle=`rgba(255,90,90,${flash*.3})`;g.fillRect(0,0,W,H)}}
@@ -281,44 +282,54 @@ function interact(){if(mode!=='play')return;if(stage===0&&!carrying&&Math.hypot(
 function getScores(){try{return JSON.parse(localStorage.getItem('nePoSpiskuScores')||'[]')}catch(e){return []}}
 function renderLocalScores(){const list=$('scoreList');if(!list)return;const scores=getScores().sort((a,b)=>b.xp-a.xp).slice(0,5);list.innerHTML='';if(!scores.length){list.innerHTML='<li>Пока нет результатов</li>';return}scores.forEach(s=>{const li=document.createElement('li');li.textContent=`${s.name} — ${s.xp} очк. (${s.success?'успех':'смена не завершена'})`;list.appendChild(li)})}
 async function renderScores(){
-  const list=$('scoreList'),status=$('onlineStatus'); if(!list)return;
-  // Local scores appear immediately, and the landing page is refreshed even if the network is slow.
-  renderLocalScores();
-  if(typeof updateLandingScores==='function')updateLandingScores();
+  const list=$('scoreList'),status=$('onlineStatus'),landing=$('landingScoreList');
+  if(!list)return;
+  const paint=(target,items,local=false)=>{
+    if(!target)return;
+    target.replaceChildren();
+    if(!items.length){
+      const li=document.createElement('li');
+      li.textContent=local?'Пока нет результатов':'Пока нет онлайн-рекордов';
+      target.appendChild(li);
+      return;
+    }
+    items.slice(0,10).forEach(item=>{
+      const li=document.createElement('li');
+      if(local){
+        li.textContent=(item.name||'Гость')+' — '+(Number(item.xp)||0)+' очк.';
+      }else{
+        const name=document.createElement('span');name.className='rank-name';name.textContent=String(item.player_name||'Гость');
+        const score=document.createElement('span');score.className='rank-score';score.textContent=(Number(item.score)||0)+' очк.';
+        li.append(name,score);
+      }
+      target.appendChild(li);
+    });
+  };
+  const localScores=getScores().slice().sort((a,b)=>(Number(b.xp)||0)-(Number(a.xp)||0));
+  paint(list,localScores,true);paint(landing,localScores,true);
   if(status)status.textContent='Загружаем общий онлайн-рейтинг…';
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),5000);
   try{
-    const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),3500);
-    let response;
-    try{response=await fetch('/.netlify/functions/submit-score',{method:'GET',cache:'no-store',signal:controller.signal,headers:{'Accept':'application/json'}})}
-    finally{clearTimeout(timeout)}
-    if(!response.ok) throw new Error('HTTP '+response.status);
+    const response=await fetch('/.netlify/functions/submit-score',{method:'GET',cache:'no-store',signal:controller.signal,headers:{'Accept':'application/json'}});
+    if(!response.ok)throw new Error('HTTP '+response.status);
     const data=await response.json();
-    if(!Array.isArray(data.scores)) throw new Error('Некорректный ответ рейтинга');
-    list.innerHTML='';
-    if(!data.scores.length){list.innerHTML='<li>Пока нет онлайн-рекордов</li>'}
-    else data.scores.slice(0,10).forEach(s=>{const li=document.createElement('li');li.textContent=`${s.player_name} — ${s.score} очк.`;list.appendChild(li)});
+    if(!Array.isArray(data.scores))throw new Error('Некорректный ответ рейтинга');
+    paint(list,data.scores,false);paint(landing,data.scores,false);
     if(status)status.textContent='Общий рейтинг игроков';
-  }catch(e){
-    renderLocalScores();
-    if(status)status.textContent='Онлайн-рейтинг временно недоступен; показаны рекорды этого устройства.';
-    console.warn('Leaderboard unavailable:',e);
-  }finally{
-    if(typeof updateLandingScores==='function')updateLandingScores();
-  }
+  }catch(error){
+    paint(list,localScores,true);paint(landing,localScores,true);
+    if(status)status.textContent='Онлайн-рейтинг недоступен; показаны сохранённые на устройстве результаты.';
+    console.warn('Leaderboard unavailable:',error);
+  }finally{clearTimeout(timeout)}
 }
 async function submitOnlineScore(){
-  try{
-    const response=await fetch('/.netlify/functions/submit-score',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({player_name:playerName,score:xp})
-    });
-    if(!response.ok) throw new Error('submit failed');
-    await renderScores();
-  }catch(e){
-    const status=$('onlineStatus');
-    if(status)status.textContent='Не удалось отправить результат онлайн. Сохранили его на этом устройстве.';
-  }
+  const response=await fetch('/.netlify/functions/submit-score',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({player_name:playerName,score:xp})
+  });
+  if(!response.ok)throw new Error('Не удалось сохранить результат: HTTP '+response.status);
+  await renderScores();
 }
 function end(success,title,text){if(success&&currentLevel===1&&!window.__alexanderReactionShown){window.__alexanderReactionShown=true;showStoryScene(2,()=>{mode='play';end(success,title,text)});return}mode='end';const earned=[];if(success&&collisions===0)earned.push('🛡️ Без столкновений');if(success&&caught>=12)earned.push('🍽️ Спаситель посуды');if(success&&currentLevel===3)earned.push('👑 Банкетный герой');if(success&&currentLevel===4)earned.push('✨ Мастер чистоты');if(success&&currentLevel===unlockedLevel&&unlockedLevel<4){unlockedLevel++;try{localStorage.setItem('nePoSpiskuUnlockedLevel',String(unlockedLevel))}catch(e){}renderLevels();text+=` Открыт уровень ${unlockedLevel}!`;}if(earned.length){let all=[];try{all=JSON.parse(localStorage.getItem('nePoSpiskuAchievements')||'[]')}catch(e){}const fresh=earned.filter(a=>!all.includes(a));all=[...new Set([...all,...earned])];try{localStorage.setItem('nePoSpiskuAchievements',JSON.stringify(all))}catch(e){}text+=` Достижения: ${earned.join(', ')}.`;if(fresh.length)text+=` Новые награды: ${fresh.join(', ')}!`;}setMobileControls(false);$('result').classList.toggle('result-success',!!success);$('result').classList.toggle('result-fail',!success);$('resultTitle').textContent=`${success?'🎉':'💥'} ${title}`;$('resultText').textContent=`${playerName}, ${text} Итоговый счёт: ${xp} очк.`;$('again').textContent=success?'Продолжить на следующий уровень':'Продолжить игру';$('result').style.display='flex'}
 function update(dt){if(mode!=='play')return;elapsed+=dt;if(stage===3&&currentLevel===1&&cleanupActive){cleanupMove+=dt;if(cleanupMove>.12){cleanupMove=0;var h={x:cleanupHead.x+cleanupDir.x*18,y:cleanupHead.y+cleanupDir.y*18};var obs=[[130,90,100,65],[570,70,130,75],[220,300,110,70],[590,300,120,70],[60,350,70,40]];if(h.x<10||h.x>W-10||h.y<10||h.y>H-10||obs.some(o=>h.x>o[0]-8&&h.x<o[0]+o[2]+8&&h.y>o[1]-8&&h.y<o[1]+o[3]+8)||cleanupTrail.slice(0,-1).some(p=>Math.hypot(p.x-h.x,p.y-h.y)<10)){finishCleanup();return}cleanupTrail.unshift(h);cleanupTrail.pop();cleanupHead=h;var si=cleanupShards.findIndex(s=>Math.hypot(s.x-h.x,s.y-h.y)<16);if(si>=0){cleanupShards.splice(si,1);cleanupStep++;xp+=3;spawnShard();$('statusText').textContent='Осколок собран! +3 очка.'}ui()}return;}if(flash>0)flash=Math.max(0,flash-dt*2);
@@ -368,7 +379,7 @@ const storyScenes=[
 ];
 function showStoryScene(index,onDone){const sc=storyScenes[index];if(!sc){$('storyDialog').style.display='none';onDone();return}$('intro').style.display='none';mode='dialog';drawDialogPortrait(sc.speaker);$('storySpeaker').textContent=sc.speaker;$('storyTitle').textContent=sc.title;$('storyLine').textContent=sc.line;const box=$('storyChoices');box.innerHTML='';sc.choices.forEach((choice,i)=>{const b=document.createElement('button');b.type='button';b.textContent=choice;b.onclick=()=>{xp+=i===0?5:2;$('storyLine').textContent=sc.replies[i];box.innerHTML='';const next=document.createElement('button');next.type='button';next.textContent='Продолжить';next.onclick=()=>{$('storyDialog').style.display='none';onDone();ui()};box.appendChild(next)};box.appendChild(b)});const skip=document.createElement('button');skip.type='button';skip.className='secondary';skip.textContent='Начать смену';skip.onclick=()=>{$('storyDialog').style.display='none';onDone();ui()};box.appendChild(skip);$('storyDialog').style.display='flex'}
 function showStory(){$('intro').style.display='none';if(currentLevel===2){showSimpleDialogue('Олег','65 тату','Если поможешь мне, то набью твоё имя татуировкой на руке, будет 65 тату.',()=>startShift());return}if(currentLevel===3){showSimpleDialogue('Лиза','Дополнительный стол','У нас гости захотели ещё один стол, засервируй его, ты же знаешь как сервировать столы?',()=>startShift());return}if(currentLevel===4){showSimpleDialogue('Менеджер','Бонус: чистая посуда','Сегодня у тебя первый день, посмотрим как ты умеешь натирать посуду. На кухне стоит большая стопка тарелок, иди туда и натри их. Тебе поможет Игорь.',()=>showSimpleDialogue('Игорь','Покажу как надо','Я буду натирать посуду рядом. Смотри внимательно: пятна убирай нажатием, а если посуда чистая — жми кнопку «Чистая тарелка».',()=>startShift()));return}showStoryScene(0,()=>startShift())}
-function startShift(){const entered=$('playerName').value.trim();if(!entered){$('playerName').focus();$('playerName').placeholder='Сначала введи имя';return}playerName=entered.slice(0,18);if(!runActive){xp=0;recordSubmitted=false;scoreSaved=false}runActive=true;setMobileControls(currentLevel===1,currentLevel===1&&stage<2);mode='play';$('intro').style.display='none';$('result').style.display='none';if(currentLevel===2){stage=2;level2Step=1;serveCount=0;servingMistakes=0;servingItems.forEach(it=>{it.found=false;it.bad=false});miniTime=35;$('taskTitle').textContent='1. Сервировка стола';$('taskDesc').textContent='Найди 5 нужных предметов среди 12 за 35 секунд. Лишние предметы отнимают время и репутацию.';$('objective').textContent='Найди 5 предметов сервировки';$('hint').textContent='Ищи тарелку, вилку, нож, бокал и салфетку. Не нажимай на посторонние вещи!';$('statusText').textContent='Официант, подготовь стол к приходу гостей.'}else if(currentLevel===3){startLevel3Puzzle()}else if(currentLevel===4){startBonusGame()}};$('again').onclick=()=>{if(runActive&&currentLevel<4){currentLevel=Math.min(4,unlockedLevel);reset(true);showStory()}else{runActive=false;currentLevel=1;reset(false)}};$('saveLevelScore').onclick=()=>{saveRunResult(false);$('resultText').textContent=playerName+', общий результат сохранён: '+xp+' очков. Можно продолжить игру.'};$('actionMobile').onclick=interact;
+function startShift(){const entered=$('playerName').value.trim();if(!entered){$('playerName').focus();$('playerName').placeholder='Сначала введи имя';return}playerName=entered.slice(0,18);if(!runActive){xp=0;recordSubmitted=false;scoreSaved=false}runActive=true;setMobileControls(currentLevel===1&&stage<2,currentLevel===1&&stage<2);mode='play';$('intro').style.display='none';$('result').style.display='none';$('cleanupIntro').style.display='none';$('storyDialog').style.display='none';$('landingPage').style.display='none';if(currentLevel===2){stage=2;level2Step=1;serveCount=0;servingMistakes=0;servingItems.forEach(it=>{it.found=false;it.bad=false});miniTime=35;$('taskTitle').textContent='1. Сервировка стола';$('taskDesc').textContent='Найди 5 нужных предметов среди 12 за 35 секунд. Лишние предметы отнимают время и репутацию.';$('objective').textContent='Найди 5 предметов сервировки';$('hint').textContent='Ищи тарелку, вилку, нож, бокал и салфетку. Не нажимай на посторонние вещи!';$('statusText').textContent='Официант, подготовь стол к приходу гостей.'}else if(currentLevel===3){startLevel3Puzzle()}else if(currentLevel===4){startBonusGame()}};$('again').onclick=()=>{if(runActive&&currentLevel<4){currentLevel=Math.min(4,Math.max(unlockedLevel,currentLevel+1));reset(true);$('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';showStory()}else{runActive=false;recordSubmitted=false;scoreSaved=false;playerName='Гость';currentLevel=1;reset(false);$('landingPage').style.display='flex';$('intro').style.display='none';setMobileControls(false,false)}};$('saveLevelScore').onclick=()=>{saveRunResult(false);$('resultText').textContent=playerName+', общий результат сохранён: '+xp+' очков. Можно продолжить игру.'};$('actionMobile').onclick=interact;
 const joystick=$('mobileJoystick'),knob=$('joystickKnob');
 function setMobileControls(active,showAction=false){document.body.classList.toggle('game-active',!!active);document.body.classList.toggle('action-available',!!active&&!!showAction)}
 setMobileControls(false);
@@ -414,7 +425,7 @@ $('landingStart').addEventListener('click',()=>{$('landingPage').style.display='
 
 function openGameMenu(){if($('gameMenu').style.display==='flex')return;$('menuScoreLine').textContent='Текущий счёт: '+xp+' очков';$('menuFeedback').textContent='';$('gameMenu').style.display='flex';if(mode==='play')mode='paused'}
 function closeGameMenu(){ $('gameMenu').style.display='none';if(mode==='paused')mode='play'}
-function saveRunResult(forceRecord=false){if(!runActive&&mode!=='end'&&xp<=0){ $('menuFeedback').textContent='Сначала начни игру.';return}if(recordSubmitted){$('menuFeedback').textContent='Результат этой смены уже сохранён.';return}const scores=getScores();scores.push({name:playerName,xp:xp,success:false,date:new Date().toISOString(),kind:forceRecord?'record':'run'});scores.sort((a,b)=>b.xp-a.xp);try{localStorage.setItem('nePoSpiskuScores',JSON.stringify(scores.slice(0,20)))}catch(e){}renderScores();submitOnlineScore();recordSubmitted=true;scoreSaved=true;$('menuFeedback').textContent=forceRecord?'Рекорд отправлен в таблицу!':'Результат сохранён в таблицу рекордов.'}
+async function saveRunResult(forceRecord=false){if(!runActive&&mode!=='end'&&xp<=0){$('menuFeedback').textContent='Сначала начни игру.';return}if(recordSubmitted){$('menuFeedback').textContent='Результат этой сессии уже отправлен.';return}const scores=getScores();scores.push({name:playerName,xp:xp,success:false,date:new Date().toISOString(),kind:forceRecord?'record':'run'});scores.sort((a,b)=>b.xp-a.xp);try{localStorage.setItem('nePoSpiskuScores',JSON.stringify(scores.slice(0,20)))}catch(e){}renderScores();$('menuFeedback').textContent='Результат сохранён на этом устройстве. Отправляем в общий рейтинг…';try{await submitOnlineScore();recordSubmitted=true;scoreSaved=true;$('menuFeedback').textContent='Результат отправлен в общий онлайн-рейтинг! Общий счёт не сброшен.'}catch(e){$('menuFeedback').textContent='Локально сохранено, но сервер не подтвердил отправку. Попробуй ещё раз.'}}
 function finishRunByChoice(){if(!runActive&&xp<=0){$('menuFeedback').textContent='Сейчас нет активной смены.';return}runActive=false;mode='end';$('gameMenu').style.display='none';$('resultTitle').textContent='Смена завершена';$('resultText').textContent=playerName+', ты закончил игру. Итоговый счёт: '+xp+' очков.';$('again').textContent='Новая игра';$('result').style.display='flex'}
 $('menuButton').addEventListener('click',openGameMenu);$('menuResume').addEventListener('click',closeGameMenu);$('menuSaveResult').addEventListener('click',()=>saveRunResult(false));$('menuSaveRecord').addEventListener('click',()=>saveRunResult(true));$('menuFinish').addEventListener('click',finishRunByChoice);
 })();
