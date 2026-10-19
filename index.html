@@ -282,26 +282,29 @@ function getScores(){try{return JSON.parse(localStorage.getItem('nePoSpiskuScore
 function renderLocalScores(){const list=$('scoreList');if(!list)return;const scores=getScores().sort((a,b)=>b.xp-a.xp).slice(0,5);list.innerHTML='';if(!scores.length){list.innerHTML='<li>Пока нет результатов</li>';return}scores.forEach(s=>{const li=document.createElement('li');li.textContent=`${s.name} — ${s.xp} очк. (${s.success?'успех':'смена не завершена'})`;list.appendChild(li)})}
 async function renderScores(){
   const list=$('scoreList'),status=$('onlineStatus'); if(!list)return;
-  // Show local results immediately so the panel is never blank while the network responds.
+  // Local scores appear immediately, and the landing page is refreshed even if the network is slow.
   renderLocalScores();
+  if(typeof updateLandingScores==='function')updateLandingScores();
   if(status)status.textContent='Загружаем общий онлайн-рейтинг…';
   try{
     const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),7000);
+    const timeout=setTimeout(()=>controller.abort(),3500);
     let response;
-    try{response=await fetch('/.netlify/functions/submit-score',{method:'GET',cache:'no-store',signal:controller.signal})}
+    try{response=await fetch('/.netlify/functions/submit-score',{method:'GET',cache:'no-store',signal:controller.signal,headers:{'Accept':'application/json'}})}
     finally{clearTimeout(timeout)}
-    if(!response.ok) throw new Error('online unavailable: '+response.status);
+    if(!response.ok) throw new Error('HTTP '+response.status);
     const data=await response.json();
-    if(!Array.isArray(data.scores)) throw new Error('invalid score response');
+    if(!Array.isArray(data.scores)) throw new Error('Некорректный ответ рейтинга');
     list.innerHTML='';
-    if(!data.scores.length){list.innerHTML='<li>Пока нет результатов</li>'}
+    if(!data.scores.length){list.innerHTML='<li>Пока нет онлайн-рекордов</li>'}
     else data.scores.slice(0,10).forEach(s=>{const li=document.createElement('li');li.textContent=`${s.player_name} — ${s.score} очк.`;list.appendChild(li)});
     if(status)status.textContent='Общий рейтинг игроков';
   }catch(e){
     renderLocalScores();
-    if(status)status.textContent='Онлайн-рейтинг недоступен ('+(e&&e.message?e.message:'ошибка сети')+'); показаны рекорды этого устройства.';
+    if(status)status.textContent='Онлайн-рейтинг временно недоступен; показаны рекорды этого устройства.';
     console.warn('Leaderboard unavailable:',e);
+  }finally{
+    if(typeof updateLandingScores==='function')updateLandingScores();
   }
 }
 async function submitOnlineScore(){
@@ -406,7 +409,7 @@ function updateLandingScores(){
 const scoreObserver=new MutationObserver(updateLandingScores);
 if($('scoreList'))scoreObserver.observe($('scoreList'),{childList:true,subtree:true,characterData:true});
 updateLandingScores();
-$('landingStart').addEventListener('click',()=>{$('landingPage').style.display='none';$('intro').style.display='flex';window.scrollTo(0,0)});
+$('landingStart').addEventListener('click',()=>{$('landingPage').style.display='none';$('intro').style.display='flex';$('intro').style.zIndex='1000';window.scrollTo(0,0);setTimeout(()=>$('playerName').focus({preventScroll:true}),0)});
 
 
 function openGameMenu(){if($('gameMenu').style.display==='flex')return;$('menuScoreLine').textContent='Текущий счёт: '+xp+' очков';$('menuFeedback').textContent='';$('gameMenu').style.display='flex';if(mode==='play')mode='paused'}
