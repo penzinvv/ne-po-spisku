@@ -417,8 +417,7 @@ function updateLandingScores(){
  });
  if(!dest.children.length){const li=document.createElement('li');li.textContent='Пока нет результатов';dest.appendChild(li)}
 }
-const scoreObserver=new MutationObserver(updateLandingScores);
-if($('scoreList'))scoreObserver.observe($('scoreList'),{childList:true,subtree:true,characterData:true});
+// Both rating lists are rendered directly by renderScores; no DOM-copy observer needed.
 updateLandingScores();
 $('landingStart').addEventListener('click',()=>{$('landingPage').style.display='none';$('intro').style.display='flex';$('intro').style.zIndex='1000';window.scrollTo(0,0);setTimeout(()=>$('playerName').focus({preventScroll:true}),0)});
 
