@@ -29,7 +29,14 @@ export default async (request, context) => {
   try {
     if (request.method === "GET") {
       const response = await fetch(`${endpoint}?select=player_name,score,created_at&order=score.desc,created_at.asc&limit=10`, { headers });
-      if (!response.ok) return Response.json({ error: "Could not load scores" }, { status: 502, headers: corsHeaders });
+      if (!response.ok) {
+  const details = await response.text();
+  return Response.json({
+    error: "Could not load scores",
+    supabase_status: response.status,
+    details: details.slice(0, 500)
+  }, { status: 502, headers: corsHeaders });
+}
       return Response.json({ scores: await response.json() }, { status: 200, headers: corsHeaders });
     }
 
