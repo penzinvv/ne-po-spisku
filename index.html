@@ -453,4 +453,5 @@ async function saveRunResult(forceRecord=false){if(!runActive&&mode!=='end'&&xp<
 function finishRunByChoice(){if(!runActive&&xp<=0){$('menuFeedback').textContent='Сейчас нет активной смены.';return}runActive=false;mode='end';$('gameMenu').style.display='none';$('resultTitle').textContent='Смена завершена';$('resultText').textContent=playerName+', ты закончил игру. Итоговый счёт: '+xp+' очков.';$('again').textContent='Новая игра';$('result').style.display='flex'}
 $('menuButton').addEventListener('click',openGameMenu);$('menuResume').addEventListener('click',closeGameMenu);$('menuSaveResult').addEventListener('click',()=>saveRunResult(false));$('menuSaveRecord').addEventListener('click',()=>saveRunResult(true));$('menuFinish').addEventListener('click',finishRunByChoice);
 })();
-</script></body></html>
+</script><!-- Soundtrack assets are loaded from the six root-level MP3 files when available. -->
+</body></html>
