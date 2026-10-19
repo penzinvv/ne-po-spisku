@@ -58,7 +58,7 @@ canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
 .landing-hero{border:3px solid #8066a1;background:linear-gradient(135deg,#26163fef,#17132ef7);box-shadow:7px 7px 0 #080713;padding:22px;border-radius:4px;position:relative;overflow:hidden}
 .landing-hero:after{content:"✦  ✧  ✦";position:absolute;right:20px;top:12px;color:#ffcd54;font-size:24px;opacity:.75}
 .landing-copy{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center}
-.landing-waiter{font-size:100px;text-align:center;filter:drop-shadow(4px 4px 0 #080713);image-rendering:pixelated;animation:waiterBounce 2.4s ease-in-out infinite}
+.landing-waiter{font-size:100px;text-align:center;filter:drop-shadow(4px 4px 0 #080713);image-rendering:pixelated;animation:waiterBounce 2.4s ease-in-out infinite}.landing-manager{display:flex;align-items:center;justify-content:center;gap:0}.landing-manager span:first-child{font-size:1em}.landing-manager span:last-child{font-size:.62em;margin-left:-12px;margin-top:48px}
 @keyframes waiterBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 .landing-hero h2{font-size:clamp(22px,3vw,32px);color:#ffe66d;margin:0 0 10px;text-shadow:2px 2px #8b3f77}
 .landing-hero p{color:#d6cce9;line-height:1.55;margin:0}
@@ -86,7 +86,7 @@ canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
 <div class="landing-top"><div><div class="landing-brand">БАНКЕТНАЯ<br>СЛУЖБА</div><div class="landing-sub">АРКАДНАЯ СМЕНА · ОТЕЛЬ «ГРАНД» · ПИКСЕЛЬНОЕ ПРИКЛЮЧЕНИЕ</div></div></div>
 <div class="landing-layout">
 <section class="landing-hero">
-<div class="landing-copy"><div class="landing-waiter" aria-hidden="true">🧑🏻‍🍳</div><div><h2>Твой первый рабочий день!</h2><p>Ты — новичок в отеле «Гранд», и сегодня твоя первая смена. Забирай подносы на кухне, доставляй заказы в большой зал, лавируй между коллегами и тележками, спасай посуду и докажи, что достоин звания лучшего сотрудника.</p></div></div>
+<div class="landing-copy"><div class="landing-waiter landing-manager" aria-hidden="true"><span>😎</span><span>🍷</span></div><div><h2>Твой первый рабочий день!</h2><p>Ты — новичок в отеле «Гранд», и сегодня твоя первая смена. Забирай подносы на кухне, доставляй заказы в большой зал, лавируй между коллегами и тележками, спасай посуду и докажи, что достоин звания лучшего сотрудника.</p></div></div>
 <button class="landing-start" id="landingStart">▶ НАЧАТЬ ИГРУ</button>
 </section>
 <section class="landing-rank"><h2>🏆 Общий онлайн-рейтинг</h2><p>Лучшие сотрудники отеля «Гранд»</p><ol id="landingScoreList"><li><span class="rank-name">Загружаем рекорды…</span></li></ol></section>
