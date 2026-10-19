@@ -47,8 +47,59 @@ canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
 .pad button{border-radius:2px}
 ::selection{background:#ffe66d;color:#211733}
 @media(max-width:600px){.panel{border-radius:2px}.modal{border-radius:3px}}
+
+/* LANDING PAGE */
+.landing{position:fixed;inset:0;z-index:1800;overflow:auto;background:linear-gradient(180deg,#1a1030ee,#100b22f5),radial-gradient(ellipse at 50% 15%,#7a2d55 0%,transparent 55%);padding:22px 18px 30px}
+.landing-inner{max-width:1180px;margin:0 auto}
+.landing-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.landing-brand{font-size:clamp(32px,5.4vw,62px);line-height:.98;font-weight:1000;letter-spacing:2px;color:#ffe66d;text-shadow:4px 4px 0 #9c315e,7px 7px 0 #090716;margin:8px 0 12px}
+.landing-sub{color:#d8c6ef;font-size:13px;letter-spacing:1px}
+.landing-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(270px,.8fr);gap:18px;margin-top:20px}
+.landing-hero{border:3px solid #8066a1;background:linear-gradient(135deg,#26163fef,#17132ef7);box-shadow:7px 7px 0 #080713;padding:22px;border-radius:4px;position:relative;overflow:hidden}
+.landing-hero:after{content:"✦  ✧  ✦";position:absolute;right:20px;top:12px;color:#ffcd54;font-size:24px;opacity:.75}
+.landing-copy{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center}
+.landing-waiter{font-size:100px;text-align:center;filter:drop-shadow(4px 4px 0 #080713);image-rendering:pixelated;animation:waiterBounce 2.4s ease-in-out infinite}
+@keyframes waiterBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.landing-hero h2{font-size:clamp(22px,3vw,32px);color:#ffe66d;margin:0 0 10px;text-shadow:2px 2px #8b3f77}
+.landing-hero p{color:#d6cce9;line-height:1.55;margin:0}
+.landing-start{width:min(100%,520px);display:block;margin:20px auto 0;padding:18px 24px;font:900 clamp(20px,3vw,30px) "Courier New",monospace;letter-spacing:1px;border:3px solid #fff09a;border-radius:3px;background:linear-gradient(#ffe66d,#ffb83f);color:#21122c;box-shadow:0 7px 0 #9a4b37,0 0 25px #ffcf5b40}
+.landing-start:hover{transform:translateY(-3px)}
+.landing-rank{border:3px solid #8066a1;background:#1d1632f5;box-shadow:7px 7px 0 #080713;padding:18px;border-radius:4px}
+.landing-rank h2{margin:0 0 4px;text-align:center;color:#ffe66d;font-size:21px}
+.landing-rank p{margin:0 0 12px;text-align:center;color:#c9b8df;font-size:12px}
+.landing-rank ol{margin:0;padding:0;list-style:none;counter-reset:rank}
+.landing-rank li{counter-increment:rank;display:flex;gap:9px;align-items:center;padding:9px 2px;border-bottom:1px solid #49365e;color:#eee3ff;font-size:13px}
+.landing-rank li:before{content:counter(rank);display:grid;place-items:center;flex:0 0 25px;height:25px;background:#32254d;border:1px solid #6d5488;color:#ffe66d;font-weight:bold}
+.landing-rank li:first-child:before{background:#ffe66d;color:#27152f}.landing-rank li:nth-child(2):before{background:#dce6ff;color:#27152f}.landing-rank li:nth-child(3):before{background:#ffb16d;color:#27152f}
+.landing-rank .rank-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.landing-rank .rank-score{color:#ffd779;white-space:nowrap}
+.landing-features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}
+.landing-feature{border:2px solid #5c477a;background:#201733;padding:14px;text-align:center;box-shadow:4px 4px 0 #080713}
+.landing-feature .feature-icon{font-size:32px;display:block;margin-bottom:8px}
+.landing-feature strong{display:block;color:#ffe66d;font-size:14px;margin-bottom:7px}
+.landing-feature span{font-size:12px;line-height:1.45;color:#cfc1e3}
+.landing-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#a991bf;font-size:12px;margin-top:18px;padding-top:12px;border-top:1px solid #57416d}
+@media(max-width:760px){.landing{padding:18px 12px 26px}.landing-layout{grid-template-columns:1fr}.landing-copy{grid-template-columns:90px 1fr;gap:10px}.landing-waiter{font-size:68px}.landing-hero{padding:16px}.landing-rank{padding:14px}.landing-features{grid-template-columns:repeat(2,minmax(0,1fr))}.landing-top{display:block}.landing-brand{font-size:clamp(30px,8vw,48px)}}
+@media(max-width:390px){.landing-copy{grid-template-columns:1fr}.landing-waiter{font-size:58px}.landing-hero h2{text-align:center}.landing-features{gap:8px}.landing-feature{padding:10px}}
 </style></head>
-<body><button id="menuButton" class="secondary" style="position:fixed;top:12px;left:12px;z-index:1000">☰ Меню</button>
+<body><div class="landing" id="landingPage">
+<div class="landing-inner">
+<div class="landing-top"><div><div class="landing-brand">БАНКЕТНАЯ<br>СЛУЖБА</div><div class="landing-sub">АРКАДНАЯ СМЕНА · ОТЕЛЬ «ГРАНД» · ПИКСЕЛЬНОЕ ПРИКЛЮЧЕНИЕ</div></div></div>
+<div class="landing-layout">
+<section class="landing-hero">
+<div class="landing-copy"><div class="landing-waiter" aria-hidden="true">🧑🏻‍🍳</div><div><h2>Твой первый рабочий день!</h2><p>Ты — новичок в отеле «Гранд», и сегодня твоя первая смена. Забирай подносы на кухне, доставляй заказы в большой зал, лавируй между коллегами и тележками, спасай посуду и докажи, что достоин звания лучшего сотрудника.</p></div></div>
+<button class="landing-start" id="landingStart">▶ НАЧАТЬ ИГРУ</button>
+</section>
+<section class="landing-rank"><h2>🏆 Общий онлайн-рейтинг</h2><p>Лучшие сотрудники отеля «Гранд»</p><ol id="landingScoreList"><li><span class="rank-name">Загружаем рекорды…</span></li></ol></section>
+</div>
+<div class="landing-features">
+<div class="landing-feature"><span class="feature-icon">🍽️</span><strong>Забирай подносы</strong><span>Собирай заказы на кухне и не теряй ни секунды.</span></div>
+<div class="landing-feature"><span class="feature-icon">🚪</span><strong>Осторожно в коридорах</strong><span>Обходи коллег, тележки и узкие двери.</span></div>
+<div class="landing-feature"><span class="feature-icon">🥂</span><strong>Доставляй заказы</strong><span>Гости ждут, а время идёт — успеешь ли ты?</span></div>
+<div class="landing-feature"><span class="feature-icon">⭐</span><strong>Открывай уровни</strong><span>Выполняй задания, набирай очки и попади в рейтинг.</span></div>
+</div>
+<div class="landing-footer"><span>🏨 Отель «Гранд» · Банкетная служба</span><span>Внимательность, скорость и аккуратность делают из новичка профи.</span><span>Пиксельная аркада ❤️</span></div>
+</div></div>
+<button id="menuButton" class="secondary" style="position:fixed;top:12px;left:12px;z-index:1000">☰ Меню</button>
 <div class="overlay" id="gameMenu" style="display:none;z-index:1300"><div class="modal"><h2>Меню игры</h2><p id="menuScoreLine">Текущий счёт: 0</p><div class="actions" style="display:grid;gap:8px"><button id="menuSaveResult">Сохранить результат</button><button id="menuSaveRecord">Сохранить рекорд</button><button id="menuFinish">Закончить игру</button><button id="menuResume" class="secondary">Вернуться в игру</button></div><p id="menuFeedback"></p></div></div><main>
 <header><div><h1>БАНКЕТНАЯ СЛУЖБА</h1><div class="sub">Аркадная смена · отель «Гранд» · версия 0.8</div></div>
 <div class="stats"><div class="pill">⏱ <b id="clock">02:00</b></div><div class="pill">⭐ <b id="xp">0</b></div><div class="pill">🍽 <b id="rep">100%</b></div></div></header>
@@ -285,6 +336,23 @@ function startShift(){const entered=$('playerName').value.trim();if(!entered){$(
 $('start').onclick=()=>{const entered=$('playerName').value.trim();if(!entered){$('playerName').focus();$('playerName').placeholder='Сначала введи имя';return}playerName=entered.slice(0,18);showStory()};
 document.querySelectorAll('[data-key]').forEach(b=>{let k=b.dataset.key;const down=e=>{e.preventDefault();keys[k]=true},up=e=>{e.preventDefault();keys[k]=false};b.addEventListener('pointerdown',down);b.addEventListener('pointerup',up);b.addEventListener('pointerleave',up);b.addEventListener('pointercancel',up)});
 let last=performance.now();function loop(now){let dt=Math.min(.04,(now-last)/1000);last=now;update(dt);draw();requestAnimationFrame(loop)}reset();renderScores();requestAnimationFrame(loop);
+function updateLandingScores(){
+ const source=$('scoreList'),dest=$('landingScoreList');if(!source||!dest)return;
+ dest.innerHTML='';
+ [...source.querySelectorAll('li')].slice(0,10).forEach((item)=>{
+  const text=item.textContent.trim();const li=document.createElement('li');
+  const parts=text.match(/^(.*?)\s+[—-]\s+(\d+)\s*очк\./i);
+  const name=document.createElement('span');name.className='rank-name';name.textContent=parts?parts[1]:text;
+  li.appendChild(name);
+  if(parts){const score=document.createElement('span');score.className='rank-score';score.textContent=parts[2]+' очк.';li.appendChild(score)}
+  dest.appendChild(li);
+ });
+ if(!dest.children.length){const li=document.createElement('li');li.textContent='Пока нет результатов';dest.appendChild(li)}
+}
+const scoreObserver=new MutationObserver(updateLandingScores);
+if($('scoreList'))scoreObserver.observe($('scoreList'),{childList:true,subtree:true,characterData:true});
+$('landingStart').addEventListener('click',()=>{$('landingPage').style.display='none';$('intro').style.display='flex';window.scrollTo(0,0)});
+
 
 function openGameMenu(){if($('gameMenu').style.display==='flex')return;$('menuScoreLine').textContent='Текущий счёт: '+xp+' очков';$('menuFeedback').textContent='';$('gameMenu').style.display='flex';if(mode==='play')mode='paused'}
 function closeGameMenu(){ $('gameMenu').style.display='none';if(mode==='paused')mode='play'}
