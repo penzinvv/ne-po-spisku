@@ -89,6 +89,11 @@ body.game-active .pad#mobileControls{display:block}body.game-active #mobileJoyst
 body.game-active #actionMobile{display:none;position:fixed;right:22px;bottom:calc(158px + env(safe-area-inset-bottom));z-index:1102;min-width:124px;min-height:56px;padding:12px 14px;font-weight:bold;border:2px solid #fff09a;background:linear-gradient(#ffe66d,#ffb83f);color:#21122c;box-shadow:0 5px 0 #9a4b37;touch-action:manipulation}
 }
 @media(max-width:380px){#mobileJoystick{width:112px;height:112px;left:14px;bottom:calc(18px + env(safe-area-inset-bottom))}.joystick-knob{width:48px;height:48px;left:32px;top:32px}#actionMobile{right:14px;bottom:calc(142px + env(safe-area-inset-bottom));min-width:112px;min-height:52px}}
+
+/* Mobile controls: joystick throughout gameplay, action button only for tray task */
+#mobileControls{display:none}
+#actionMobile{display:none!important}
+@media(max-width:800px){body.game-active #mobileControls{display:block}body.game-active #mobileJoystick{display:block}body.game-active.action-available #actionMobile{display:block!important}}
 </style></head>
 <body><div class="landing" id="landingPage">
 <div class="landing-inner">
