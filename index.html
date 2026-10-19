@@ -80,6 +80,15 @@ canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
 .landing-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#a991bf;font-size:12px;margin-top:18px;padding-top:12px;border-top:1px solid #57416d}
 @media(max-width:760px){.landing{padding:18px 12px 26px}.landing-layout{grid-template-columns:1fr}.landing-copy{grid-template-columns:90px 1fr;gap:10px}.landing-waiter{font-size:68px}.landing-hero{padding:16px}.landing-rank{padding:14px}.landing-features{grid-template-columns:repeat(2,minmax(0,1fr))}.landing-top{display:block}.landing-brand{font-size:clamp(30px,8vw,48px)}}
 @media(max-width:390px){.landing-copy{grid-template-columns:1fr}.landing-waiter{font-size:58px}.landing-hero h2{text-align:center}.landing-features{gap:8px}.landing-feature{padding:10px}}
+
+@media(max-width:800px){
+.pad#mobileControls{display:block;position:static;width:0;height:0;padding:0;margin:0;border:0;background:transparent;box-shadow:none;transform:none;touch-action:none;z-index:1100}
+#mobileJoystick{position:fixed;left:22px;bottom:calc(24px + env(safe-area-inset-bottom));width:132px;height:132px;z-index:1101;touch-action:none;user-select:none;-webkit-user-select:none}
+.joystick-ring{position:absolute;inset:0;border:3px solid #b8a0dc;border-radius:50%;background:radial-gradient(circle,#392751dd,#17102adf);box-shadow:0 5px 0 #080713, inset 0 0 0 5px #6a507e88}
+.joystick-knob{position:absolute;width:54px;height:54px;left:39px;top:39px;border:3px solid #fff0a0;border-radius:50%;background:linear-gradient(#ffe66d,#ffb83f);box-shadow:0 4px 0 #9a4b37;pointer-events:none}
+#actionMobile{position:fixed;right:22px;bottom:calc(158px + env(safe-area-inset-bottom));z-index:1102;min-width:124px;min-height:56px;padding:12px 14px;font-weight:bold;border:2px solid #fff09a;background:linear-gradient(#ffe66d,#ffb83f);color:#21122c;box-shadow:0 5px 0 #9a4b37;touch-action:manipulation}
+}
+@media(max-width:380px){#mobileJoystick{width:112px;height:112px;left:14px;bottom:calc(18px + env(safe-area-inset-bottom))}.joystick-knob{width:48px;height:48px;left:32px;top:32px}#actionMobile{right:14px;bottom:calc(142px + env(safe-area-inset-bottom));min-width:112px;min-height:52px}}
 </style></head>
 <body><div class="landing" id="landingPage">
 <div class="landing-inner">
@@ -111,7 +120,7 @@ canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
 <div class="card"><strong id="taskTitle">1. Доставка подноса</strong><small id="taskDesc">Забери поднос на кухне и отнеси в большой зал.</small></div>
 <div class="card" id="controlsCard"><strong>Управление</strong><small>WASD / стрелки — ходить. E — действие. В мини-игре ловли посуды двигай тележку влево-вправо.</small></div>
 <div class="status">Время<div class="bar"><span id="timeBar"></span></div>Репутация<div class="bar"><span id="repBar"></span></div><span id="statusText">Флюровна уже смотрит на часы.</span></div>
-<div class="pad"><div class="padrow"><button class="secondary" data-key="ArrowUp">▲</button></div><div class="padrow"><button class="secondary" data-key="ArrowLeft">◀</button><button class="secondary" data-key="ArrowDown">▼</button><button class="secondary" data-key="ArrowRight">▶</button></div><button class="secondary" id="actionMobile">E · Действие</button></div>
+<div class="pad" id="mobileControls"><div class="joystick" id="mobileJoystick" aria-label="Сенсорный джойстик"><div class="joystick-ring"></div><div class="joystick-knob" id="joystickKnob"></div></div><button class="secondary" id="actionMobile">E · Действие</button></div>
 <div class="note">Версия 0.8: общий онлайн-рейтинг. Для сохранения результата нужно подключение к интернету.</div><div class="scores"><div class="sideTitle">Общий онлайн-рейтинг</div><small id="onlineStatus">Загружаем результаты игроков…</small><ol id="scoreList"><li>Загрузка…</li></ol></div></aside></div></main>
 <script>
 (()=>{
@@ -333,6 +342,25 @@ const storyScenes=[
 function showStoryScene(index,onDone){const sc=storyScenes[index];if(!sc){onDone();return}$('intro').style.display='none';mode='dialog';drawDialogPortrait(sc.speaker);$('storySpeaker').textContent=sc.speaker;$('storyTitle').textContent=sc.title;$('storyLine').textContent=sc.line;const box=$('storyChoices');box.innerHTML='';sc.choices.forEach((choice,i)=>{const b=document.createElement('button');b.type='button';b.textContent=choice;b.onclick=()=>{xp+=i===0?5:2;$('storyLine').textContent=sc.replies[i];box.innerHTML='';const next=document.createElement('button');next.type='button';next.textContent='Продолжить';next.onclick=()=>{$('storyDialog').style.display='none';onDone();ui()};box.appendChild(next)};box.appendChild(b)});$('storyDialog').style.display='flex'}
 function showStory(){$('intro').style.display='none';if(currentLevel===2){showSimpleDialogue('Олег','65 тату','Если поможешь мне, то набью твоё имя татуировкой на руке, будет 65 тату.',()=>startShift());return}if(currentLevel===3){showSimpleDialogue('Лиза','Дополнительный стол','У нас гости захотели ещё один стол, засервируй его, ты же знаешь как сервировать столы?',()=>startShift());return}if(currentLevel===4){showSimpleDialogue('Менеджер','Бонус: чистая посуда','Сегодня у тебя первый день, посмотрим как ты умеешь натирать посуду. На кухне стоит большая стопка тарелок, иди туда и натри их. Тебе поможет Игорь.',()=>showSimpleDialogue('Игорь','Покажу как надо','Я буду натирать посуду рядом. Смотри внимательно: пятна убирай нажатием, а если посуда чистая — жми кнопку «Чистая тарелка».',()=>startShift()));return}showStoryScene(0,()=>startShift())}
 function startShift(){const entered=$('playerName').value.trim();if(!entered){$('playerName').focus();$('playerName').placeholder='Сначала введи имя';return}playerName=entered.slice(0,18);mode='play';$('intro').style.display='none';$('result').style.display='none';if(currentLevel===2){stage=2;level2Step=1;serveCount=0;servingMistakes=0;servingItems.forEach(it=>{it.found=false;it.bad=false});miniTime=35;$('taskTitle').textContent='1. Сервировка стола';$('taskDesc').textContent='Найди 5 нужных предметов среди 12 за 35 секунд. Лишние предметы отнимают время и репутацию.';$('objective').textContent='Найди 5 предметов сервировки';$('hint').textContent='Ищи тарелку, вилку, нож, бокал и салфетку. Не нажимай на посторонние вещи!';$('statusText').textContent='Официант, подготовь стол к приходу гостей.'}else if(currentLevel===3){startLevel3Puzzle()}else if(currentLevel===4){startBonusGame()}};$('again').onclick=()=>{reset()};$('actionMobile').onclick=interact;
+const joystick=$('mobileJoystick'),knob=$('joystickKnob');
+if(joystick&&knob){
+ let joyPointer=null;
+ const releaseJoy=()=>{keys.ArrowLeft=false;keys.ArrowRight=false;keys.ArrowUp=false;keys.ArrowDown=false;knob.style.transform='translate(0px,0px)';joyPointer=null};
+ joystick.addEventListener('pointerdown',e=>{e.preventDefault();joyPointer=e.pointerId;joystick.setPointerCapture(e.pointerId);moveJoy(e)});
+ joystick.addEventListener('pointermove',e=>{if(e.pointerId===joyPointer){e.preventDefault();moveJoy(e)}});
+ joystick.addEventListener('pointerup',e=>{if(e.pointerId===joyPointer)releaseJoy()});
+ joystick.addEventListener('pointercancel',releaseJoy);
+ function moveJoy(e){
+  const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  let dx=e.clientX-cx,dy=e.clientY-cy,dist=Math.hypot(dx,dy),max=r.width*.29;
+  if(dist>max){dx=dx/dist*max;dy=dy/dist*max}
+  knob.style.transform='translate('+dx+'px,'+dy+'px)';
+  const threshold=r.width*.13;
+  keys.ArrowLeft=dx < -threshold;keys.ArrowRight=dx > threshold;
+  keys.ArrowUp=dy < -threshold;keys.ArrowDown=dy > threshold;
+ }
+}
+
 $('start').onclick=()=>{const entered=$('playerName').value.trim();if(!entered){$('playerName').focus();$('playerName').placeholder='Сначала введи имя';return}playerName=entered.slice(0,18);showStory()};
 document.querySelectorAll('[data-key]').forEach(b=>{let k=b.dataset.key;const down=e=>{e.preventDefault();keys[k]=true},up=e=>{e.preventDefault();keys[k]=false};b.addEventListener('pointerdown',down);b.addEventListener('pointerup',up);b.addEventListener('pointerleave',up);b.addEventListener('pointercancel',up)});
 let last=performance.now();function loop(now){let dt=Math.min(.04,(now-last)/1000);last=now;update(dt);draw();requestAnimationFrame(loop)}reset();renderScores();requestAnimationFrame(loop);
