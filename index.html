@@ -82,11 +82,11 @@ canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
 @media(max-width:390px){.landing-copy{grid-template-columns:1fr}.landing-waiter{font-size:58px}.landing-hero h2{text-align:center}.landing-features{gap:8px}.landing-feature{padding:10px}}
 
 @media(max-width:800px){
-.pad#mobileControls{display:block;position:static;width:0;height:0;padding:0;margin:0;border:0;background:transparent;box-shadow:none;transform:none;touch-action:none;z-index:1100}
-#mobileJoystick{position:fixed;left:22px;bottom:calc(24px + env(safe-area-inset-bottom));width:132px;height:132px;z-index:1101;touch-action:none;user-select:none;-webkit-user-select:none}
+.pad#mobileControls{display:none;position:static;width:0;height:0;padding:0;margin:0;border:0;background:transparent;box-shadow:none;transform:none;touch-action:none;z-index:1100}
+body.game-active #mobileJoystick{position:fixed;left:22px;bottom:calc(24px + env(safe-area-inset-bottom));width:132px;height:132px;z-index:1101;touch-action:none;user-select:none;-webkit-user-select:none}
 .joystick-ring{position:absolute;inset:0;border:3px solid #b8a0dc;border-radius:50%;background:radial-gradient(circle,#392751dd,#17102adf);box-shadow:0 5px 0 #080713, inset 0 0 0 5px #6a507e88}
 .joystick-knob{position:absolute;width:54px;height:54px;left:39px;top:39px;border:3px solid #fff0a0;border-radius:50%;background:linear-gradient(#ffe66d,#ffb83f);box-shadow:0 4px 0 #9a4b37;pointer-events:none}
-#actionMobile{position:fixed;right:22px;bottom:calc(158px + env(safe-area-inset-bottom));z-index:1102;min-width:124px;min-height:56px;padding:12px 14px;font-weight:bold;border:2px solid #fff09a;background:linear-gradient(#ffe66d,#ffb83f);color:#21122c;box-shadow:0 5px 0 #9a4b37;touch-action:manipulation}
+body.game-active #actionMobile{position:fixed;right:22px;bottom:calc(158px + env(safe-area-inset-bottom));z-index:1102;min-width:124px;min-height:56px;padding:12px 14px;font-weight:bold;border:2px solid #fff09a;background:linear-gradient(#ffe66d,#ffb83f);color:#21122c;box-shadow:0 5px 0 #9a4b37;touch-action:manipulation}
 }
 @media(max-width:380px){#mobileJoystick{width:112px;height:112px;left:14px;bottom:calc(18px + env(safe-area-inset-bottom))}.joystick-knob{width:48px;height:48px;left:32px;top:32px}#actionMobile{right:14px;bottom:calc(142px + env(safe-area-inset-bottom));min-width:112px;min-height:52px}}
 </style></head>
@@ -343,6 +343,8 @@ function showStoryScene(index,onDone){const sc=storyScenes[index];if(!sc){onDone
 function showStory(){$('intro').style.display='none';if(currentLevel===2){showSimpleDialogue('Олег','65 тату','Если поможешь мне, то набью твоё имя татуировкой на руке, будет 65 тату.',()=>startShift());return}if(currentLevel===3){showSimpleDialogue('Лиза','Дополнительный стол','У нас гости захотели ещё один стол, засервируй его, ты же знаешь как сервировать столы?',()=>startShift());return}if(currentLevel===4){showSimpleDialogue('Менеджер','Бонус: чистая посуда','Сегодня у тебя первый день, посмотрим как ты умеешь натирать посуду. На кухне стоит большая стопка тарелок, иди туда и натри их. Тебе поможет Игорь.',()=>showSimpleDialogue('Игорь','Покажу как надо','Я буду натирать посуду рядом. Смотри внимательно: пятна убирай нажатием, а если посуда чистая — жми кнопку «Чистая тарелка».',()=>startShift()));return}showStoryScene(0,()=>startShift())}
 function startShift(){const entered=$('playerName').value.trim();if(!entered){$('playerName').focus();$('playerName').placeholder='Сначала введи имя';return}playerName=entered.slice(0,18);mode='play';$('intro').style.display='none';$('result').style.display='none';if(currentLevel===2){stage=2;level2Step=1;serveCount=0;servingMistakes=0;servingItems.forEach(it=>{it.found=false;it.bad=false});miniTime=35;$('taskTitle').textContent='1. Сервировка стола';$('taskDesc').textContent='Найди 5 нужных предметов среди 12 за 35 секунд. Лишние предметы отнимают время и репутацию.';$('objective').textContent='Найди 5 предметов сервировки';$('hint').textContent='Ищи тарелку, вилку, нож, бокал и салфетку. Не нажимай на посторонние вещи!';$('statusText').textContent='Официант, подготовь стол к приходу гостей.'}else if(currentLevel===3){startLevel3Puzzle()}else if(currentLevel===4){startBonusGame()}};$('again').onclick=()=>{reset()};$('actionMobile').onclick=interact;
 const joystick=$('mobileJoystick'),knob=$('joystickKnob');
+function setMobileControls(active){document.body.classList.toggle('game-active',!!active)}
+setMobileControls(false);
 if(joystick&&knob){
  let joyPointer=null;
  const releaseJoy=()=>{keys.ArrowLeft=false;keys.ArrowRight=false;keys.ArrowUp=false;keys.ArrowDown=false;knob.style.transform='translate(0px,0px)';joyPointer=null};
