@@ -102,6 +102,25 @@ body.game-active #actionMobile{display:none;position:fixed;right:22px;bottom:cal
 #musicControls .music-secondary{background:linear-gradient(135deg,#333456,#252642);color:#fff8e7;border:1px solid #7771b6;box-shadow:none}
 #trackPicker .track-choice{width:100%;text-align:left;justify-content:flex-start}
 @media(max-width:600px){#musicControls button{font-size:11px;padding:8px;flex:1}}
+
+/* ONLINE PLAYER CHAT */
+#chatLauncher{position:fixed;right:18px;bottom:18px;z-index:1500;border:2px solid #fff09b;background:#ffe66d;color:#211733;padding:12px 16px;font:900 14px "Courier New",monospace;box-shadow:4px 4px 0 #0b0817}
+#playerChat{position:fixed;right:18px;bottom:76px;z-index:1500;width:min(360px,calc(100vw - 24px));height:min(480px,calc(100dvh - 110px));display:none;flex-direction:column;background:#20183b;border:3px solid #8066a1;box-shadow:6px 6px 0 #080713;color:#fff4d6;font:13px "Courier New",monospace}
+#playerChat.open{display:flex}
+#playerChatHead{display:flex;align-items:center;justify-content:space-between;padding:10px;background:#302447;border-bottom:2px solid #6b5c8c}
+#playerChatHead strong{color:#ffe66d;font-size:15px}
+#chatClose{padding:4px 9px;background:#302747;color:#fff4d6;border:1px solid #8e7bab;box-shadow:none}
+#chatStatus{padding:6px 10px;color:#c4b9dd;border-bottom:1px solid #49365e;font-size:11px}
+#chatMessages{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:7px}
+.chat-message{padding:7px;background:#2a2346;border:1px solid #5c477a;overflow-wrap:anywhere}
+.chat-message .chat-meta{color:#ffe66d;font-size:10px;margin-bottom:4px}
+.chat-message .chat-text{white-space:pre-wrap;line-height:1.4}
+#chatForm{padding:9px;border-top:2px solid #6b5c8c;display:grid;gap:6px}
+#chatForm input,#chatForm textarea{width:100%;min-width:0;box-sizing:border-box;background:#120d22;color:#fff4d6;border:2px solid #6b5c8c;padding:8px;font:12px "Courier New",monospace;border-radius:0}
+#chatForm textarea{height:58px;resize:vertical}
+#chatForm button{padding:8px}
+#chatDisclaimer{font-size:10px;color:#c4b9dd;line-height:1.3}
+@media(max-width:600px){#chatLauncher{right:10px;bottom:10px}#playerChat{right:8px;bottom:64px;height:min(68dvh,500px)}}
 </style></head>
 <body><div class="landing" id="landingPage">
 <div class="landing-inner">
@@ -457,4 +476,74 @@ function finishRunByChoice(){if(!runActive&&xp<=0){$('menuFeedback').textContent
 $('menuButton').addEventListener('click',openGameMenu);$('menuResume').addEventListener('click',closeGameMenu);$('menuSaveResult').addEventListener('click',()=>saveRunResult(false));$('menuSaveRecord').addEventListener('click',()=>saveRunResult(true));$('menuFinish').addEventListener('click',finishRunByChoice);
 })();
 </script><!-- Soundtrack assets are loaded from the six root-level MP3 files when available. -->
+
+<button id="chatLauncher" type="button" aria-expanded="false">💬 ЧАТ</button>
+<section id="playerChat" aria-label="Общий чат игроков" aria-hidden="true">
+  <div id="playerChatHead"><strong>💬 Чат игроков</strong><button id="chatClose" type="button" aria-label="Закрыть чат">✕</button></div>
+  <div id="chatStatus">Подключаемся к чату…</div>
+  <div id="chatMessages" aria-live="polite"><div class="chat-message">Загружаем сообщения…</div></div>
+  <form id="chatForm">
+    <input id="chatPlayerName" maxlength="18" placeholder="Твоё имя в чате" aria-label="Имя в чате" required>
+    <textarea id="chatMessageInput" maxlength="300" placeholder="Напиши сообщение…" aria-label="Сообщение" required></textarea>
+    <button id="chatSend" type="submit">Отправить</button>
+    <div id="chatDisclaimer">Не публикуй личные данные. Сообщения видны всем игрокам.</div>
+  </form>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  const chatUrl='https://tdegzadwhnnhhmfqhoof.supabase.co';
+  const chatKey='sb_publishable_Aetb_CS_nBxVzirbuIIJ5A_AOQW3rkY';
+  const $chat=id=>document.getElementById(id);
+  const panel=$chat('playerChat'),launcher=$chat('chatLauncher'),messages=$chat('chatMessages'),status=$chat('chatStatus'),nameInput=$chat('chatPlayerName'),textInput=$chat('chatMessageInput'),sendButton=$chat('chatSend');
+  let client=null,channel=null,lastSentAt=0,loaded=false;
+  try {
+    if(!window.supabase||!window.supabase.createClient) throw new Error('Не загрузилась библиотека чата');
+    client=window.supabase.createClient(chatUrl,chatKey);
+  } catch(e) { status.textContent='Чат пока недоступен. Обнови страницу позже.'; return; }
+  try { nameInput.value=localStorage.getItem('banquetChatName')||''; } catch(e) {}
+  function setOpen(open){panel.classList.toggle('open',open);panel.setAttribute('aria-hidden',String(!open));launcher.setAttribute('aria-expanded',String(open));if(open){if(!loaded)loadHistory();setTimeout(()=>textInput.focus(),80)}}
+  launcher.addEventListener('click',()=>setOpen(!panel.classList.contains('open')));
+  $chat('chatClose').addEventListener('click',()=>setOpen(false));
+  function safeText(el,value){el.textContent=value}
+  function addMessage(row){
+    if(messages.querySelector('[data-message-id="'+row.id+'"]'))return;
+    const empty=messages.querySelector('[data-empty="true"]');if(empty)empty.remove();
+    const card=document.createElement('div');card.className='chat-message';card.dataset.messageId=String(row.id);
+    const meta=document.createElement('div');meta.className='chat-meta';
+    const date=new Date(row.created_at);meta.textContent=(row.player_name||'Игрок')+' · '+date.toLocaleString('ru-RU',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
+    const body=document.createElement('div');body.className='chat-text';safeText(body,row.message||'');
+    card.append(meta,body);messages.appendChild(card);
+    while(messages.children.length>100)messages.firstElementChild.remove();
+    messages.scrollTop=messages.scrollHeight;
+  }
+  async function loadHistory(){
+    loaded=true;status.textContent='Загружаем историю…';
+    const {data,error}=await client.from('chat_messages').select('id,player_name,message,created_at').order('created_at',{ascending:false}).limit(60);
+    if(error){status.textContent='Не удалось загрузить чат. Проверь подключение.';console.error('Chat history error',error);loaded=false;return}
+    messages.replaceChildren();
+    (data||[]).reverse().forEach(addMessage);
+    if(!data||!data.length){const empty=document.createElement('div');empty.className='chat-message';empty.dataset.empty='true';empty.textContent='Пока тихо. Напиши первое сообщение!';messages.appendChild(empty)}
+    status.textContent='Общий чат · история сохраняется';
+    messages.scrollTop=messages.scrollHeight;
+    if(!channel){
+      channel=client.channel('banquet-chat-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},payload=>addMessage(payload.new)).subscribe(state=>{if(state==='SUBSCRIBED')status.textContent='● Онлайн · история сохраняется';else if(state==='CHANNEL_ERROR'||state==='TIMED_OUT')status.textContent='Связь прервалась — попробуй обновить страницу'});
+    }
+  }
+  $chat('chatForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const playerName=nameInput.value.trim().slice(0,18),message=textInput.value.trim().slice(0,300),now=Date.now();
+    if(!playerName){nameInput.focus();return}
+    if(!message){textInput.focus();return}
+    if(now-lastSentAt<1800){status.textContent='Подожди немного перед следующим сообщением.';return}
+    lastSentAt=now;sendButton.disabled=true;sendButton.textContent='Отправляем…';
+    try{localStorage.setItem('banquetChatName',playerName)}catch(e){}
+    const {error}=await client.from('chat_messages').insert({player_name:playerName,message});
+    sendButton.disabled=false;sendButton.textContent='Отправить';
+    if(error){status.textContent='Не удалось отправить. Попробуй ещё раз.';console.error('Chat send error',error);lastSentAt=0;return}
+    textInput.value='';status.textContent='● Сообщение отправлено';textInput.focus();
+  });
+})();
+</script>
 </body></html>
