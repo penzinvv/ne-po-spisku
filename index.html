@@ -363,7 +363,7 @@ if(joystick&&knob){
  }
 }
 
-$('start').onclick=()=>{const entered=$('playerName').value.trim();if(!entered){$('playerName').focus();$('playerName').placeholder='Сначала введи имя';return}playerName=entered.slice(0,18);showStory()};
+$('start').onclick=()=>{const entered=$('playerName').value.trim();if(!entered){$('playerName').focus();$('playerName').placeholder='Сначала введи имя';return}playerName=entered.slice(0,18);setMobileControls(true);showStory()};
 document.querySelectorAll('[data-key]').forEach(b=>{let k=b.dataset.key;const down=e=>{e.preventDefault();keys[k]=true},up=e=>{e.preventDefault();keys[k]=false};b.addEventListener('pointerdown',down);b.addEventListener('pointerup',up);b.addEventListener('pointerleave',up);b.addEventListener('pointercancel',up)});
 let last=performance.now();function loop(now){let dt=Math.min(.04,(now-last)/1000);last=now;update(dt);draw();requestAnimationFrame(loop)}reset();renderScores();requestAnimationFrame(loop);
 function updateLandingScores(){
