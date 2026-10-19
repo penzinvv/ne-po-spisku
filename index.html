@@ -12,6 +12,41 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;fl
 button{border:0;border-radius:10px;padding:10px 13px;background:var(--gold);color:#222;font-weight:800;cursor:pointer}button.secondary{background:#2d4056;color:var(--cream);border:1px solid #465b73}.controls{padding:11px 14px;border-top:1px solid #35455a;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
 aside{padding:15px}.sideTitle{font-size:18px;color:var(--gold);font-weight:800;margin:0 0 10px}.card{padding:12px;border-radius:12px;background:#243246;margin:9px 0;border:1px solid #35475e}.card strong{display:block;margin-bottom:4px}.card small{display:block;color:var(--muted);line-height:1.4}.bar{height:8px;background:#0d141d;border-radius:8px;overflow:hidden;margin:6px 0 12px}.bar span{display:block;height:100%;width:100%;background:linear-gradient(90deg,#8ee0b0,#f3c969)}.status{font-size:13px;color:var(--muted);line-height:1.55}.note{font-size:12px;line-height:1.5;color:var(--muted);margin-top:12px}.pad{display:none;gap:6px;align-items:center;flex-direction:column;margin:10px 0}.padrow{display:flex;gap:6px}.pad button{min-width:45px;min-height:40px}
 @media(max-width:600px){.canvaswrap{overflow:visible}.overlay{position:fixed;inset:0;z-index:1000;overflow-y:auto;align-items:flex-start;justify-content:center;padding:calc(16px + env(safe-area-inset-top)) 12px calc(24px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}.modal{width:100%;max-width:490px;max-height:none;overflow:visible;margin:auto;padding:18px 14px}.levelGrid{gap:6px}.levelBtn{min-width:0;padding:9px 3px;font-size:13px}.levelBtn strong{font-size:13px}.levelBtn small{font-size:10px}.nameinput{font-size:16px}.modal button{min-height:44px}.layout{min-width:0}canvas{image-rendering:auto}}@media(max-width:800px){.layout{grid-template-columns:1fr}aside{display:grid;grid-template-columns:1fr 1fr;gap:8px}aside .sideTitle,aside .status,aside .note{grid-column:1/-1}.card{margin:0}.pad{display:flex;position:fixed;z-index:900;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);width:214px;margin:0;padding:8px;background:#101a27eF;border:1px solid #465b73;border-radius:18px;box-shadow:0 8px 28px #0009;gap:5px;touch-action:none}.padrow{gap:5px}.pad button{min-width:54px;min-height:48px;padding:8px;margin:0;box-shadow:0 3px 0 #a75c38}.pad #actionMobile{width:100%;min-height:42px;font-size:13px}.padrow button{flex:1}}
+
+/* RETRO PIXEL-ART SKIN */
+:root{--bg:#17102a;--panel:#20183b;--gold:#ffe66d;--cream:#fff4d6;--muted:#c4b9dd;--green:#80f0a8;--red:#ff7088;--pink:#ff78c8;--cyan:#73eaff}
+*{box-sizing:border-box}
+body{background-color:#17102a;background-image:linear-gradient(180deg,#21153b 0%,#17102a 60%,#101b2d 100%);color:var(--cream);font-family:"Courier New",monospace;letter-spacing:.15px}
+main{max-width:1160px}
+h1{font-family:"Courier New",monospace;font-weight:900;letter-spacing:2px;text-shadow:3px 3px 0 #8a4779,5px 5px 0 #080817}
+.panel{background:#201b36;border:3px solid #77639b;border-radius:3px;box-shadow:0 0 0 3px #100b20,6px 6px 0 #0b0817}
+.pill{background:#2a2346;border:2px solid #6b5c8c;border-radius:2px;box-shadow:inset 2px 2px 0 #44375f}
+.card{background:#2a2346;border:2px solid #6b5c8c;border-radius:2px}
+.card strong{color:#ffe66d}
+button{font-family:"Courier New",monospace;border:2px solid #fff09b;border-radius:2px;background:#ffe66d;color:#211733;box-shadow:0 4px 0 #9b6a36,4px 4px 0 #0d0918;transition:transform .08s steps(2),filter .08s steps(2)}
+button:hover{transform:translate(-1px,-1px);filter:brightness(1.08);box-shadow:0 5px 0 #9b6a36,5px 5px 0 #0d0918}
+button:active{transform:translate(2px,3px);box-shadow:0 1px 0 #9b6a36,1px 1px 0 #0d0918}
+button.secondary{background:#302747;color:#fff4d6;border:2px solid #8e7bab;box-shadow:0 4px 0 #100b20}
+.levelBtn{background:#302747;color:var(--cream);border:2px solid #766394;border-radius:2px;box-shadow:3px 3px 0 #100b20}
+.levelBtn strong{color:#ffe66d}
+.levelBtn small{color:#d0c4e7}
+.levelBtn.selected{border:3px solid #80f0a8;background:#194b48;box-shadow:0 0 0 2px #17102a,4px 4px 0 #0b0817}
+.levelBtn:disabled{filter:grayscale(.8)}
+canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
+.modal{background:#201b36;border:3px solid #8e7bab;border-radius:3px;box-shadow:6px 6px 0 #0b0817}
+.modal h2{font-family:"Courier New",monospace;color:#ffe66d;text-shadow:2px 2px 0 #8a4779}
+.nameinput{border:2px solid #8e7bab;border-radius:2px;background:#120d22;color:var(--cream);font-family:"Courier New",monospace}
+.overlay{backdrop-filter:none;background:#080513df}
+.overlay.result-success .modal{border-color:#80f0a8;box-shadow:6px 6px 0 #0b0817,0 0 0 3px #80f0a833}
+.overlay.result-fail .modal{border-color:#ff7088;box-shadow:6px 6px 0 #0b0817}
+.scores{border-top:2px solid #6b5c8c}
+.scores li:first-child{color:#ffe66d}
+.controls{border-top:2px solid #6b5c8c}
+.bar{height:10px;border-radius:0;background:#100b20;border:1px solid #766394}
+.bar span{background:repeating-linear-gradient(90deg,#80f0a8 0 8px,#52b982 8px 10px)}
+.pad button{border-radius:2px}
+::selection{background:#ffe66d;color:#211733}
+@media(max-width:600px){.panel{border-radius:2px}.modal{border-radius:3px}}
 </style></head>
 <body><main>
 <header><div><h1>БАНКЕТНАЯ СЛУЖБА</h1><div class="sub">Аркадная смена · отель «Гранд» · версия 0.8</div></div>
