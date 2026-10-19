@@ -83,7 +83,7 @@ canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
 
 @media(max-width:800px){
 .pad#mobileControls{display:none;position:static;width:0;height:0;padding:0;margin:0;border:0;background:transparent;box-shadow:none;transform:none;touch-action:none;z-index:1100}
-body.game-active #mobileJoystick{position:fixed;left:22px;bottom:calc(24px + env(safe-area-inset-bottom));width:132px;height:132px;z-index:1101;touch-action:none;user-select:none;-webkit-user-select:none}
+body.game-active .pad#mobileControls{display:block}body.game-active #mobileJoystick{position:fixed;left:22px;bottom:calc(24px + env(safe-area-inset-bottom));width:132px;height:132px;z-index:1101;touch-action:none;user-select:none;-webkit-user-select:none}
 .joystick-ring{position:absolute;inset:0;border:3px solid #b8a0dc;border-radius:50%;background:radial-gradient(circle,#392751dd,#17102adf);box-shadow:0 5px 0 #080713, inset 0 0 0 5px #6a507e88}
 .joystick-knob{position:absolute;width:54px;height:54px;left:39px;top:39px;border:3px solid #fff0a0;border-radius:50%;background:linear-gradient(#ffe66d,#ffb83f);box-shadow:0 4px 0 #9a4b37;pointer-events:none}
 body.game-active #actionMobile{position:fixed;right:22px;bottom:calc(158px + env(safe-area-inset-bottom));z-index:1102;min-width:124px;min-height:56px;padding:12px 14px;font-weight:bold;border:2px solid #fff09a;background:linear-gradient(#ffe66d,#ffb83f);color:#21122c;box-shadow:0 5px 0 #9a4b37;touch-action:manipulation}
