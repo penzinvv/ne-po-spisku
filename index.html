@@ -97,7 +97,7 @@ body.game-active #actionMobile{display:none;position:fixed;right:22px;bottom:cal
 
 #cleanupIntro{position:fixed;inset:0;z-index:60;background:#100b20ef;display:none;align-items:center;justify-content:center;padding:18px}#cleanupIntro .panel{max-width:520px;background:#211a36;border:3px solid #9b80b7;border-radius:8px;padding:24px;text-align:center;color:#eee;font-size:18px}#cleanupIntro h2{color:#ffe56b}
 
-#musicControls{position:fixed;right:12px;top:12px;z-index:1002;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 90px)}
+#musicControls{display:none;position:fixed;right:12px;top:12px;z-index:1002;gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 90px)}
 #musicControls button{font-size:12px;padding:9px 11px;min-height:36px;border-radius:10px}
 #musicControls .music-secondary{background:linear-gradient(135deg,#333456,#252642);color:#fff8e7;border:1px solid #7771b6;box-shadow:none}
 @media(max-width:600px){#musicControls{top:58px;right:8px;left:8px;max-width:none}#musicControls button{font-size:11px;padding:8px;flex:1}}
@@ -265,12 +265,12 @@ p(10,29,28,19,'#171622');p(14,30,7,16,'#292b37');p(28,30,6,16,'#292b37');p(20,29
 
 }
 
-const musicFiles={active:'/music/background-active.mp3',calm:'/music/background-calm.mp3',songs:['/music/song-events.mp3','/music/song-not-a-gift.mp3','/music/song-main-menu.mp3','/music/song-we-are-banquet-service.mp3']};
+const musicFiles={active:'/background-active.mp3',calm:'/background-calm.mp3',songs:['/song-events.mp3','/song-not-a-gift.mp3','/song-main-menu.mp3','/song-we-are-banquet-service.mp3']};
 const bgAudio=new Audio(),songAudio=new Audio();
 bgAudio.loop=true;bgAudio.preload='auto';bgAudio.volume=0.22;
 songAudio.preload='auto';songAudio.volume=0.48;
 let musicEnabled=true,musicUnlocked=false,songPlaylistEnabled=false,songIndex=0,musicScene='calm';
-function syncMusicButtons(){const m=$('musicToggle'),p=$('songsToggle');if(m){m.textContent=musicEnabled?'♫ Музыка: вкл.':'♫ Музыка: выкл.';m.setAttribute('aria-pressed',String(musicEnabled))}if(p){p.textContent=songPlaylistEnabled?'■ Остановить песни':'▶ Песни';p.setAttribute('aria-pressed',String(songPlaylistEnabled))}}
+async function checkMusicAssets(){const urls=[musicFiles.active,musicFiles.calm,...musicFiles.songs];try{const results=await Promise.all(urls.map(url=>fetch(url,{method:'HEAD',cache:'no-store'})));if(results.every(r=>r.ok))$('musicControls').style.display='flex'}catch(e){/* Audio files are optional until installed; keep controls hidden. */}}\ncheckMusicAssets();\nfunction syncMusicButtons(){const m=$('musicToggle'),p=$('songsToggle');if(m){m.textContent=musicEnabled?'♫ Музыка: вкл.':'♫ Музыка: выкл.';m.setAttribute('aria-pressed',String(musicEnabled))}if(p){p.textContent=songPlaylistEnabled?'■ Остановить песни':'▶ Песни';p.setAttribute('aria-pressed',String(songPlaylistEnabled))}}
 function playBackgroundMusic(){if(!musicEnabled||songPlaylistEnabled||!musicUnlocked)return;const src=musicFiles[musicScene]||musicFiles.calm;if(!bgAudio.src.endsWith(src)){bgAudio.src=src;bgAudio.load()}bgAudio.play().catch(()=>{})}
 function setMusicScene(scene){musicScene=scene==='active'?'active':'calm';playBackgroundMusic()}
 function playSongAt(index){if(!songPlaylistEnabled||!musicEnabled)return;if(index>=musicFiles.songs.length){songPlaylistEnabled=false;songAudio.pause();songAudio.removeAttribute('src');songAudio.load();syncMusicButtons();playBackgroundMusic();return}songIndex=index;songAudio.src=musicFiles.songs[songIndex];songAudio.currentTime=0;songAudio.play().catch(()=>{songPlaylistEnabled=false;syncMusicButtons();playBackgroundMusic()})}
