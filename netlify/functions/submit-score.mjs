@@ -48,7 +48,18 @@ export default async (request, context) => {
       headers: { ...headers, "Prefer": "return=minimal" },
       body: JSON.stringify({ player_name: playerName, score })
     });
-    if (!response.ok) return Response.json({ error: "Could not save score" }, { status: 502, headers: corsHeaders });
+if (!response.ok) {
+  const details = await response.text();
+  console.error("Supabase read error:", response.status, details);
+  return Response.json(
+    {
+      error: "Could not load scores",
+      supabase_status: response.status,
+      details: details.slice(0, 500)
+    },
+    { status: 502, headers: corsHeaders }
+  );
+}
     return Response.json({ ok: true }, { status: 201, headers: corsHeaders });
   } catch {
     return Response.json({ error: "Unexpected server error" }, { status: 500, headers: corsHeaders });
