@@ -489,6 +489,51 @@ function updateLandingScores(){
 }
 // Both rating lists are rendered directly by renderScores; no DOM-copy observer needed.
 updateLandingScores();
+
+/* Выбор задания на уже открытых уровнях */
+(function(){
+ const taskSets={
+  1:['Доставка подноса','Спасение посуды','Уборка кухни'],
+  2:['Сервировка','Стандарт салфетки','Мармелад для Вовы'],
+  3:['Сервировка стола','Работа в гардеробе','Поиск Славы'],
+  4:['Натирка посуды'],
+  5:['Обед в столовой','Общение с коллегой','Женщина Александра']
+ };
+ const picker=document.createElement('div');
+ picker.id='taskPicker';picker.className='overlay';picker.style.display='none';picker.style.zIndex='1100';
+ picker.innerHTML='<div class="modal"><h2 id="taskPickerTitle">Выбор задания</h2><p>Выбери, с какого задания начать.</p><div id="taskPickerButtons" style="display:grid;gap:8px"></div><div class="actions"><button type="button" id="taskPickerCancel">Назад</button></div></div>';
+ document.body.appendChild(picker);
+ document.getElementById('taskPickerCancel').onclick=()=>{picker.style.display='none'};
+ function launch(n,i){
+  picker.style.display='none';
+  currentLevel=n;
+  const name=$('playerName').value.trim();
+  if(name)playerName=name.slice(0,18);
+  xp=0;runActive=true;recordSubmitted=false;scoreSaved=false;
+  $('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';
+  reset(true);$('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';
+  mode='play';setMusicScene('active');
+  if(n===1){
+   if(i===0){stage=0;carrying=false;player.x=110;player.y=410;startShift();return}
+   if(i===1){stage=2;startShift();return}
+   if(i===2){stage=3;startShift();startCleanup();return}
+  }
+  if(n===2){if(i===0){level2Step=1;startShift()}else if(i===1)beginLevel2Fold();else beginLevel2Memory();return}
+  if(n===3){if(i===0)startLevel3Puzzle();else if(i===1)startLevel3Cloakroom();else startLevel3Wine();return}
+  if(n===4){startBonusGame();return}
+  if(n===5){if(i===0)startCafeLevel();else if(i===1){cafeLevelState={startXP:xp,round:0,selected:[],sympathy:0,mazeStart:0,mazeWindow:0,mazeDone:false,mazeTimer:null};cafeVovaQuestion()}else{cafeLevelState={startXP:xp,round:0,selected:[],sympathy:0,mazeStart:0,mazeWindow:0,mazeDone:false,mazeTimer:null};cafeMazeStart()}return}
+ }
+ document.querySelectorAll('[data-level]').forEach(b=>b.addEventListener('click',e=>{
+  const n=Number(b.dataset.level);
+  if(n<unlockedLevel){
+   e.stopImmediatePropagation();e.preventDefault();
+   document.getElementById('taskPickerTitle').textContent='Уровень '+n+': выбери задание';
+   const box=document.getElementById('taskPickerButtons');box.innerHTML='';
+   (taskSets[n]||[]).forEach((label,i)=>{const btn=document.createElement('button');btn.type='button';btn.textContent=label;btn.onclick=()=>launch(n,i);box.appendChild(btn)});
+   picker.style.display='flex';
+  }
+ }),true);
+})();
 $('landingStart').addEventListener('click',()=>{musicUnlocked=true;if(musicEnabled&&!songPlaylistEnabled){musicScene='calm';bgAudio.src=musicFiles.calm;bgAudio.load();bgAudio.play().catch(err=>{console.warn('Музыка на стартовом экране не запустилась:',err);const retry=()=>bgAudio.play().catch(e=>console.warn('Повторный запуск музыки не удался:',e));document.addEventListener('pointerdown',retry,{once:true});document.addEventListener('keydown',retry,{once:true})})}$('landingPage').style.display='none';$('intro').style.display='flex';$('intro').style.zIndex='1000';window.scrollTo(0,0);setTimeout(()=>$('playerName').focus({preventScroll:true}),0)});
 
 
