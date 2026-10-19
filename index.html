@@ -116,7 +116,7 @@ const level2Lines=[[.08,.18,.92,.18],[.08,.38,.92,.38],[.08,.62,.92,.62],[.08,.8
 function drawDialogPortrait(speaker){
 const c=$('dialogPortrait'),ctx=c.getContext('2d');c.width=144;c.height=144;ctx.clearRect(0,0,144,144);
 const p=(x,y,w,h,col)=>{ctx.fillStyle=col;ctx.fillRect(x*3,y*3,w*3,h*3)};
-const name=speaker.toLowerCase();let kind=name.includes('лиз')?'lisa':name.includes('игор')?'igor':name.includes('слав')?'slava':name.includes('менедж')?'manager':name.includes('александр')?'slava':name.includes('вова')?'igor':name.includes('олег')?'igor':name.includes('флюровна')?'lisa':'';
+const name=speaker.toLowerCase();let kind=name.includes('лиз')?'lisa':name.includes('игор')?'igor':name.includes('слав')?'slava':name.includes('менедж')?'manager':name.includes('александр')?'alexander':name.includes('вова')?'vova':name.includes('олег')?'oleg':name.includes('флюровна')?'fluorovna':name.includes('люба')?'lyuba':name.includes('стаж')?'intern':'';
 if(!kind){c.style.display='none';return}
 c.style.display='block';p(0,0,48,48,'#21183a');p(2,3,44,42,'#292044');p(3,33,42,13,'#44345f');
 /* portraits use a 48x48 logical canvas with 3px pixel blocks for finer detail */
@@ -138,6 +138,27 @@ if(kind==='lisa'){
 p(10,28,28,20,'#777783');p(14,29,7,17,'#9696a3');p(27,29,7,17,'#9696a3');p(20,29,9,16,'#6b4634');p(22,30,5,2,'#c3b5a6');
 p(16,11,16,22,'#f1c9a7');p(13,17,4,8,'#e4b294');p(32,17,4,8,'#e4b294');p(12,8,24,7,'#9b7044');p(10,12,6,20,'#8c6038');p(13,18,4,13,'#9b7044');p(33,13,5,18,'#8c6038');p(16,7,18,5,'#b4875a');p(18,5,12,3,'#9b7044');p(16,15,4,2,'#684b52');p(28,15,4,2,'#684b52');p(17,15,2,2,'#f5eee0');p(29,15,2,2,'#f5eee0');p(22,19,5,3,'#d7a28a');p(20,24,10,3,'#b85b70');p(21,27,8,2,'#f5b3b8');p(34,27,8,10,'#28253b');p(36,29,5,6,'#73eaff');p(37,30,3,4,'#9bf5ff');p(13,36,5,5,'#9b7044')
 }
+if(kind==='vova'){
+p(10,29,28,19,'#121522');p(14,30,7,16,'#292b3b');p(28,30,6,16,'#292b3b');p(21,29,7,16,'#b8b4b1');p(23,29,3,18,'#503a36');p(22,33,5,2,'#c94b51');
+p(16,11,16,22,'#edc4a2');p(13,17,4,8,'#d9ae94');p(32,17,4,8,'#d9ae94');p(12,7,23,8,'#9a6945');p(11,10,5,9,'#8c5b3b');p(15,5,17,4,'#b17a50');p(20,4,10,3,'#c28a5b');p(16,15,4,2,'#49312e');p(28,15,4,2,'#49312e');p(17,15,2,2,'#dce8e5');p(29,15,2,2,'#dce8e5');p(22,19,4,4,'#c18b7a');p(20,25,8,2,'#995a55');p(8,37,4,4,'#171721');p(36,37,4,4,'#171721')
+}
+if(kind==='alexander'){
+p(10,29,28,19,'#111520');p(14,30,7,16,'#292b37');p(28,30,6,16,'#292b37');p(21,29,7,16,'#b8b4b1');p(23,29,3,18,'#4c3734');p(22,33,5,2,'#c94b51');
+p(16,11,16,22,'#e8c1a0');p(13,17,4,8,'#d9ad91');p(32,17,4,8,'#d9ad91');p(14,8,20,6,'#4b342b');p(15,7,17,3,'#63483a');p(16,14,4,2,'#34272b');p(28,14,4,2,'#34272b');p(17,14,2,2,'#d6e3dd');p(29,14,2,2,'#d6e3dd');p(22,19,4,4,'#bd8a77');p(20,25,8,2,'#955d58');p(21,28,6,2,'#e8c1a0')
+}
+if(kind==='oleg'){
+p(10,29,28,19,'#111520');p(14,30,7,16,'#292b37');p(28,30,6,16,'#292b37');p(19,29,10,16,'#b5a9a2');p(23,29,3,18,'#49332f');p(22,33,5,2,'#c94b51');p(16,11,16,22,'#eac5a5');p(13,17,4,8,'#d8ad92');p(32,17,4,8,'#d8ad92');p(14,8,20,6,'#6c4a35');p(16,6,15,3,'#886044');p(16,14,4,2,'#38282b');p(28,14,4,2,'#38282b');p(17,14,2,2,'#e0e9e5');p(29,14,2,2,'#e0e9e5');p(22,19,4,4,'#c28e7a');p(20,25,8,2,'#a26361');p(21,28,6,2,'#eac5a5');p(30,32,5,4,'#d7c8b8')
+}
+if(kind==='fluorovna'){
+p(10,29,28,19,'#111520');p(13,30,8,16,'#20212c');p(28,30,7,16,'#20212c');p(18,29,13,16,'#66616a');p(16,11,16,22,'#efc7a9');p(13,17,4,8,'#d9ad92');p(32,17,4,8,'#d9ad92');p(14,8,20,6,'#70482e');p(11,10,5,19,'#68432d');p(30,7,7,5,'#8b5b37');p(30,11,7,18,'#6c452e');p(17,14,4,2,'#49302f');p(28,14,4,2,'#49302f');p(18,14,2,2,'#dce7e3');p(29,14,2,2,'#dce7e3');p(22,19,4,4,'#c38f7c');p(20,25,8,2,'#b46b70');p(21,28,6,2,'#efc7a9');p(12,35,4,8,'#68432d')
+}
+if(kind==='lyuba'){
+p(10,29,28,19,'#171622');p(15,30,6,16,'#30303a');p(27,30,6,16,'#30303a');p(18,29,13,16,'#68616b');p(16,11,16,22,'#f0c8a9');p(13,17,4,8,'#dfb194');p(32,17,4,8,'#dfb194');p(13,8,22,8,'#54382f');p(11,12,5,17,'#4b302a');p(32,12,5,17,'#4b302a');p(16,6,17,4,'#79503b');p(17,14,4,2,'#3b292c');p(28,14,4,2,'#3b292c');p(18,14,2,2,'#e2ece8');p(29,14,2,2,'#e2ece8');p(22,19,4,4,'#c68f7e');p(20,25,8,2,'#a85b70');p(21,28,6,2,'#f0c8a9')
+}
+if(kind==='intern'){
+p(10,29,28,19,'#171622');p(14,30,7,16,'#292b37');p(28,30,6,16,'#292b37');p(20,29,10,16,'#b8b0ab');p(23,29,3,18,'#513a35');p(16,11,16,22,'#efc9a9');p(13,17,4,8,'#ddb294');p(32,17,4,8,'#ddb294');p(12,7,23,8,'#b27a4c');p(11,10,5,9,'#a66c43');p(16,5,14,3,'#c78d58');p(28,6,7,6,'#b27a4c');p(16,14,4,2,'#44302d');p(28,14,4,2,'#44302d');p(17,14,2,2,'#dce8e5');p(29,14,2,2,'#dce8e5');p(22,19,4,4,'#c28d7b');p(20,25,8,2,'#ad6870');p(21,28,6,2,'#efc9a9')
+}
+
 }
 function showSimpleDialogue(speaker,title,line,onDone){$('intro').style.display='none';mode='dialog';drawDialogPortrait(speaker);$('storySpeaker').textContent=speaker;$('storyTitle').textContent=title;$('storyLine').textContent=line;const box=$('storyChoices');box.innerHTML='';const b=document.createElement('button');b.type='button';b.textContent='Продолжить';b.onclick=()=>{$('storyDialog').style.display='none';onDone();ui()};box.appendChild(b);$('storyDialog').style.display='flex'}
 function beginLevel2Fold(){level2Step=2;stage=2;foldLines=level2Lines;foldLinesFound=[];foldFirstPoint=null;foldDrawing=null;foldPreview=5;miniTime=20;$('taskTitle').textContent='2. Сложи салфетку по памяти';$('taskDesc').textContent='Запомни схему из 7 линий, затем восстанови её за 20 секунд. Ошибка отнимает 5 секунд.';$('objective').textContent='Запомни и повтори 7 линий сгибов';$('hint').textContent='Во время показа запомни линии; затем нарисуй каждую линию мышкой или пальцем.';$('statusText').textContent='Флюровна проверяет стандарты сервировки.';mode='play';}
