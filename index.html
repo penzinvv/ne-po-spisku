@@ -462,6 +462,19 @@ async function renderScores(){
   const paint=(target,items,local=false)=>{
     if(!target)return;
     target.replaceChildren();
+    if(!local){
+      // Older score rows may have no player_id; collapse legacy rows by normalized name,
+      // keeping the best score so historical resubmissions do not fill the leaderboard.
+      const unique=new Map();
+      items.forEach(item=>{
+        const rawId=String(item.player_id||'').trim();
+        const normalizedName=String(item.player_name||'Гость').trim().toLocaleLowerCase('ru-RU').replace(/\s+/g,' ');
+        const key=rawId?'id:'+rawId:'legacy-name:'+normalizedName;
+        const previous=unique.get(key);
+        if(!previous||(Number(item.score)||0)>(Number(previous.score)||0))unique.set(key,item);
+      });
+      items=[...unique.values()].sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
+    }
     if(!items.length){
       const li=document.createElement('li');
       li.textContent=local?'Пока нет результатов':'Пока нет онлайн-рекордов';
