@@ -178,6 +178,16 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
 #homeMusicMount #musicControls{display:block!important;margin:0!important}#homeMusicMount #trackPicker{position:absolute;z-index:15;background:#17132b;border:1px solid #94668e;border-radius:10px;padding:10px;right:30px;max-width:300px}
 @media(max-width:900px){.home-grid{grid-template-columns:1fr}.home-ranking{order:2}.home-header{align-items:flex-start;flex-direction:column}.home-audio{justify-content:flex-start}}
 @media(max-width:560px){.home-dashboard .landing-inner{padding:18px 12px}.home-profile{flex-wrap:wrap}.home-profile-copy{min-width:150px}.home-profile>button{width:100%}.home-mission{align-items:flex-start}.home-mission-art{flex-basis:64px;min-height:64px;font-size:38px}.home-quicknav{grid-template-columns:repeat(2,minmax(0,1fr))}.home-dashboard .landing-footer{flex-direction:column}}
+
+.home-ranking .office-heading{margin:0;color:#ffe66d;font-size:clamp(20px,2vw,26px);text-align:center}
+.home-ranking #homeChatMount{min-height:500px;display:flex;flex-direction:column}
+#homeChatMount #playerChat{position:relative;right:auto;bottom:auto;z-index:1;width:100%;height:520px;max-height:calc(100vh - 300px);display:flex;flex-direction:column;box-sizing:border-box;border:1px solid #8066a1;box-shadow:none}
+#homeChatMount #playerChat.open{display:flex}
+#homeChatMount #chatClose{display:none}
+.story-notebook-modal{width:min(760px,100%);max-height:92vh;overflow:auto}
+.story-notebook-modal textarea{display:block;width:100%;box-sizing:border-box;margin:10px 0 14px;background:#120d22;color:#fff4d6;border:2px solid #8066a1;padding:12px;font:14px "Courier New",monospace;resize:vertical}
+.story-notebook-modal label{color:#ffe66d}
+@media(max-width:900px){.home-ranking #homeChatMount{min-height:420px}#homeChatMount #playerChat{height:440px;max-height:none}}
 </style></head>
 <body><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
@@ -191,15 +201,14 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
     <button class="landing-start home-start" id="landingStart">▶ НАЧАТЬ ИГРУ <small>Выбрать уровень и приступить к смене</small></button>
     <section class="home-mission panel"><div class="home-mission-art">🥂</div><div><h2>Отель «Гранд»</h2><p>Доставляй подносы, выполняй заказы в большом зале, лавируй между коллегами и докажи, что достоин звания лучшего сотрудника.</p><div class="home-statline"><span>⭐ Твой счёт: <b id="homeXP">0</b></span><span>🏅 Открытый уровень: <b id="homeLevel">1</b></span></div></div></section>
     <section class="home-quicknav" aria-label="Разделы игры">
-      <button type="button" data-home-action="records">🏆<strong>Рекорды</strong><small>Таблица лидеров</small></button>
-      <button type="button" data-home-action="story">📖<strong>Сюжет</strong><small>История отеля</small></button>
-      <button type="button" data-home-action="colleagues">👥<strong>Сотрудники</strong><small>Отношения</small></button>
-      <button type="button" data-home-action="gallery">🖼️<strong>Галерея</strong><small>Открытые сцены</small></button>
-      <button type="button" data-home-action="settings">⚙️<strong>Настройки</strong><small>Звук и имя</small></button>
-      <button type="button" data-home-action="help">❔<strong>Помощь</strong><small>Как играть</small></button>
+      <button type="button" data-home-action="story">📖<strong>Сюжет</strong><small>Блокнот реплик</small></button>
+      <button type="button" data-home-action="tips">💛<strong>Оставить чаевые</strong><small>Поддержать игру</small></button>
+      <button type="button" data-home-action="gallery">🖼️<strong>Галерея</strong><small>Скриншоты сцен</small></button>
+      <button type="button" data-home-action="settings">⚙️<strong>Настройки</strong><small>Открыть меню игры</small></button>
+      <button type="button" data-home-action="about">ℹ️<strong>О разработчике</strong><small>Информация об авторе</small></button>
     </section>
   </section>
-  <section class="home-ranking panel"><h2>🏆 Общий онлайн-рейтинг</h2><p>Лучшие сотрудники отеля «Гранд»</p><ol id="landingScoreList"><li><span class="rank-name">Загружаем рекорды…</span></li></ol><button type="button" class="secondary home-chat-button" id="homeChat">💬 Открыть чат игроков</button></section>
+  <section class="home-ranking panel"><h2 class="office-heading">🏢 ОФИС МЕНЕДЖЕРА</h2><p>Общий онлайн-чат сотрудников отеля «Гранд»</p><div id="homeChatMount"></div></section>
 </div>
 <div class="landing-footer"><span>Разработчик: Валерий DOS, 2026</span><span>Внимательность, скорость и аккуратность делают из новичка профи.</span><span>Банкетная служба · версия 0.9</span></div>
 </div></div>
@@ -772,17 +781,22 @@ document.addEventListener('click',function(event){
   refreshHomeProfile();
   const music=$('musicControls'),mount=$('homeMusicMount');if(music&&mount)mount.appendChild(music);
   const start=$('landingStart');if(start)start.addEventListener('click',()=>setTimeout(refreshHomeProfile,100));
-  const chat=$('homeChat');if(chat)chat.addEventListener('click',()=>{const launcher=$('chatLauncher');if(launcher)launcher.click()});
+  const chat=$('chatLauncher'),chatPanel=$('playerChat'),chatMount=$('homeChatMount');if(chatPanel&&chatMount){chatMount.appendChild(chatPanel);chatPanel.classList.add('open');chatPanel.setAttribute('aria-hidden','false');if(chat)chat.style.display='none';}
   const change=$('homeChangeName');if(change)change.addEventListener('click',()=>{const menu=$('menuButton');if(menu)menu.click();setTimeout(()=>{const b=$('menuChangeName');if(b)b.click()},80)});
   const sound=$('homeSoundSettings');if(sound)sound.addEventListener('click',()=>{const picker=$('trackPicker');if(picker)picker.style.display=picker.style.display==='block'?'none':'block';});
   document.querySelectorAll('[data-home-action]').forEach(btn=>btn.addEventListener('click',()=>{
    const action=btn.dataset.homeAction;
-   if(action==='records'){const rank=$('landingScoreList');if(rank)rank.scrollIntoView({behavior:'smooth',block:'center'});return}
-   if(action==='settings'){const picker=$('trackPicker');if(picker)picker.style.display='block';return}
-   if(action==='story'||action==='help'){const start=$('landingStart');if(start)start.click();return}
-   if(action==='colleagues'){alert('Отношения с коллегами открываются и развиваются во время сюжетных заданий. Начни игру и выполни задания, чтобы увидеть изменения.');return}
-   if(action==='gallery'){alert('Галерея сцен пока находится в разработке.');return}
+   if(action==='settings'){const menu=$('menuButton');if(menu)menu.click();return}
+   if(action==='story'){openStoryNotebook();return}
+   if(action==='tips'){const b=$('menuTips');if(b)b.click();return}
+   if(action==='about'){const b=$('menuAbout');if(b)b.click();return}
+   if(action==='gallery'){openGalleryPlaceholder();return}
   }));
  });
+ function openStoryNotebook(){
+  let modal=$('storyNotebook');if(!modal){modal=document.createElement('div');modal.id='storyNotebook';modal.className='overlay';modal.style.cssText='position:fixed;z-index:6000;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:#080513ed';modal.innerHTML='<div class="modal story-notebook-modal"><h2>📖 Блокнот сюжета</h2><p>Записывай сюда реплики персонажей или кратко пересказывай разговоры, которые происходят во время игры. Записи сохраняются в этом браузере.</p><label for="storyNotebookText">Мои заметки и реплики</label><textarea id="storyNotebookText" rows="12" placeholder="Уровень / персонаж / реплика…"></textarea><div class="actions"><button id="storyNotebookSave" type="button">Сохранить записи</button><button id="storyNotebookClose" class="secondary" type="button">Закрыть</button></div><p id="storyNotebookStatus" aria-live="polite"></p></div>';document.body.appendChild(modal);$('storyNotebookSave').addEventListener('click',()=>{try{localStorage.setItem('banquetStoryNotebook',$('storyNotebookText').value);$('storyNotebookStatus').textContent='Записи сохранены на этом устройстве.'}catch(e){$('storyNotebookStatus').textContent='Не удалось сохранить записи в этом браузере.'}});$('storyNotebookClose').addEventListener('click',()=>modal.style.display='none')}
+  try{$('storyNotebookText').value=localStorage.getItem('banquetStoryNotebook')||''}catch(e){}modal.style.display='flex';
+ }
+ function openGalleryPlaceholder(){let modal=$('galleryPlaceholder');if(!modal){modal=document.createElement('div');modal.id='galleryPlaceholder';modal.className='overlay';modal.style.cssText='position:fixed;z-index:6000;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:#080513ed';modal.innerHTML='<div class="modal"><h2>🖼️ Галерея</h2><p>Здесь будет коллекция игровых сцен и скриншотов, которые ты пришлёшь. Пока галерея подготовлена для будущего наполнения.</p><div class="actions"><button id="galleryPlaceholderClose" type="button">Понятно</button></div></div>';document.body.appendChild(modal);$('galleryPlaceholderClose').addEventListener('click',()=>modal.style.display='none')}modal.style.display='flex'}
 })();
 </script></body></html>
