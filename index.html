@@ -203,6 +203,25 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
 .story-notebook-modal textarea{display:block;width:100%;box-sizing:border-box;margin:10px 0 14px;background:#120d22;color:#fff4d6;border:2px solid #8066a1;padding:12px;font:14px "Courier New",monospace;resize:vertical}
 .story-notebook-modal label{color:#ffe66d}
 @media(max-width:900px){.home-office #homeChatMount{min-height:420px}#homeChatMount #playerChat{height:440px;max-height:none}}
+
+.home-avatar{cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,border-color .15s}
+.home-avatar:hover{transform:scale(1.05);border-color:var(--gold)}
+.home-avatar:after{content:'✎';position:absolute;right:0;bottom:0;background:#17132d;color:var(--gold);font-size:12px;padding:1px 4px;border-radius:5px 0 0 0}
+.avatar-modal{position:fixed;inset:0;z-index:10000;background:#080713d9;display:none;align-items:center;justify-content:center;padding:16px}
+.avatar-dialog{width:min(900px,100%);max-height:92vh;overflow:auto;background:linear-gradient(145deg,#201637,#111126);border:3px solid #a65bea;border-radius:18px;box-shadow:0 0 0 4px #27113f,0 20px 70px #000b;padding:22px}
+.avatar-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+.avatar-dialog h2{margin:0;color:var(--gold);text-align:center;font-size:clamp(21px,4vw,32px);text-shadow:2px 3px #9e426e}
+.avatar-dialog p{margin:8px 0 18px;text-align:center;color:#cbb6ed}
+.avatar-close{min-width:42px;padding:6px 10px}
+.avatar-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.avatar-choice{background:#282044;border:2px solid #8052a8;border-radius:10px;padding:7px 4px;color:#f8d8ff;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;box-shadow:none}
+.avatar-choice .avatar-face{width:100%;aspect-ratio:1/1;display:grid;place-items:center;font-size:clamp(34px,6vw,58px);border-radius:7px;background:radial-gradient(circle at 50% 25%,#574079,#241737 72%)}
+.avatar-choice small{font-size:11px;font-weight:800}
+.avatar-choice.selected{border-color:var(--gold);box-shadow:0 0 0 2px #ffda5966,inset 0 0 20px #ffe66d22;color:var(--gold)}
+.avatar-save-row{display:flex;justify-content:center;gap:10px;margin-top:18px}
+.avatar-save-row button{min-width:210px}
+@media(max-width:620px){.avatar-dialog{padding:14px}.avatar-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.home-profile{flex-wrap:wrap}.home-profile-actions{min-width:100%}}
+
 </style></head>
 <body><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
@@ -212,7 +231,7 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
 </header>
 <div class="home-grid">
   <section class="home-primary">
-    <div class="home-profile panel"><div class="home-avatar">🧑‍🍳</div><div class="home-profile-copy"><span class="home-eyebrow">ТВОЙ ПРОФИЛЬ</span><h2 id="homePlayerName">Новый сотрудник</h2><p>⭐ Общие баллы: <b id="homeXP">0</b> · готов к смене</p><small id="homeScoreFeedback" aria-live="polite"></small></div><div class="home-profile-actions"><button id="homeSubmitScore" type="button">🏆 Отправить результат в онлайн-рейтинг</button><button id="homeChangeName" class="secondary" type="button">Изменить имя</button></div></div>
+    <div class="home-profile panel"><button class="home-avatar" id="homeAvatar" type="button" aria-label="Выбрать аватарку" title="Нажми, чтобы выбрать аватарку">🧑‍🍳</button><div class="home-profile-copy"><span class="home-eyebrow">ТВОЙ ПРОФИЛЬ</span><h2 id="homePlayerName">Новый сотрудник</h2><p>⭐ Общие баллы: <b id="homeXP">0</b> · готов к смене</p><small id="homeScoreFeedback" aria-live="polite"></small></div><div class="home-profile-actions"><button id="homeSubmitScore" type="button">🏆 Отправить результат в онлайн-рейтинг</button><button id="homeChangeName" class="secondary" type="button">Изменить имя</button></div></div>
     <button class="landing-start home-start" id="landingStart">▶ НАЧАТЬ ИГРУ <small>Выбрать уровень и приступить к смене</small></button>
     
     <section class="home-quicknav" aria-label="Разделы игры">
@@ -942,4 +961,38 @@ document.addEventListener('click',function(event){
  }
  function openGalleryPlaceholder(){let modal=$('galleryPlaceholder');if(!modal){modal=document.createElement('div');modal.id='galleryPlaceholder';modal.className='overlay';modal.style.cssText='position:fixed;z-index:6000;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:#080513ed';modal.innerHTML='<div class="modal"><h2>🖼️ Галерея</h2><p>Здесь будет коллекция игровых сцен и скриншотов, которые ты пришлёшь. Пока галерея подготовлена для будущего наполнения.</p><div class="actions"><button id="galleryPlaceholderClose" type="button">Понятно</button></div></div>';document.body.appendChild(modal);$('galleryPlaceholderClose').addEventListener('click',()=>modal.style.display='none')}modal.style.display='flex'}
 })();
-</script></body></html>
+</script>
+<div class="avatar-modal" id="avatarModal" role="dialog" aria-modal="true" aria-labelledby="avatarTitle">
+ <div class="avatar-dialog">
+  <div class="avatar-dialog-head"><div style="flex:1"><h2 id="avatarTitle">ВЫБЕРИ СВОЮ АВАТАРКУ</h2></div><button class="secondary avatar-close" id="avatarClose" type="button" aria-label="Закрыть">✕</button></div>
+  <p>Выбери портрет официанта. Аватар сохранится в профиле на этом устройстве.</p>
+  <div class="avatar-grid" id="avatarGrid"></div>
+  <div class="avatar-save-row"><button id="avatarSave" type="button">💾 СОХРАНИТЬ</button></div>
+ </div>
+</div>
+<script>
+(function(){
+ const avatars=[
+  {face:'👩🏻‍🍳',label:'Официант 1'},{face:'👱🏻‍♀️',label:'Официант 2'},{face:'👨🏻‍🍳',label:'Официант 3'},
+  {face:'👩🏻‍🦰',label:'Официант 4'},{face:'🤓',label:'Официант 5'},{face:'👨🏻',label:'Официант 6'},
+  {face:'👱🏻',label:'Официант 7'},{face:'👩🏻',label:'Официант 8'},{face:'😎',label:'Официант 9'},
+  {face:'👩🏼‍🦱',label:'Официант 10'},{face:'🧑🏻‍🦱',label:'Официант 11'}
+ ];
+ const modal=document.getElementById('avatarModal'),grid=document.getElementById('avatarGrid'),icon=document.getElementById('homeAvatar');
+ if(!modal||!grid||!icon)return;
+ let chosen=0;
+ try{chosen=Math.max(0,Math.min(10,Number(JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}').avatar)||0)}catch(e){}
+ function draw(){grid.replaceChildren();avatars.forEach((a,i)=>{const b=document.createElement('button');b.type='button';b.className='avatar-choice'+(i===chosen?' selected':'');b.setAttribute('aria-pressed',String(i===chosen));const face=document.createElement('span');face.className='avatar-face';face.textContent=a.face;const label=document.createElement('small');label.textContent=a.label;b.append(face,label);b.addEventListener('click',()=>{chosen=i;draw()});grid.appendChild(b)})}
+ function show(){try{const p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}');chosen=Math.max(0,Math.min(10,Number(p.avatar)||0))}catch(e){}draw();modal.style.display='flex'}
+ function hide(){modal.style.display='none'}
+ function apply(){icon.textContent=avatars[chosen].face;icon.setAttribute('aria-label','Выбран аватар: '+avatars[chosen].label)}
+ icon.addEventListener('click',show);document.getElementById('avatarClose').addEventListener('click',hide);
+ modal.addEventListener('click',e=>{if(e.target===modal)hide()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});
+ document.getElementById('avatarSave').addEventListener('click',()=>{
+   try{const p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}');p.avatar=chosen;localStorage.setItem('banquetPlayerProfile',JSON.stringify(p));apply();hide()}catch(e){alert('Не удалось сохранить аватар. Проверь настройки браузера.')}
+ });
+ apply();
+})();
+</script>
+</body></html>
