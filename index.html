@@ -204,23 +204,23 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
 .home-quicknav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
 .home-quicknav button{min-height:85px;background:#19142e;color:#fff3d6;border:1px solid #94668e;box-shadow:none;border-radius:9px;font-size:22px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px}
 .home-quicknav button strong{font-size:14px}.home-quicknav button small{font-size:11px;color:#c7b6dc;font-weight:500}.home-quicknav button:hover{background:#302043}
-.home-ranking{padding:18px;border:1px solid #79558e;border-radius:13px;background:#17132b;min-width:0}.home-ranking h2{margin:0;color:#ffe66d;font-size:20px}.home-ranking>p{margin:6px 0 12px;color:#c9badc;font-size:13px}
+.home-ranking{padding:0;border:0;background:transparent;min-width:0;align-self:stretch}.home-office{padding:18px;border:1px solid #79558e;border-radius:13px;background:#17132b;min-width:0;margin-top:16px}.home-office h2{margin:0;color:#ffe66d;font-size:20px}.home-office>p{margin:6px 0 12px;color:#c9badc;font-size:13px}.home-ranking h2{margin:0;color:#ffe66d;font-size:20px}.home-ranking>p{margin:6px 0 12px;color:#c9badc;font-size:13px}
 .home-ranking ol{margin:0;padding-left:28px}.home-ranking li{padding:9px 4px;border-bottom:1px solid #3b2b4b;font-size:13px}.home-ranking .rank-name{color:#fff0d9}.home-chat-button{width:100%;margin-top:16px}
 .home-dashboard .landing-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:22px;padding-top:14px;border-top:1px solid #604369;color:#b7a7d2;font-size:13px}
 #homeMusicMount #musicControls{display:block!important;margin:0!important}#homeMusicMount #trackPicker{position:absolute;z-index:15;background:#17132b;border:1px solid #94668e;border-radius:10px;padding:10px;right:30px;max-width:300px}
 @media(max-width:900px){.home-grid{grid-template-columns:1fr}.home-ranking{order:2}.home-header{align-items:flex-start;flex-direction:column}.home-audio{justify-content:flex-start}}
 @media(max-width:560px){.home-dashboard .landing-inner{padding:18px 12px}.home-profile{flex-wrap:wrap}.home-profile-copy{min-width:150px}.home-profile-actions{width:100%;min-width:0}.home-profile-actions button{width:100%}.home-mission{align-items:flex-start}.home-mission-art{flex-basis:64px;min-height:64px;font-size:38px}.home-quicknav{grid-template-columns:repeat(2,minmax(0,1fr))}.home-dashboard .landing-footer{flex-direction:column}}
 
-.home-ranking .office-heading{margin:0;color:#ffe66d;font-size:clamp(20px,2vw,26px);text-align:center}
-.home-ranking #homeChatMount{min-height:500px;display:flex;flex-direction:column}
+.home-office .office-heading{margin:0;color:#ffe66d;font-size:clamp(20px,2vw,26px);text-align:center}
+.home-office #homeChatMount{min-height:500px;display:flex;flex-direction:column}
 #homeChatMount #playerChat{position:relative;right:auto;bottom:auto;z-index:1;width:100%;height:520px;max-height:calc(100vh - 300px);display:flex;flex-direction:column;box-sizing:border-box;border:1px solid #8066a1;box-shadow:none}
 #homeChatMount #playerChat.open{display:flex}
 #homeChatMount #chatClose{display:none}
-.home-online-ranking{margin-top:18px;padding:16px;border:2px solid #8066a1;background:#17102a}.home-online-ranking h2{margin:0 0 6px;text-align:center;color:#ffe66d;font-size:clamp(18px,2vw,23px)}.home-online-ranking p{margin:0 0 8px;text-align:center;color:#c4b9dd;font-size:12px}.home-online-ranking ol{margin:0;padding-left:28px}.home-online-ranking li{padding:8px 2px;border-bottom:1px solid #49365e;overflow-wrap:anywhere}
+.home-online-ranking{margin:0;padding:16px;border:2px solid #8066a1;background:#17102a;min-height:100%;box-sizing:border-box}.home-online-ranking h2{margin:0 0 6px;text-align:center;color:#ffe66d;font-size:clamp(18px,2vw,23px)}.home-online-ranking p{margin:0 0 8px;text-align:center;color:#c4b9dd;font-size:12px}.home-online-ranking ol{margin:0;padding-left:28px}.home-online-ranking li{padding:8px 2px;border-bottom:1px solid #49365e;overflow-wrap:anywhere}
 .story-notebook-modal{width:min(760px,100%);max-height:92vh;overflow:auto}
 .story-notebook-modal textarea{display:block;width:100%;box-sizing:border-box;margin:10px 0 14px;background:#120d22;color:#fff4d6;border:2px solid #8066a1;padding:12px;font:14px "Courier New",monospace;resize:vertical}
 .story-notebook-modal label{color:#ffe66d}
-@media(max-width:900px){.home-ranking #homeChatMount{min-height:420px}#homeChatMount #playerChat{height:440px;max-height:none}}
+@media(max-width:900px){.home-office #homeChatMount{min-height:420px}#homeChatMount #playerChat{height:440px;max-height:none}}
 </style></head>
 <body><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
@@ -240,8 +240,9 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
       <button type="button" data-home-action="settings">⚙️<strong>Настройки</strong><small>Открыть меню игры</small></button>
       <button type="button" data-home-action="about">ℹ️<strong>О разработчике</strong><small>Информация об авторе</small></button>
     </section>
+    <section class="home-office panel"><h2 class="office-heading">🏢 ОФИС МЕНЕДЖЕРА</h2><p>Общий онлайн-чат сотрудников отеля «Гранд»</p><div id="homeChatMount"></div></section>
   </section>
-  <section class="home-ranking panel"><h2 class="office-heading">🏢 ОФИС МЕНЕДЖЕРА</h2><p>Общий онлайн-чат сотрудников отеля «Гранд»</p><div id="homeChatMount"></div><section class="home-online-ranking"><h2>🏆 Общий онлайн-рейтинг</h2><p id="homeOnlineStatus">Загружаем результаты игроков…</p><ol id="landingScoreList"><li>Загрузка…</li></ol></section></section>
+  <section class="home-ranking panel"><section class="home-online-ranking"><h2>🏆 Общий онлайн-рейтинг · ТОП 25</h2><p id="homeOnlineStatus">Загружаем результаты игроков…</p><ol id="landingScoreList"><li>Загрузка…</li></ol></section></section>
 </div>
 <div class="landing-footer"><span>Разработчик: Валерий DOS, 2026</span><span>Внимательность, скорость и аккуратность делают из новичка профи.</span><span>Банкетная служба · версия 0.9</span></div>
 </div></div>
@@ -467,7 +468,7 @@ async function renderScores(){
       target.appendChild(li);
       return;
     }
-    items.slice(0,10).forEach(item=>{
+    items.slice(0,25).forEach(item=>{
       const li=document.createElement('li');
       if(local){
         li.textContent=(item.name||'Гость')+' — '+(Number(item.xp)||0)+' очк.';
@@ -623,7 +624,7 @@ let last=performance.now();function loop(now){let dt=Math.min(.04,(now-last)/100
 function updateLandingScores(){
  const source=$('scoreList'),dest=$('landingScoreList');if(!source||!dest)return;
  dest.innerHTML='';
- [...source.querySelectorAll('li')].slice(0,10).forEach((item)=>{
+ [...source.querySelectorAll('li')].slice(0,25).forEach((item)=>{
   const text=item.textContent.trim();const li=document.createElement('li');
   const parts=text.match(/^(.*?)\s+[—-]\s+(\d+)\s*очк\./i);
   const name=document.createElement('span');name.className='rank-name';name.textContent=parts?parts[1]:text;
