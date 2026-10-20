@@ -80,7 +80,7 @@ export default async (request, context) => {
     if (
       !playerName ||
       !Number.isInteger(score) ||
-      score < 0 ||
+      score < -1000000 ||
       score > 1000000
     ) {
       return json({ error: "Invalid player name or score" }, 400);
