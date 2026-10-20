@@ -660,4 +660,29 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
   });
 })();
 </script>
+<script>
+/* Надёжные обработчики стартовых кнопок — независимо от порядка инициализации остальных модулей. */
+document.addEventListener('click',function(event){
+ const button=event.target.closest('#landingStart, #landingOffice');
+ if(!button)return;
+ event.preventDefault();
+ event.stopImmediatePropagation();
+ if(button.id==='landingStart'){
+  const landing=document.getElementById('landingPage');
+  const intro=document.getElementById('intro');
+  if(landing)landing.style.display='none';
+  if(intro){intro.style.display='flex';intro.style.zIndex='1000'}
+  window.scrollTo(0,0);
+  const name=document.getElementById('playerName');
+  if(name)setTimeout(()=>name.focus({preventScroll:true}),0);
+ }else{
+  const launcher=document.getElementById('chatLauncher');
+  if(launcher)launcher.click();
+  else{
+   const chat=document.getElementById('playerChat');
+   if(chat)chat.style.display='flex';
+  }
+ }
+},true);
+</script>
 </body></html>
