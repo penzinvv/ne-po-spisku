@@ -419,7 +419,7 @@ function interact(){if(mode!=='play')return;if(stage===0&&!carrying&&Math.hypot(
 
 function getScores(){try{return JSON.parse(localStorage.getItem('nePoSpiskuScores')||'[]')}catch(e){return []}}
 function renderLocalScores(){const list=$('scoreList');if(!list)return;const scores=getScores().sort((a,b)=>b.xp-a.xp).slice(0,5);list.innerHTML='';if(!scores.length){list.innerHTML='<li>Пока нет результатов</li>';return}scores.forEach(s=>{const li=document.createElement('li');li.textContent=`${s.name} — ${s.xp} очк. (${s.success?'успех':'смена не завершена'})`;list.appendChild(li)})}
-async function renderScores(){
+async async function renderScores(){
   const list=$('scoreList'),status=$('onlineStatus'),landing=$('landingScoreList'),homeStatus=$('homeOnlineStatus');
   if(!list)return;
   const paint=(target,items,local=false)=>{
