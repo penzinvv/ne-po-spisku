@@ -444,19 +444,8 @@ async function renderScores(){
   const paint=(target,items,local=false)=>{
     if(!target)return;
     target.replaceChildren();
-    if(!local){
-      // Older score rows may have no player_id; collapse legacy rows by normalized name,
-      // keeping the best score so historical resubmissions do not fill the leaderboard.
-      const unique=new Map();
-      items.forEach(item=>{
-        const rawId=String(item.player_id||'').trim();
-        const normalizedName=String(item.player_name||'Гость').trim().toLocaleLowerCase('ru-RU').replace(/\s+/g,' ');
-        const key=rawId?'id:'+rawId:'legacy-name:'+normalizedName;
-        const previous=unique.get(key);
-        if(!previous||(Number(item.score)||0)>(Number(previous.score)||0))unique.set(key,item);
-      });
-      items=[...unique.values()].sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
-    }
+    // Keep individual submissions: every saved result is a leaderboard entry.
+    if(!local)items=items.slice().sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
     if(!items.length){
       const li=document.createElement('li');
       li.textContent=local?'Пока нет результатов':'Пока нет онлайн-рекордов';
@@ -833,7 +822,7 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
 <script>
 /* Делегирование действий меню: обработчики вызываются до возможных перекрывающих слоёв. */
 document.addEventListener('click',function(event){
- const homeNameBtn=event.target.closest('#homeChangeName');if(homeNameBtn){const panel=document.getElementById('changeNamePanel');if(panel){panel.style.display='block';const input=document.getElementById('changeNameInput');if(input){input.value='';input.placeholder='Новое имя';input.focus()}}const menuName=document.getElementById('menuChangeName');if(menuName)menuName.click();return;}
+ const homeNameBtn=event.target.closest('#homeChangeName');if(homeNameBtn){event.preventDefault();const saved=(()=>{try{return JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}')}catch(e){return {}}})();const changes=Number(saved.nameChanges)||0;if(changes>=3){const f=document.getElementById('homeScoreFeedback');if(f)f.textContent='Лимит смены имени исчерпан.';return;}const current=String(saved.name||'').trim();const next=window.prompt('Введи новое имя игрока (до 18 символов):',current);if(next===null)return;const clean=next.trim().slice(0,18);const f=document.getElementById('homeScoreFeedback');if(!clean){if(f)f.textContent='Имя не может быть пустым.';return;}if(clean===current){if(f)f.textContent='Это уже твоё имя.';return;}saved.name=clean;saved.nameChanges=changes+1;try{localStorage.setItem('banquetPlayerProfile',JSON.stringify(saved));localStorage.setItem('banquetPlayerName',clean)}catch(e){}const label=document.getElementById('homePlayerName');if(label)label.textContent=clean;const nameLine=document.getElementById('savedPlayerName');if(nameLine)nameLine.textContent='Игрок: '+clean;if(f)f.textContent='Имя изменено на «'+clean+'».';return;}
  const b=event.target.closest('#menuOfficeChat,#menuTips,#menuAbout,#menuChangeName,#changeNameSave,#changeNameCancel,#menuSaveRecord,#menuFinish,#menuResume');
  if(!b)return;
  event.preventDefault();
@@ -935,7 +924,7 @@ document.addEventListener('click',function(event){
   const music=$('musicControls'),mount=$('homeMusicMount');if(music&&mount)mount.appendChild(music);
   const start=$('landingStart');if(start)start.addEventListener('click',()=>setTimeout(refreshHomeProfile,100));
   const chat=$('chatLauncher'),chatPanel=$('playerChat'),chatMount=$('homeChatMount');if(chatPanel&&chatMount){chatMount.appendChild(chatPanel);chatPanel.classList.add('open');chatPanel.setAttribute('aria-hidden','false');if(chat)chat.style.display='none';}
-  const change=$('homeChangeName');if(change)change.addEventListener('click',()=>{const menu=$('menuButton');if(menu)menu.click();setTimeout(()=>{const b=$('menuChangeName');if(b)b.click()},80)});
+
   const sound=$('homeSoundSettings');if(sound)sound.addEventListener('click',()=>{const picker=$('trackPicker');if(picker)picker.style.display=picker.style.display==='block'?'none':'block';});
   document.querySelectorAll('[data-home-action]').forEach(btn=>btn.addEventListener('click',()=>{
    const action=btn.dataset.homeAction;
