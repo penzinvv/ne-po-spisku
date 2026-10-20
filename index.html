@@ -981,7 +981,7 @@ document.addEventListener('click',function(event){
  const modal=document.getElementById('avatarModal'),grid=document.getElementById('avatarGrid'),icon=document.getElementById('homeAvatar');
  if(!modal||!grid||!icon)return;
  let chosen=0;
- try{chosen=Math.max(0,Math.min(10,Number(JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}').avatar)||0)}catch(e){}
+ try{chosen=Math.max(0,Math.min(10,Number(JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}').avatar)||0))}catch(e){}
  function draw(){grid.replaceChildren();avatars.forEach((a,i)=>{const b=document.createElement('button');b.type='button';b.className='avatar-choice'+(i===chosen?' selected':'');b.setAttribute('aria-pressed',String(i===chosen));const face=document.createElement('span');face.className='avatar-face';face.textContent=a.face;const label=document.createElement('small');label.textContent=a.label;b.append(face,label);b.addEventListener('click',()=>{chosen=i;draw()});grid.appendChild(b)})}
  function show(){try{const p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}');chosen=Math.max(0,Math.min(10,Number(p.avatar)||0))}catch(e){}draw();modal.style.display='flex'}
  function hide(){modal.style.display='none'}
