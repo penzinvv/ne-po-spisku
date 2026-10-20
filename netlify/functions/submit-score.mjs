@@ -74,25 +74,31 @@ export default async (request, context) => {
       typeof body?.player_name === "string"
         ? body.player_name.trim().slice(0, 18)
         : "";
-
+    const playerId = typeof body?.player_id === "string" ? body.player_id.trim() : "";
     const score = body?.score;
 
     if (
       !playerName ||
       !Number.isInteger(score) ||
       score < -1000000 ||
-      score > 1000000
+      score > 1000000 ||
+      (playerId && !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(playerId))
     ) {
-      return json({ error: "Invalid player name or score" }, 400);
+      return json({ error: "Invalid player name, player id or score" }, 400);
     }
 
-    const response = await fetch(endpoint, {
+    const saveUrl = playerId ? `${endpoint}?on_conflict=player_id` : endpoint;
+    const response = await fetch(saveUrl, {
       method: "POST",
       headers: {
         ...headers,
-        Prefer: "return=minimal"
+        Prefer: playerId ? "resolution=merge-duplicates,return=minimal" : "return=minimal"
       },
-      body: JSON.stringify({
+      body: JSON.stringify(playerId ? {
+        player_id: playerId,
+        player_name: playerName,
+        score
+      } : {
         player_name: playerName,
         score
       })
