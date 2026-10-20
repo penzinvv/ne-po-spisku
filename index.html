@@ -751,13 +751,13 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
   const chatKey='sb_publishable_Aetb_CS_nBxVzirbuIIJ5A_AOQW3rkY';
   const $chat=id=>document.getElementById(id);
   const panel=$chat('playerChat'),launcher=$chat('chatLauncher'),messages=$chat('chatMessages'),status=$chat('chatStatus'),nameInput=$chat('chatPlayerName'),textInput=$chat('chatMessageInput'),sendButton=$chat('chatSend');
-  let client=null,channel=null,lastSentAt=0,loaded=false;
+  let client=null,channel=null,lastSentAt=0,loaded=false,historyLoading=false;
   try {
     if(!window.supabase||!window.supabase.createClient) throw new Error('Не загрузилась библиотека чата');
     client=window.supabase.createClient(chatUrl,chatKey);
   } catch(e) { status.textContent='Чат пока недоступен. Обнови страницу позже.'; return; }
   try { if(nameInput)nameInput.value=localStorage.getItem('banquetChatName')||''; } catch(e) {}
-  function setOpen(open){panel.classList.toggle('open',open);panel.setAttribute('aria-hidden',String(!open));launcher.setAttribute('aria-expanded',String(open));if(open){if(!loaded)loadHistory();setTimeout(()=>textInput.focus(),80)}}
+  function setOpen(open){panel.classList.toggle('open',open);panel.setAttribute('aria-hidden',String(!open));launcher.setAttribute('aria-expanded',String(open));if(open){if(!loaded)loadHistory();else loadHistory(true);setTimeout(()=>textInput.focus(),80)}}
   launcher.addEventListener('click',()=>setOpen(!panel.classList.contains('open')));
   $chat('chatClose').addEventListener('click',()=>setOpen(false));
   function safeText(el,value){el.textContent=value}
@@ -773,10 +773,12 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
     messages.scrollTop=messages.scrollHeight;
   }
   async function loadHistory(silent=false){
-    if(!client)return;
+    if(!client||historyLoading)return;
+    historyLoading=true;
     if(!silent)status.textContent='Загружаем историю…';
     const {data,error}=await client.from('chat_messages').select('id,player_name,message,created_at').order('created_at',{ascending:false}).limit(60);
-    if(error){if(!silent)status.textContent='Не удалось загрузить чат. Повторяем попытку…';console.error('Chat history error',error);return}
+    historyLoading=false;
+    if(error){status.textContent='Не удалось обновить чат. Проверь подключение и попробуй открыть чат ещё раз.';console.error('Chat history error',error);return}
     const rows=(data||[]).slice().reverse();rows.forEach(addMessage);
     const known=new Set(rows.map(row=>String(row.id)));
     Array.from(messages.children).forEach(el=>{if(el.dataset.messageId&&!known.has(String(el.dataset.messageId)))el.remove()});
@@ -786,6 +788,7 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
     if(!channel){channel=client.channel('banquet-chat-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},payload=>{addMessage(payload.new);status.textContent='● Онлайн · сообщения обновляются'}).subscribe(state=>{if(state==='SUBSCRIBED')status.textContent='● Онлайн · резервное обновление включено';else if(state==='CHANNEL_ERROR'||state==='TIMED_OUT')status.textContent='Realtime нестабилен · чат проверяется автоматически'});}
   }
   setInterval(()=>{if(client)loadHistory(true)},5000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&client)loadHistory(true)});
   $chat('chatForm').addEventListener('submit',async e=>{
     e.preventDefault();
     const profileName=(()=>{try{const p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}');return String(p.name||'НОВЫЙ СОТРУДНИК').trim().slice(0,18)||'НОВЫЙ СОТРУДНИК'}catch(e){return 'НОВЫЙ СОТРУДНИК'}})();
@@ -806,13 +809,14 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
 /* Делегирование действий меню: обработчики вызываются до возможных перекрывающих слоёв. */
 document.addEventListener('click',function(event){
  const homeNameBtn=event.target.closest('#homeChangeName');if(homeNameBtn){const panel=document.getElementById('changeNamePanel');if(panel){panel.style.display='block';const input=document.getElementById('changeNameInput');if(input){input.value='';input.placeholder='Новое имя';input.focus()}}const menuName=document.getElementById('menuChangeName');if(menuName)menuName.click();return;}
- const b=event.target.closest('#menuOfficeChat,#menuChangeName,#changeNameSave,#changeNameCancel,#menuSaveRecord,#menuFinish,#menuResume');
+ const b=event.target.closest('#menuOfficeChat,#menuTips,#menuAbout,#menuChangeName,#changeNameSave,#changeNameCancel,#menuSaveRecord,#menuFinish,#menuResume');
  if(!b)return;
  event.preventDefault();
  event.stopImmediatePropagation();
  const $=id=>document.getElementById(id);
  if(b.id==='menuResume'){if(typeof window.closeGameMenu==='function')window.closeGameMenu();else $('gameMenu').style.display='none';return}
  if(b.id==='menuOfficeChat'){ $('gameMenu').style.display='none';const launcher=$('chatLauncher');if(launcher)launcher.click();return}
+ if(b.id==='menuTips'||b.id==='menuAbout'){const id=b.id==='menuTips'?'tipsDialog':'aboutDialog';const dialog=$(id);if(dialog){if(dialog.parentElement!==document.body)document.body.appendChild(dialog);dialog.style.display='flex';dialog.style.zIndex='7000';if(typeof mode!=='undefined'&&mode==='play')mode='paused';$('gameMenu').style.display='none'}else{const feedback=$('menuFeedback');if(feedback)feedback.textContent='Это окно пока недоступно. Обнови страницу и попробуй ещё раз.'}return}
  if(b.id==='menuChangeName'){const panel=$('changeNamePanel');if(!panel)return;let p={};try{p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}')}catch(e){}panel.style.display=panel.style.display==='block'?'none':'block';$('changeNameInfo').textContent='Текущее имя: '+(p.name||'не задано')+'. Осталось смен имени: '+(3-(Number(p.nameChanges)||0));const input=$('changeNameInput'),save=$('changeNameSave');if(input){input.value='';input.disabled=(Number(p.nameChanges)||0)>=3;input.placeholder=input.disabled?'Лимит смен исчерпан':'Новое имя'}if(save)save.disabled=input&&input.disabled;return}
  if(b.id==='changeNameCancel'){if($('changeNamePanel'))$('changeNamePanel').style.display='none';return}
  if(b.id==='changeNameSave'){let p={name:'',nameChanges:0};try{p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}')}catch(e){}const input=$('changeNameInput'),info=$('changeNameInfo'),next=input&&input.value.trim().slice(0,18);p.nameChanges=Number(p.nameChanges)||0;if(!next){info.textContent='Введи новое имя.';return}if(p.nameChanges>=3){info.textContent='Все 3 смены имени использованы.';return}if(next===p.name){info.textContent='Это уже твоё имя. Попробуй другое.';return}p.name=next;p.nameChanges++;try{localStorage.setItem('banquetPlayerProfile',JSON.stringify(p))}catch(e){}const field=$('playerName');if(field){field.value=next;field.readOnly=true}info.textContent='Имя изменено на «'+next+'». Осталось смен имени: '+(3-p.nameChanges);if(input)input.value='';return}
