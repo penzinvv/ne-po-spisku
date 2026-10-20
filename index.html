@@ -732,6 +732,21 @@ document.addEventListener('click',function(event){
  if(b.id==='menuSaveRecord'){if(typeof window.saveRunResult==='function')window.saveRunResult(true);else $('menuFeedback').textContent='Функция сохранения недоступна. Обнови страницу и попробуй снова.';return}
  if(b.id==='menuFinish'){event.preventDefault();event.stopImmediatePropagation();runActive=false;mode='end';const menu=$('gameMenu');if(menu)menu.style.display='none';const result=$('result');if(result)result.style.display='none';const intro=$('intro');if(intro)intro.style.display='none';const landing=$('landingPage');if(landing){landing.style.display='flex';landing.style.zIndex='1000';landing.scrollIntoView({behavior:'auto',block:'start'})}window.scrollTo(0,0);if(typeof renderLevels==='function')renderLevels();if(typeof refreshHomeProfile==='function')refreshHomeProfile();return}
 },true);
+/* Надёжные обработчики окна чаевых: работают и из главной страницы, и из игрового меню. */
+document.addEventListener('click',function(event){
+ const b=event.target.closest('#tipsDonate,#tipsContinue');
+ if(!b)return;
+ event.preventDefault();event.stopImmediatePropagation();
+ const dialog=document.getElementById('tipsDialog');
+ if(b.id==='tipsContinue'){
+  if(dialog)dialog.style.display='none';
+  if(typeof mode!=='undefined'&&mode==='paused')mode='play';
+  return;
+ }
+ const url='https://www.donationalerts.com/r/valeriydos';
+ const opened=window.open(url,'_blank','noopener,noreferrer');
+ if(!opened){const feedback=document.getElementById('menuFeedback');if(feedback)feedback.textContent='Браузер заблокировал новое окно. Разреши всплывающие окна или открой страницу поддержки вручную: '+url;}
+},true);
 /* Надёжные обработчики стартовых кнопок — независимо от порядка инициализации остальных модулей. */
 document.addEventListener('click',function(event){
  const menuButton=event.target.closest('#menuButton');
