@@ -672,6 +672,21 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
 })();
 </script>
 <script>
+/* Делегирование действий меню: обработчики вызываются до возможных перекрывающих слоёв. */
+document.addEventListener('click',function(event){
+ const b=event.target.closest('#menuOfficeChat,#menuChangeName,#changeNameSave,#changeNameCancel,#menuSaveRecord,#menuFinish,#menuResume');
+ if(!b)return;
+ event.preventDefault();
+ event.stopImmediatePropagation();
+ const $=id=>document.getElementById(id);
+ if(b.id==='menuResume'){if(typeof window.closeGameMenu==='function')window.closeGameMenu();else $('gameMenu').style.display='none';return}
+ if(b.id==='menuOfficeChat'){ $('gameMenu').style.display='none';const launcher=$('chatLauncher');if(launcher)launcher.click();return}
+ if(b.id==='menuChangeName'){const panel=$('changeNamePanel');if(!panel)return;let p={};try{p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}')}catch(e){}panel.style.display=panel.style.display==='block'?'none':'block';$('changeNameInfo').textContent='Текущее имя: '+(p.name||'не задано')+'. Осталось смен имени: '+(3-(Number(p.nameChanges)||0));const input=$('changeNameInput'),save=$('changeNameSave');if(input){input.value='';input.disabled=(Number(p.nameChanges)||0)>=3;input.placeholder=input.disabled?'Лимит смен исчерпан':'Новое имя'}if(save)save.disabled=input&&input.disabled;return}
+ if(b.id==='changeNameCancel'){if($('changeNamePanel'))$('changeNamePanel').style.display='none';return}
+ if(b.id==='changeNameSave'){let p={name:'',nameChanges:0};try{p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}')}catch(e){}const input=$('changeNameInput'),info=$('changeNameInfo'),next=input&&input.value.trim().slice(0,18);p.nameChanges=Number(p.nameChanges)||0;if(!next){info.textContent='Введи новое имя.';return}if(p.nameChanges>=3){info.textContent='Все 3 смены имени использованы.';return}if(next===p.name){info.textContent='Это уже твоё имя. Попробуй другое.';return}p.name=next;p.nameChanges++;try{localStorage.setItem('banquetPlayerProfile',JSON.stringify(p))}catch(e){}const field=$('playerName');if(field){field.value=next;field.readOnly=true}info.textContent='Имя изменено на «'+next+'». Осталось смен имени: '+(3-p.nameChanges);if(input)input.value='';return}
+ if(b.id==='menuSaveRecord'){if(typeof window.saveRunResult==='function')window.saveRunResult(true);else $('menuFeedback').textContent='Функция сохранения недоступна. Обнови страницу и попробуй снова.';return}
+ if(b.id==='menuFinish'){if(typeof window.finishRunByChoice==='function')window.finishRunByChoice();else $('menuFeedback').textContent='Функция завершения недоступна. Обнови страницу и попробуй снова.';return}
+},true);
 /* Надёжные обработчики стартовых кнопок — независимо от порядка инициализации остальных модулей. */
 document.addEventListener('click',function(event){
  const menuButton=event.target.closest('#menuButton');
