@@ -449,15 +449,17 @@ async async function renderScores(){
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),5000);
   try{
-    const response=await fetch('/.netlify/functions/submit-score',{method:'GET',cache:'no-store',signal:controller.signal,headers:{'Accept':'application/json'}});
+    const response=await fetch('/.netlify/functions/submit-score',{method:'GET',cache:'no-store',signal:controller.signal,headers:{'Accept':'application/json'}});clearTimeout(timeout);
     if(!response.ok)throw new Error('HTTP '+response.status);
     const data=await response.json();
     if(!Array.isArray(data.scores))throw new Error('Некорректный ответ рейтинга');
     paint(list,data.scores,false);paint(landing,data.scores,false);
     if(status)status.textContent='Общий рейтинг игроков';if(homeStatus)homeStatus.textContent='Общий рейтинг игроков';
   }catch(error){
+    clearTimeout(timeout);console.error('Online ranking load failed:',error);
     paint(list,localScores,true);paint(landing,localScores,true);
-    if(status)status.textContent='Онлайн-рейтинг недоступен; показаны сохранённые на устройстве результаты.';if(homeStatus)homeStatus.textContent='Онлайн-рейтинг недоступен; показаны сохранённые на устройстве результаты.';
+    const reason=error&&error.name==='AbortError'?' (тайм-аут)':' ('+(error&&error.message?error.message:'ошибка сети')+')';
+    if(status)status.textContent='Онлайн-рейтинг недоступен'+reason+'.';if(homeStatus)homeStatus.textContent='Онлайн-рейтинг недоступен'+reason+'.';
     console.warn('Leaderboard unavailable:',error);
   }finally{clearTimeout(timeout)}
 }
@@ -516,7 +518,7 @@ document.addEventListener('keyup',e=>{
   if(target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
   const k=keyName(e);keys[k]=false;keys[e.key]=false;keys[e.key.toLowerCase()]=false;
 });
-document.querySelectorAll('[data-level]').forEach(b=>b.addEventListener('click',()=>{const n=Number(b.dataset.level);if(n<=unlockedLevel||n===4){currentLevel=n;renderLevels()}}));
+/* Level selection is handled by the task picker below. */
 let storyIndex=0;
 const storyScenes=[
 {speaker:'Менеджер',title:'Первая смена',line:'О, новенький! У нас мероприятие в большом зале. Отнеси поднос с посудой по коридору. Только аккуратнее — мне сегодня и без того есть за что переживать.',choices:['Без проблем. Куда нести?','А техника безопасности будет?','За переноску тяжестей доплата есть?'],replies:['«Вот это настрой! Поднос на кухне, зал прямо по коридору. Давай!»','«Техника безопасности — это хорошо. Особенно если не придётся писать объяснительную».','«Сначала донеси, потом поторгуемся. Если доживём до конца банкета».']},
@@ -610,7 +612,7 @@ updateLandingScores();
   }
  }),true);
 })();
-$('landingStart').addEventListener('click',()=>{musicUnlocked=true;if(musicEnabled&&!songPlaylistEnabled){musicScene='calm';bgAudio.src=musicFiles.calm;bgAudio.load();bgAudio.play().catch(err=>{console.warn('Музыка на стартовом экране не запустилась:',err);const retry=()=>bgAudio.play().catch(e=>console.warn('Повторный запуск музыки не удался:',e));document.addEventListener('pointerdown',retry,{once:true});document.addEventListener('keydown',retry,{once:true})})}$('landingPage').style.display='none';$('intro').style.display='flex';$('intro').style.zIndex='1000';window.scrollTo(0,0);setTimeout(()=>$('playerName').focus({preventScroll:true}),0)});
+$('landingStart').addEventListener('click',()=>{musicUnlocked=true;if(musicEnabled&&!songPlaylistEnabled){musicScene='calm';bgAudio.src=musicFiles.calm;bgAudio.load();bgAudio.play().catch(err=>{console.warn('Музыка на стартовом экране не запустилась:',err);const retry=()=>bgAudio.play().catch(e=>console.warn('Повторный запуск музыки не удался:',e));document.addEventListener('pointerdown',retry,{once:true});document.addEventListener('keydown',retry,{once:true})})}$('landingPage').style.display='none';$('intro').style.display='flex';$('intro').style.zIndex='1000';const savedName=(playerProfile.name||'').trim();const nameField=$('playerName');if(savedName){playerName=savedName;nameField.value=savedName;nameField.readOnly=true;nameField.style.display='none';const savedLabel=$('savedPlayerName');if(savedLabel)savedLabel.textContent='Игрок: '+savedName}else{nameField.style.display='';nameField.readOnly=false;setTimeout(()=>nameField.focus({preventScroll:true}),0)}window.scrollTo(0,0)});
 
 
 function openGameMenu(){if($('gameMenu').style.display==='flex')return;$('menuScoreLine').textContent='Текущий счёт: '+xp+' очков';$('menuFeedback').textContent='';$('gameMenu').style.display='flex';if(mode==='play')mode='paused'}
