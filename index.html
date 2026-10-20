@@ -149,25 +149,59 @@ body.game-active canvas#game{width:min(100vw,calc((100vh - 8px)*1.53846));height
 body.game-active .controls{display:none!important}
 body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px!important}
 @media(max-width:800px){body.game-active canvas#game{width:100vw;max-height:100dvh}body.game-active .canvaswrap{min-height:100dvh}}
+
+/* Главная страница игрока */
+.home-dashboard{min-height:100vh;background:radial-gradient(ellipse at 12% 8%,#572b68 0%,transparent 42%),radial-gradient(ellipse at 88% 18%,#163e54 0%,transparent 38%),#100d20;color:#fff5df}
+.home-dashboard .landing-inner{max-width:1500px;padding:26px 30px 18px}
+.home-header{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px}
+.home-dashboard .landing-brand{font-size:clamp(34px,4vw,58px);line-height:.98;color:#ffe66d;text-shadow:3px 4px 0 #68294b,0 0 25px #ffcf5544}
+.home-dashboard .landing-sub{color:#ded1f2;margin-top:14px}
+.home-audio{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.home-tool,.home-dashboard .music-secondary{background:#21152f;color:#ffe66d;border:1px solid #a66b8d;box-shadow:none}
+.home-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.75fr);gap:18px;align-items:stretch}
+.home-primary{display:flex;flex-direction:column;gap:15px;min-width:0}
+.home-profile{display:flex;align-items:center;gap:15px;padding:16px 18px;border:1px solid #79558e;border-radius:13px;background:#17132b}
+.home-avatar{width:64px;height:64px;display:grid;place-items:center;border:2px solid #c08b65;border-radius:12px;background:#2d1d3f;font-size:35px}
+.home-profile-copy{flex:1;min-width:0}.home-eyebrow{font-size:12px;letter-spacing:2px;color:#ffe66d;font-weight:800}
+.home-profile h2{margin:5px 0;font-size:clamp(20px,2.2vw,28px);overflow-wrap:anywhere}.home-profile p,.home-mission p{margin:0;color:#d5cbe8;line-height:1.5}
+.home-start{width:100%;min-height:112px;font-size:clamp(25px,3vw,38px);border:3px solid #fff0a3;border-radius:12px;box-shadow:0 6px 0 #8f4a37,0 0 26px #ffcf5550}
+.home-start small{display:block;font-size:14px;margin-top:6px}
+.home-mission{display:flex;align-items:center;gap:18px;padding:18px;border:1px solid #79558e;border-radius:13px;background:#17132b}
+.home-mission-art{flex:0 0 110px;min-height:100px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(145deg,#57304e,#282045);font-size:58px}
+.home-mission h2{margin:0 0 8px;color:#ffe66d}.home-statline{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;color:#c8b9e0;font-size:13px}.home-statline b{color:#ffe66d}
+.home-quicknav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.home-quicknav button{min-height:85px;background:#19142e;color:#fff3d6;border:1px solid #94668e;box-shadow:none;border-radius:9px;font-size:22px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px}
+.home-quicknav button strong{font-size:14px}.home-quicknav button small{font-size:11px;color:#c7b6dc;font-weight:500}.home-quicknav button:hover{background:#302043}
+.home-ranking{padding:18px;border:1px solid #79558e;border-radius:13px;background:#17132b;min-width:0}.home-ranking h2{margin:0;color:#ffe66d;font-size:20px}.home-ranking>p{margin:6px 0 12px;color:#c9badc;font-size:13px}
+.home-ranking ol{margin:0;padding-left:28px}.home-ranking li{padding:9px 4px;border-bottom:1px solid #3b2b4b;font-size:13px}.home-ranking .rank-name{color:#fff0d9}.home-chat-button{width:100%;margin-top:16px}
+.home-dashboard .landing-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:22px;padding-top:14px;border-top:1px solid #604369;color:#b7a7d2;font-size:13px}
+#homeMusicMount #musicControls{display:block!important;margin:0!important}#homeMusicMount #trackPicker{position:absolute;z-index:15;background:#17132b;border:1px solid #94668e;border-radius:10px;padding:10px;right:30px;max-width:300px}
+@media(max-width:900px){.home-grid{grid-template-columns:1fr}.home-ranking{order:2}.home-header{align-items:flex-start;flex-direction:column}.home-audio{justify-content:flex-start}}
+@media(max-width:560px){.home-dashboard .landing-inner{padding:18px 12px}.home-profile{flex-wrap:wrap}.home-profile-copy{min-width:150px}.home-profile>button{width:100%}.home-mission{align-items:flex-start}.home-mission-art{flex-basis:64px;min-height:64px;font-size:38px}.home-quicknav{grid-template-columns:repeat(2,minmax(0,1fr))}.home-dashboard .landing-footer{flex-direction:column}}
 </style></head>
-<body><div class="landing" id="landingPage">
+<body><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
-<div class="landing-top"><div><div class="landing-brand">БАНКЕТНАЯ<br>СЛУЖБА</div><div class="landing-sub">АРКАДНАЯ СМЕНА · ОТЕЛЬ «ГРАНД» · ПИКСЕЛЬНОЕ ПРИКЛЮЧЕНИЕ</div></div></div>
-<div class="landing-layout">
-<section class="landing-hero">
-<div class="landing-copy"><div class="landing-waiter landing-manager" aria-hidden="true"><span>😎</span><span>🍷</span></div><div><h2>Твой первый рабочий день!</h2><p>Ты — новичок в отеле «Гранд», и сегодня твоя первая смена. Забирай подносы на кухне, доставляй заказы в большой зал, лавируй между коллегами и тележками, спасай посуду и докажи, что достоин звания лучшего сотрудника.</p></div></div>
-<button class="landing-start" id="landingStart">▶ НАЧАТЬ ИГРУ</button>
-<button class="landing-office" id="landingOffice" type="button">ОФИС МЕНЕДЖЕРА</button>
-</section>
-<section class="landing-rank"><h2>🏆 Общий онлайн-рейтинг</h2><p>Лучшие сотрудники отеля «Гранд»</p><ol id="landingScoreList"><li><span class="rank-name">Загружаем рекорды…</span></li></ol></section>
+<header class="home-header">
+  <div><div class="landing-brand">БАНКЕТНАЯ<br>СЛУЖБА</div><div class="landing-sub">АРКАДНАЯ СМЕНА · ОТЕЛЬ «ГРАНД» · ПИКСЕЛЬНОЕ ПРИКЛЮЧЕНИЕ</div></div>
+  <div class="home-audio"><div id="homeMusicMount"></div><button class="home-tool" id="homeSoundSettings" type="button">⚙ Настройки звука</button></div>
+</header>
+<div class="home-grid">
+  <section class="home-primary">
+    <div class="home-profile panel"><div class="home-avatar">🧑‍🍳</div><div class="home-profile-copy"><span class="home-eyebrow">ТВОЙ ПРОФИЛЬ</span><h2 id="homePlayerName">Новый сотрудник</h2><p>Сотрудник отеля «Гранд» · готов к смене</p></div><button id="homeChangeName" class="secondary" type="button">Изменить имя</button></div>
+    <button class="landing-start home-start" id="landingStart">▶ НАЧАТЬ ИГРУ <small>Выбрать уровень и приступить к смене</small></button>
+    <section class="home-mission panel"><div class="home-mission-art">🥂</div><div><h2>Отель «Гранд»</h2><p>Доставляй подносы, выполняй заказы в большом зале, лавируй между коллегами и докажи, что достоин звания лучшего сотрудника.</p><div class="home-statline"><span>⭐ Твой счёт: <b id="homeXP">0</b></span><span>🏅 Открытый уровень: <b id="homeLevel">1</b></span></div></div></section>
+    <section class="home-quicknav" aria-label="Разделы игры">
+      <button type="button" data-home-action="records">🏆<strong>Рекорды</strong><small>Таблица лидеров</small></button>
+      <button type="button" data-home-action="story">📖<strong>Сюжет</strong><small>История отеля</small></button>
+      <button type="button" data-home-action="colleagues">👥<strong>Сотрудники</strong><small>Отношения</small></button>
+      <button type="button" data-home-action="gallery">🖼️<strong>Галерея</strong><small>Открытые сцены</small></button>
+      <button type="button" data-home-action="settings">⚙️<strong>Настройки</strong><small>Звук и имя</small></button>
+      <button type="button" data-home-action="help">❔<strong>Помощь</strong><small>Как играть</small></button>
+    </section>
+  </section>
+  <section class="home-ranking panel"><h2>🏆 Общий онлайн-рейтинг</h2><p>Лучшие сотрудники отеля «Гранд»</p><ol id="landingScoreList"><li><span class="rank-name">Загружаем рекорды…</span></li></ol><button type="button" class="secondary home-chat-button" id="homeChat">💬 Открыть чат игроков</button></section>
 </div>
-<div class="landing-features">
-<div class="landing-feature"><span class="feature-icon">🍽️</span><strong>Забирай подносы</strong><span>Собирай заказы на кухне и не теряй ни секунды.</span></div>
-<div class="landing-feature"><span class="feature-icon">🚪</span><strong>Осторожно в коридорах</strong><span>Обходи коллег, тележки и узкие двери.</span></div>
-<div class="landing-feature"><span class="feature-icon">🥂</span><strong>Доставляй заказы</strong><span>Гости ждут, а время идёт — успеешь ли ты?</span></div>
-<div class="landing-feature"><span class="feature-icon">⭐</span><strong>Открывай уровни</strong><span>Выполняй задания, набирай очки и попади в рейтинг.</span></div>
-</div>
-<div class="landing-footer"><span>🏨 Отель «Гранд» · Банкетная служба</span><span>Внимательность, скорость и аккуратность делают из новичка профи.</span><span>Пиксельная аркада ❤️</span></div>
+<div class="landing-footer"><span>Разработчик: Валерий DOS, 2026</span><span>Внимательность, скорость и аккуратность делают из новичка профи.</span><span>Банкетная служба · версия 0.9</span></div>
 </div></div>
 
 <button id="menuButton" class="secondary" style="position:fixed;top:12px;left:12px;z-index:1000">☰ Меню</button>
@@ -568,7 +602,7 @@ $('landingStart').addEventListener('click',()=>{musicUnlocked=true;if(musicEnabl
 function openGameMenu(){if($('gameMenu').style.display==='flex')return;$('menuScoreLine').textContent='Текущий счёт: '+xp+' очков';$('menuFeedback').textContent='';$('gameMenu').style.display='flex';if(mode==='play')mode='paused'}
 function closeGameMenu(){ $('gameMenu').style.display='none';if(mode==='paused')mode='play'}
 async function saveRunResult(forceRecord=false){if(!runActive&&mode!=='end'&&xp<=0){$('menuFeedback').textContent='Сначала начни игру.';return}if(recordSubmitted){$('menuFeedback').textContent='Результат этой сессии уже отправлен.';return}const scores=getScores();scores.push({name:playerName,xp:xp,success:false,date:new Date().toISOString(),kind:forceRecord?'record':'run'});scores.sort((a,b)=>b.xp-a.xp);try{localStorage.setItem('nePoSpiskuScores',JSON.stringify(scores.slice(0,20)))}catch(e){}renderScores();$('menuFeedback').textContent='Результат сохранён на этом устройстве. Отправляем в общий рейтинг…';try{await submitOnlineScore();recordSubmitted=true;scoreSaved=true;$('menuFeedback').textContent='Результат отправлен в общий онлайн-рейтинг! Общий счёт не сброшен.'}catch(e){$('menuFeedback').textContent='Локально сохранено, но сервер не подтвердил отправку. Попробуй ещё раз.'}}
-function finishRunByChoice(){if(!runActive&&xp<=0){$('menuFeedback').textContent='Сейчас нет активной смены.';return}runActive=false;mode='end';$('gameMenu').style.display='none';$('resultTitle').textContent='Смена завершена';$('resultText').textContent=playerName+', ты закончил игру. Итоговый счёт: '+xp+' очков.';$('again').textContent='Новая игра';$('result').style.display='flex'}
+function finishRunByChoice(){runActive=false;mode='end';$('gameMenu').style.display='none';document.body.classList.remove('game-active');const result=$('result');if(result)result.style.display='none';const intro=$('intro');if(intro){intro.style.display='flex';intro.style.zIndex='1000'}const landing=$('landingPage');if(landing)landing.style.display='none';window.scrollTo(0,0);if(typeof renderLevels==='function')renderLevels();const feedback=$('menuFeedback');if(feedback)feedback.textContent='Смена завершена. Выбери уровень для следующей игры.';}
 $('menuChangeName').addEventListener('click',()=>{const panel=$('changeNamePanel');panel.style.display=panel.style.display==='block'?'none':'block';$('changeNameInfo').textContent='Текущее имя: '+(playerProfile.name||'не задано')+'. Осталось смен имени: '+(3-playerProfile.nameChanges);$('changeNameInput').value='';$('changeNameInput').placeholder=3-playerProfile.nameChanges>0?'Новое имя':'Лимит смен исчерпан';$('changeNameInput').disabled=playerProfile.nameChanges>=3;$('changeNameSave').disabled=playerProfile.nameChanges>=3;$('changeNameInput').focus()});
  $('changeNameCancel').addEventListener('click',()=>{$('changeNamePanel').style.display='none'});
  $('changeNameSave').addEventListener('click',()=>{const next=$('changeNameInput').value.trim().slice(0,18);if(!next){$('changeNameInfo').textContent='Введи новое имя.';return}if(playerProfile.nameChanges>=3){$('changeNameInfo').textContent='Ты уже использовал все 3 смены имени.';return}if(next===playerProfile.name){$('changeNameInfo').textContent='Это уже твоё имя. Попробуй другое.';return}playerProfile.nameChanges++;rememberPlayerName(next);$('playerName').value=next;$('changeNameInfo').textContent='Имя изменено на «'+next+'». Осталось смен имени: '+(3-playerProfile.nameChanges);$('changeNameInput').value='';$('menuFeedback').textContent='Имя игрока сохранено.';if(playerProfile.nameChanges>=3){$('changeNameInput').disabled=true;$('changeNameSave').disabled=true}});
@@ -722,4 +756,33 @@ document.addEventListener('click',function(event){
  }
 },true);
 </script>
-</body></html>
+
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ function refreshHomeProfile(){
+  let profile={};try{profile=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}')}catch(e){}
+  const name=profile.name||localStorage.getItem('nePoSpiskuPlayerName')||'Новый сотрудник';
+  const label=$('homePlayerName');if(label)label.textContent=name;
+  const xp=$('homeXP');if(xp)xp.textContent=String(window.__banquetXP||0);
+  let level=1;try{level=Number(localStorage.getItem('nePoSpiskuUnlockedLevel'))||1}catch(e){}
+  const lv=$('homeLevel');if(lv)lv.textContent=String(level);
+ }
+ document.addEventListener('DOMContentLoaded',function(){
+  refreshHomeProfile();
+  const music=$('musicControls'),mount=$('homeMusicMount');if(music&&mount)mount.appendChild(music);
+  const start=$('landingStart');if(start)start.addEventListener('click',()=>setTimeout(refreshHomeProfile,100));
+  const chat=$('homeChat');if(chat)chat.addEventListener('click',()=>{const launcher=$('chatLauncher');if(launcher)launcher.click()});
+  const change=$('homeChangeName');if(change)change.addEventListener('click',()=>{const menu=$('menuButton');if(menu)menu.click();setTimeout(()=>{const b=$('menuChangeName');if(b)b.click()},80)});
+  const sound=$('homeSoundSettings');if(sound)sound.addEventListener('click',()=>{const picker=$('trackPicker');if(picker)picker.style.display=picker.style.display==='block'?'none':'block';});
+  document.querySelectorAll('[data-home-action]').forEach(btn=>btn.addEventListener('click',()=>{
+   const action=btn.dataset.homeAction;
+   if(action==='records'){const rank=$('landingScoreList');if(rank)rank.scrollIntoView({behavior:'smooth',block:'center'});return}
+   if(action==='settings'){const picker=$('trackPicker');if(picker)picker.style.display='block';return}
+   if(action==='story'||action==='help'){const start=$('landingStart');if(start)start.click();return}
+   if(action==='colleagues'){alert('Отношения с коллегами открываются и развиваются во время сюжетных заданий. Начни игру и выполни задания, чтобы увидеть изменения.');return}
+   if(action==='gallery'){alert('Галерея сцен пока находится в разработке.');return}
+  }));
+ });
+})();
+</script></body></html>
