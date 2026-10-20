@@ -776,16 +776,32 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
     if(!client||historyLoading)return;
     historyLoading=true;
     if(!silent)status.textContent='Загружаем историю…';
-    const {data,error}=await client.from('chat_messages').select('id,player_name,message,created_at').order('created_at',{ascending:false}).limit(60);
-    historyLoading=false;
-    if(error){status.textContent='Не удалось обновить чат. Проверь подключение и попробуй открыть чат ещё раз.';console.error('Chat history error',error);return}
-    const rows=(data||[]).slice().reverse();rows.forEach(addMessage);
-    const known=new Set(rows.map(row=>String(row.id)));
-    Array.from(messages.children).forEach(el=>{if(el.dataset.messageId&&!known.has(String(el.dataset.messageId)))el.remove()});
-    const empty=messages.querySelector('[data-empty="true"]');if(rows.length&&empty)empty.remove();
-    if(!rows.length&&!messages.children.length){const e=document.createElement('div');e.className='chat-message';e.dataset.empty='true';e.textContent='Пока тихо. Напиши первое сообщение!';messages.appendChild(e)}
-    loaded=true;if(!channel)status.textContent='● Чат подключён · автоматическая проверка включена';messages.scrollTop=messages.scrollHeight;
-    if(!channel){channel=client.channel('banquet-chat-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},payload=>{addMessage(payload.new);status.textContent='● Онлайн · сообщения обновляются'}).subscribe(state=>{if(state==='SUBSCRIBED')status.textContent='● Онлайн · резервное обновление включено';else if(state==='CHANNEL_ERROR'||state==='TIMED_OUT')status.textContent='Realtime нестабилен · чат проверяется автоматически'});}
+    try{
+      const {data,error}=await client.from('chat_messages').select('id,player_name,message,created_at').order('created_at',{ascending:false}).limit(60);
+      if(error)throw error;
+      const rows=(data||[]).slice().reverse();
+      /* Убираем стартовую заглушку, иначе она остаётся над настоящими сообщениями. */
+      Array.from(messages.children).forEach(el=>{if(!el.dataset.messageId)el.remove()});
+      rows.forEach(addMessage);
+      const known=new Set(rows.map(row=>String(row.id)));
+      Array.from(messages.children).forEach(el=>{if(el.dataset.messageId&&!known.has(String(el.dataset.messageId)))el.remove()});
+      if(!rows.length&&!messages.children.length){const e=document.createElement('div');e.className='chat-message';e.dataset.empty='true';e.textContent='Пока тихо. Напиши первое сообщение!';messages.appendChild(e)}
+      loaded=true;
+      if(!channel){
+        channel=client.channel('banquet-chat-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},payload=>{addMessage(payload.new);status.textContent='● Онлайн · сообщения обновляются'}).subscribe(state=>{
+          if(state==='SUBSCRIBED')status.textContent='● Онлайн · обновление сообщений включено';
+          else if(state==='CHANNEL_ERROR'||state==='TIMED_OUT'||state==='CLOSED'){status.textContent='Realtime недоступен · включена проверка истории каждые 5 секунд';}
+        });
+      }
+      if(!channel)status.textContent='● Чат подключён · проверка каждые 5 секунд';
+      else if(!silent)status.textContent='● Чат подключён · история обновлена';
+      messages.scrollTop=messages.scrollHeight;
+    }catch(error){
+      status.textContent='Не удалось обновить сообщения. Повторяем попытку автоматически.';
+      console.error('Chat history error',error);
+    }finally{
+      historyLoading=false;
+    }
   }
   setInterval(()=>{if(client)loadHistory(true)},5000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&client)loadHistory(true)});
@@ -798,10 +814,16 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
     if(now-lastSentAt<1800){status.textContent='Подожди немного перед следующим сообщением.';return}
     lastSentAt=now;sendButton.disabled=true;sendButton.textContent='Отправляем…';
     try{localStorage.setItem('banquetChatName',playerName);if(nameInput){nameInput.value=playerName;nameInput.readOnly=true;nameInput.style.display='none'}}catch(e){}
-    const {error}=await client.from('chat_messages').insert({player_name:playerName,message});
-    sendButton.disabled=false;sendButton.textContent='Отправить';
-    if(error){status.textContent='Не удалось отправить. Попробуй ещё раз.';console.error('Chat send error',error);lastSentAt=0;return}
-    textInput.value='';status.textContent='● Сообщение отправлено';textInput.focus();
+    try{
+      const {error}=await client.from('chat_messages').insert({player_name:playerName,message});
+      if(error)throw error;
+      textInput.value='';status.textContent='● Сообщение отправлено';loadHistory(true);textInput.focus();
+    }catch(error){
+      status.textContent='Не удалось отправить. Проверь подключение и попробуй ещё раз.';
+      console.error('Chat send error',error);lastSentAt=0;
+    }finally{
+      sendButton.disabled=false;sendButton.textContent='Отправить';
+    }
   });
 })();
 </script>
