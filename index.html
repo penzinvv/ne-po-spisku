@@ -864,6 +864,13 @@ document.addEventListener('click',function(event){
  event.preventDefault();
  event.stopImmediatePropagation();
  if(button.id==='landingStart'){
+  /* При переходе с главной страницы выключаем песню главного меню и включаем фоновую музыку. */
+  if(typeof musicUnlocked!=='undefined')musicUnlocked=true;
+  if(typeof stopLandingMusic==='function')stopLandingMusic();
+  if(typeof songPlaylistEnabled!=='undefined'&&!songPlaylistEnabled&&typeof musicEnabled!=='undefined'&&musicEnabled){
+   musicScene='calm';
+   if(typeof playBackgroundMusic==='function')playBackgroundMusic();
+  }
   const landing=document.getElementById('landingPage');
   const intro=document.getElementById('intro');
   if(landing)landing.style.display='none';
