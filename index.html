@@ -757,7 +757,7 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
     if(!window.supabase||!window.supabase.createClient) throw new Error('Не загрузилась библиотека чата');
     client=window.supabase.createClient(chatUrl,chatKey);
   } catch(e) { status.textContent='Чат пока недоступен. Обнови страницу позже.'; return; }
-  try { nameInput.value=localStorage.getItem('banquetChatName')||''; } catch(e) {}
+  try { if(nameInput)nameInput.value=localStorage.getItem('banquetChatName')||''; } catch(e) {}
   function setOpen(open){panel.classList.toggle('open',open);panel.setAttribute('aria-hidden',String(!open));launcher.setAttribute('aria-expanded',String(open));if(open){if(!loaded)loadHistory();setTimeout(()=>textInput.focus(),80)}}
   launcher.addEventListener('click',()=>setOpen(!panel.classList.contains('open')));
   $chat('chatClose').addEventListener('click',()=>setOpen(false));
@@ -806,6 +806,7 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
 <script>
 /* Делегирование действий меню: обработчики вызываются до возможных перекрывающих слоёв. */
 document.addEventListener('click',function(event){
+ const homeNameBtn=event.target.closest('#homeChangeName');if(homeNameBtn){const panel=document.getElementById('changeNamePanel');if(panel){panel.style.display='block';const input=document.getElementById('changeNameInput');if(input){input.value='';input.placeholder='Новое имя';input.focus()}}const menuName=document.getElementById('menuChangeName');if(menuName)menuName.click();return;}
  const b=event.target.closest('#menuOfficeChat,#menuChangeName,#changeNameSave,#changeNameCancel,#menuSaveRecord,#menuFinish,#menuResume');
  if(!b)return;
  event.preventDefault();
