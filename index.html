@@ -687,19 +687,20 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
     while(messages.children.length>100)messages.firstElementChild.remove();
     messages.scrollTop=messages.scrollHeight;
   }
-  async function loadHistory(){
-    loaded=true;status.textContent='Загружаем историю…';
+  async function loadHistory(silent=false){
+    if(!client)return;
+    if(!silent)status.textContent='Загружаем историю…';
     const {data,error}=await client.from('chat_messages').select('id,player_name,message,created_at').order('created_at',{ascending:false}).limit(60);
-    if(error){status.textContent='Не удалось загрузить чат. Проверь подключение.';console.error('Chat history error',error);loaded=false;return}
-    messages.replaceChildren();
-    (data||[]).reverse().forEach(addMessage);
-    if(!data||!data.length){const empty=document.createElement('div');empty.className='chat-message';empty.dataset.empty='true';empty.textContent='Пока тихо. Напиши первое сообщение!';messages.appendChild(empty)}
-    status.textContent='Общий чат · история сохраняется';
-    messages.scrollTop=messages.scrollHeight;
-    if(!channel){
-      channel=client.channel('banquet-chat-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},payload=>addMessage(payload.new)).subscribe(state=>{if(state==='SUBSCRIBED')status.textContent='● Онлайн · история сохраняется';else if(state==='CHANNEL_ERROR'||state==='TIMED_OUT')status.textContent='Связь прервалась — попробуй обновить страницу'});
-    }
+    if(error){if(!silent)status.textContent='Не удалось загрузить чат. Повторяем попытку…';console.error('Chat history error',error);return}
+    const rows=(data||[]).slice().reverse();rows.forEach(addMessage);
+    const known=new Set(rows.map(row=>String(row.id)));
+    Array.from(messages.children).forEach(el=>{if(el.dataset.messageId&&!known.has(String(el.dataset.messageId)))el.remove()});
+    const empty=messages.querySelector('[data-empty="true"]');if(rows.length&&empty)empty.remove();
+    if(!rows.length&&!messages.children.length){const e=document.createElement('div');e.className='chat-message';e.dataset.empty='true';e.textContent='Пока тихо. Напиши первое сообщение!';messages.appendChild(e)}
+    loaded=true;if(!channel)status.textContent='● Чат подключён · автоматическая проверка включена';messages.scrollTop=messages.scrollHeight;
+    if(!channel){channel=client.channel('banquet-chat-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},payload=>{addMessage(payload.new);status.textContent='● Онлайн · сообщения обновляются'}).subscribe(state=>{if(state==='SUBSCRIBED')status.textContent='● Онлайн · резервное обновление включено';else if(state==='CHANNEL_ERROR'||state==='TIMED_OUT')status.textContent='Realtime нестабилен · чат проверяется автоматически'});}
   }
+  setInterval(()=>{if(client)loadHistory(true)},5000);
   $chat('chatForm').addEventListener('submit',async e=>{
     e.preventDefault();
     const playerName=nameInput.value.trim().slice(0,18),message=textInput.value.trim().slice(0,300),now=Date.now();
@@ -778,6 +779,7 @@ document.addEventListener('click',function(event){
   const lv=$('homeLevel');if(lv)lv.textContent=String(level);
  }
  document.addEventListener('DOMContentLoaded',function(){
+  ['tipsDialog','aboutDialog'].forEach(liftDialog);
   refreshHomeProfile();
   const music=$('musicControls'),mount=$('homeMusicMount');if(music&&mount)mount.appendChild(music);
   const start=$('landingStart');if(start)start.addEventListener('click',()=>setTimeout(refreshHomeProfile,100));
@@ -788,11 +790,12 @@ document.addEventListener('click',function(event){
    const action=btn.dataset.homeAction;
    if(action==='settings'){const menu=$('menuButton');if(menu)menu.click();return}
    if(action==='story'){openStoryNotebook();return}
-   if(action==='tips'){const b=$('menuTips');if(b)b.click();return}
-   if(action==='about'){const b=$('menuAbout');if(b)b.click();return}
+   if(action==='tips'){liftDialog('tipsDialog');const d=$('tipsDialog');if(d){d.style.display='flex';d.style.zIndex='7000'}if(typeof mode!=='undefined'&&mode==='play')mode='paused';return}
+   if(action==='about'){liftDialog('aboutDialog');const d=$('aboutDialog');if(d){d.style.display='flex';d.style.zIndex='7000'}if(typeof mode!=='undefined'&&mode==='play')mode='paused';return}
    if(action==='gallery'){openGalleryPlaceholder();return}
   }));
  });
+ function liftDialog(id){const el=$(id);if(el&&el.parentElement!==document.body){document.body.appendChild(el);el.style.zIndex='7000'}}
  function openStoryNotebook(){
   let modal=$('storyNotebook');if(!modal){modal=document.createElement('div');modal.id='storyNotebook';modal.className='overlay';modal.style.cssText='position:fixed;z-index:6000;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:#080513ed';modal.innerHTML='<div class="modal story-notebook-modal"><h2>📖 Блокнот сюжета</h2><p>Записывай сюда реплики персонажей или кратко пересказывай разговоры, которые происходят во время игры. Записи сохраняются в этом браузере.</p><label for="storyNotebookText">Мои заметки и реплики</label><textarea id="storyNotebookText" rows="12" placeholder="Уровень / персонаж / реплика…"></textarea><div class="actions"><button id="storyNotebookSave" type="button">Сохранить записи</button><button id="storyNotebookClose" class="secondary" type="button">Закрыть</button></div><p id="storyNotebookStatus" aria-live="polite"></p></div>';document.body.appendChild(modal);$('storyNotebookSave').addEventListener('click',()=>{try{localStorage.setItem('banquetStoryNotebook',$('storyNotebookText').value);$('storyNotebookStatus').textContent='Записи сохранены на этом устройстве.'}catch(e){$('storyNotebookStatus').textContent='Не удалось сохранить записи в этом браузере.'}});$('storyNotebookClose').addEventListener('click',()=>modal.style.display='none')}
   try{$('storyNotebookText').value=localStorage.getItem('banquetStoryNotebook')||''}catch(e){}modal.style.display='flex';
