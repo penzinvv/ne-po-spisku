@@ -85,7 +85,7 @@ canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
 .landing-rank li{counter-increment:rank;display:flex;gap:9px;align-items:center;padding:9px 2px;border-bottom:1px solid #49365e;color:#eee3ff;font-size:13px}
 .landing-rank li:before{content:counter(rank);display:grid;place-items:center;flex:0 0 25px;height:25px;background:#32254d;border:1px solid #6d5488;color:#ffe66d;font-weight:bold}
 .landing-rank li:first-child:before{background:#ffe66d;color:#27152f}.landing-rank li:nth-child(2):before{background:#dce6ff;color:#27152f}.landing-rank li:nth-child(3):before{background:#ffb16d;color:#27152f}
-.landing-rank .rank-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.landing-rank .rank-score{color:#ffd779;white-space:nowrap}
+.landing-rank .rank-name,.scores .rank-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}.landing-rank .rank-score,.scores .rank-score{color:#ffd779;white-space:nowrap;font-weight:800}.landing-rank li.rank-first,.scores li.rank-first{background:linear-gradient(90deg,#80611f55,#2c203d);border-color:#e8c85d}.landing-rank li.rank-second,.scores li.rank-second{background:linear-gradient(90deg,#67748a55,#2c203d);border-color:#bdcbe1}.landing-rank li.rank-third,.scores li.rank-third{background:linear-gradient(90deg,#94532f55,#2c203d);border-color:#d58a5d}.landing-rank li.rank-first:before,.scores li.rank-first:before{content:'🥇';background:#ffe66d;color:#27152f;border-color:#ffe66d}.landing-rank li.rank-second:before,.scores li.rank-second:before{content:'🥈';background:#dce6ff;color:#27152f;border-color:#dce6ff}.landing-rank li.rank-third:before,.scores li.rank-third:before{content:'🥉';background:#ffb16d;color:#27152f;border-color:#ffb16d}.scores ol{list-style:none;padding-left:0;counter-reset:rank}.scores li{counter-increment:rank;display:flex;gap:9px;align-items:center;padding:9px 7px;border-bottom:1px solid #49365e;border-radius:4px;color:#eee3ff;font-size:13px}.scores li:before{content:counter(rank);display:grid;place-items:center;flex:0 0 25px;height:25px;background:#32254d;border:1px solid #6d5488;color:#ffe66d;font-weight:bold}
 .landing-features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}
 .landing-feature{border:2px solid #5c477a;background:#201733;padding:14px;text-align:center;box-shadow:4px 4px 0 #080713}
 .landing-feature .feature-icon{font-size:32px;display:block;margin-bottom:8px}
@@ -471,8 +471,9 @@ async function renderScores(){
       target.appendChild(li);
       return;
     }
-    items.slice(0,25).forEach(item=>{
+    items.slice(0,25).forEach((item,index)=>{
       const li=document.createElement('li');
+      if(index===0)li.classList.add('rank-first');else if(index===1)li.classList.add('rank-second');else if(index===2)li.classList.add('rank-third');
       if(local){
         li.textContent=(item.name||'Гость')+' — '+(Number(item.xp)||0)+' очк.';
       }else{
@@ -493,13 +494,11 @@ async function renderScores(){
     if(!response.ok)throw new Error('HTTP '+response.status);
     const data=await response.json();
     if(!Array.isArray(data.scores))throw new Error('Некорректный ответ рейтинга');
-    paint(list,data.scores,false);paint(landing,data.scores,false);
-    if(status)status.textContent='Общий рейтинг игроков';if(homeStatus)homeStatus.textContent='Общий рейтинг игроков';
+    const onlineScores=data.scores.slice().sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0)).slice(0,25);try{localStorage.setItem('banquetCachedOnlineScores',JSON.stringify(onlineScores))}catch(e){}paint(list,onlineScores,false);paint(landing,onlineScores,false);
+    if(status)status.textContent='Общий рейтинг игроков · обновлено сейчас';if(homeStatus)homeStatus.textContent='Общий рейтинг игроков · обновлено сейчас';
   }catch(error){
     clearTimeout(timeout);console.error('Online ranking load failed:',error);
-    paint(list,localScores,true);paint(landing,localScores,true);
-    const reason=error&&error.name==='AbortError'?' (тайм-аут)':' ('+(error&&error.message?error.message:'ошибка сети')+')';
-    if(status)status.textContent='Онлайн-рейтинг недоступен'+reason+'.';if(homeStatus)homeStatus.textContent='Онлайн-рейтинг недоступен'+reason+'.';
+    let cached=[];try{cached=JSON.parse(localStorage.getItem('banquetCachedOnlineScores')||'[]')}catch(e){}if(cached.length){paint(list,cached,false);paint(landing,cached,false)}else{paint(list,[],false);paint(landing,[],false)}const message=cached.length?'Нет связи с сервером — показан последний сохранённый онлайн-рейтинг.':'Сервер рейтинга временно недоступен. Проверь подключение и обнови страницу.';if(status)status.textContent=message;if(homeStatus)homeStatus.textContent=message;
     console.warn('Leaderboard unavailable:',error);
   }finally{clearTimeout(timeout)}
 }
@@ -516,9 +515,9 @@ function getPlayerScoreId(){
 async function submitOnlineScore(){
   const response=await fetch('/.netlify/functions/submit-score',{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({player_id:getPlayerScoreId(),player_name:playerName,score:xp})
+    body:JSON.stringify({player_id:getPlayerScoreId(),player_name:(()=>{try{return String(JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}').name||playerName||'Гость').trim().slice(0,18)}catch(e){return playerName||'Гость'}})(),score:Number(localStorage.getItem('banquetLifetimeXP'))||0})
   });
-  if(!response.ok)throw new Error('Не удалось сохранить результат: HTTP '+response.status);
+  if(!response.ok){let detail='';try{detail=(await response.text()).slice(0,180)}catch(e){}throw new Error('Не удалось сохранить результат: HTTP '+response.status+(detail?': '+detail:''));}
   await renderScores();
 }
 async function autoSaveCompletedLevel(levelKey){
@@ -841,7 +840,7 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
 <script>
 /* Делегирование действий меню: обработчики вызываются до возможных перекрывающих слоёв. */
 document.addEventListener('click',function(event){
- const homeNameBtn=event.target.closest('#homeChangeName');if(homeNameBtn){event.preventDefault();const saved=(()=>{try{return JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}')}catch(e){return {}}})();const changes=Number(saved.nameChanges)||0;if(changes>=3){const f=document.getElementById('homeScoreFeedback');if(f)f.textContent='Лимит смены имени исчерпан.';return;}const current=String(saved.name||'').trim();const next=window.prompt('Введи новое имя игрока (до 18 символов):',current);if(next===null)return;const clean=next.trim().slice(0,18);const f=document.getElementById('homeScoreFeedback');if(!clean){if(f)f.textContent='Имя не может быть пустым.';return;}if(clean===current){if(f)f.textContent='Это уже твоё имя.';return;}saved.name=clean;saved.nameChanges=changes+1;try{localStorage.setItem('banquetPlayerProfile',JSON.stringify(saved));localStorage.setItem('banquetPlayerName',clean)}catch(e){}const label=document.getElementById('homePlayerName');if(label)label.textContent=clean;const nameLine=document.getElementById('savedPlayerName');if(nameLine)nameLine.textContent='Игрок: '+clean;if(f)f.textContent='Имя изменено на «'+clean+'».';return;}
+ const submitBtn=event.target.closest('#homeSubmitScore');if(submitBtn){event.preventDefault();event.stopImmediatePropagation();const button=submitBtn,feedback=document.getElementById('homeScoreFeedback');const total=Number(localStorage.getItem('banquetLifetimeXP'))||0;const previous=button.textContent;button.disabled=true;button.textContent='Отправляем…';if(feedback)feedback.textContent='Отправляем накопленные '+total+' очков…';(async()=>{try{await submitOnlineScore();if(feedback)feedback.textContent='Готово! В онлайн-рейтинг отправлено '+total+' накопленных очков.';await renderScores()}catch(error){if(feedback)feedback.textContent='Не удалось отправить: '+(error&&error.message?error.message:'ошибка сети')+'. Баллы сохранены на устройстве — попробуй ещё раз.';console.error('Manual leaderboard submission failed:',error)}finally{button.disabled=false;button.textContent=previous}})();return;}const homeNameBtn=event.target.closest('#homeChangeName');if(homeNameBtn){event.preventDefault();const saved=(()=>{try{return JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}')}catch(e){return {}}})();const changes=Number(saved.nameChanges)||0;if(changes>=3){const f=document.getElementById('homeScoreFeedback');if(f)f.textContent='Лимит смены имени исчерпан.';return;}const current=String(saved.name||'').trim();const next=window.prompt('Введи новое имя игрока (до 18 символов):',current);if(next===null)return;const clean=next.trim().slice(0,18);const f=document.getElementById('homeScoreFeedback');if(!clean){if(f)f.textContent='Имя не может быть пустым.';return;}if(clean===current){if(f)f.textContent='Это уже твоё имя.';return;}saved.name=clean;saved.nameChanges=changes+1;try{localStorage.setItem('banquetPlayerProfile',JSON.stringify(saved));localStorage.setItem('banquetPlayerName',clean)}catch(e){}const label=document.getElementById('homePlayerName');if(label)label.textContent=clean;const nameLine=document.getElementById('savedPlayerName');if(nameLine)nameLine.textContent='Игрок: '+clean;if(f)f.textContent='Имя изменено на «'+clean+'».';return;}
  const b=event.target.closest('#menuOfficeChat,#menuTips,#menuAbout,#menuChangeName,#changeNameSave,#changeNameCancel,#menuSaveRecord,#menuFinish,#menuResume');
  if(!b)return;
  event.preventDefault();
