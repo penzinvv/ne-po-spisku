@@ -747,6 +747,15 @@ document.addEventListener('click',function(event){
  const opened=window.open(url,'_blank','noopener,noreferrer');
  if(!opened){const feedback=document.getElementById('menuFeedback');if(feedback)feedback.textContent='Браузер заблокировал новое окно. Разреши всплывающие окна или открой страницу поддержки вручную: '+url;}
 },true);
+/* Надёжное закрытие окна «О разработчике» после переноса диалога в body. */
+document.addEventListener('click',function(event){
+ const button=event.target.closest('#aboutClose');
+ if(!button)return;
+ event.preventDefault();event.stopImmediatePropagation();
+ const dialog=document.getElementById('aboutDialog');
+ if(dialog)dialog.style.display='none';
+ if(typeof mode!=='undefined'&&mode==='paused')mode='play';
+},true);
 /* Надёжные обработчики стартовых кнопок — независимо от порядка инициализации остальных модулей. */
 document.addEventListener('click',function(event){
  const menuButton=event.target.closest('#menuButton');
