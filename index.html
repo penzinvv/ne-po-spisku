@@ -541,7 +541,7 @@ updateLandingScores();
   reset(true);$('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';
   mode='play';setMusicScene('active');
   if(n===1){
-   if(i===0){stage=0;carrying=false;player.x=110;player.y=410;startShift();return}
+   if(i===0){stage=0;carrying=false;player.x=110;player.y=410;showStory();return}
    if(i===1){stage=2;startShift();return}
    if(i===2){stage=3;startShift();startCleanup();return}
   }
@@ -673,6 +673,16 @@ const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,t
 </script>
 <script>
 /* Надёжные обработчики стартовых кнопок — независимо от порядка инициализации остальных модулей. */
+document.addEventListener('click',function(event){
+ const menuButton=event.target.closest('#menuButton');
+ if(!menuButton)return;
+ event.preventDefault();
+ event.stopImmediatePropagation();
+ const menu=document.getElementById('gameMenu');
+ if(!menu)return;
+ if(menu.style.display==='flex'){menu.style.display='none';if(window.__banquetPausedByMenu){window.__banquetPausedByMenu=false;}}
+ else{const score=document.getElementById('menuScoreLine');if(score){const canvas=document.getElementById('game');score.textContent='Текущий счёт: '+(window.__banquetXP||0)+' очков';}const feedback=document.getElementById('menuFeedback');if(feedback)feedback.textContent='';menu.style.display='flex';}
+},true);
 document.addEventListener('click',function(event){
  const button=event.target.closest('#landingStart, #landingOffice');
  if(!button)return;
