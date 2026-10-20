@@ -104,10 +104,16 @@ body.game-active #actionMobile{display:none;position:fixed;right:22px;bottom:cal
 }
 @media(max-width:380px){#mobileJoystick{width:112px;height:112px;left:14px;bottom:calc(18px + env(safe-area-inset-bottom))}.joystick-knob{width:48px;height:48px;left:32px;top:32px}#actionMobile{right:14px;bottom:calc(142px + env(safe-area-inset-bottom));min-width:112px;min-height:52px}}
 
-/* Mobile controls: joystick throughout gameplay, action button only for tray task */
+/* Mobile controls: keep the joystick visible during every gameplay task.
+   The ID selector above (#mobileControls) otherwise overrides the older
+   body.game-active selector, leaving the whole controls container hidden. */
 #mobileControls{display:none}
 #actionMobile{display:none!important}
-@media(max-width:800px){body.game-active #mobileControls{display:block}body.game-active #mobileJoystick{display:block}body.game-active.action-available #actionMobile{display:block!important}}
+@media(max-width:800px){
+  body.game-active #mobileControls{display:block!important}
+  body.game-active #mobileJoystick{display:block!important}
+  body.game-active.action-available #actionMobile{display:block!important}
+}
 
 #cleanupIntro{position:fixed;inset:0;z-index:60;background:#100b20ef;display:none;align-items:center;justify-content:center;padding:18px}#cleanupIntro .panel{max-width:520px;background:#211a36;border:3px solid #9b80b7;border-radius:8px;padding:24px;text-align:center;color:#eee;font-size:18px}#cleanupIntro h2{color:#ffe56b}
 
