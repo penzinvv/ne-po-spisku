@@ -193,8 +193,9 @@ let keys={},mode='intro',stage=0,elapsed=0,time=150,xp=0,runActive=false,recordS
  let playerProfile={name:'',nameChanges:0};
  try{const saved=JSON.parse(localStorage.getItem(PLAYER_PROFILE_KEY)||'{}');if(saved&&typeof saved==='object'){playerProfile.name=typeof saved.name==='string'?saved.name.slice(0,18):'';playerProfile.nameChanges=Math.max(0,Math.min(3,Number(saved.nameChanges)||0))}}catch(e){}
  if(playerProfile.name)playerName=playerProfile.name;
+ if(playerProfile.name){const nameField=document.getElementById('playerName');if(nameField){nameField.value=playerProfile.name;nameField.readOnly=true;nameField.title='Имя можно изменить через меню игры';nameField.placeholder='Имя сохранено — изменить можно в меню'}}
  function savePlayerProfile(){try{localStorage.setItem(PLAYER_PROFILE_KEY,JSON.stringify(playerProfile))}catch(e){}}
- function rememberPlayerName(name){const clean=String(name||'').trim().slice(0,18);if(!clean)return false;playerName=clean;playerProfile.name=clean;savePlayerProfile();return true}
+ function rememberPlayerName(name){const clean=String(name||'').trim().slice(0,18);if(!clean)return false;playerName=clean;playerProfile.name=clean;const field=document.getElementById('playerName');if(field){field.value=clean;field.readOnly=true;field.title='Имя можно изменить через меню игры'}savePlayerProfile();return true}
 
 try{unlockedLevel=Math.max(1,Math.min(5,Number(localStorage.getItem('nePoSpiskuUnlockedLevel'))||1))}catch(e){}
 const levelInfo={1:{name:'Первая смена',time:150,mini:24,spawn:.72,plateSpeed:1},2:{name:'Час пик',time:135,mini:22,spawn:.59,plateSpeed:1.12},3:{name:'Банкетная подготовка',time:120,mini:20,spawn:.48,plateSpeed:1.25},4:{name:'Бонус: чистая посуда',time:0,mini:0,spawn:0,plateSpeed:1},5:{name:'Время обеда',time:0,mini:0,spawn:0,plateSpeed:1}};
