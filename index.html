@@ -45,6 +45,20 @@ canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
 .bar{height:10px;border-radius:0;background:#100b20;border:1px solid #766394}
 .bar span{background:repeating-linear-gradient(90deg,#80f0a8 0 8px,#52b982 8px 10px)}
 .pad button{border-radius:2px}
+/* Единая структура диалогов: портрет слева, имя и реплика справа */
+#storyDialog .modal{display:grid;grid-template-columns:96px minmax(0,1fr);column-gap:14px;align-items:start;text-align:left}
+#storyDialog #dialogPortrait{grid-column:1;grid-row:1 / span 4;width:96px;height:96px;margin:0;align-self:start}
+#storyDialog #storySpeaker,#storyDialog #storyTitle,#storyDialog #storyLine,#storyDialog #storyChoices{grid-column:2;min-width:0}
+#storyDialog #storySpeaker{margin:0 0 5px}
+#storyDialog #storyTitle{margin:0 0 6px}
+#storyDialog #storyLine{margin:0;white-space:pre-wrap}
+#storyDialog #storyChoices{margin-top:12px}
+.unified-cafe-dialog{display:flex;align-items:flex-start;gap:14px;text-align:left}
+.unified-cafe-dialog .dialog-face{flex:0 0 112px;width:112px;height:112px;image-rendering:pixelated;border:2px solid #8e7bab;background:#21183a}
+.unified-cafe-dialog .dialog-copy{flex:1;min-width:0}
+.unified-cafe-dialog .dialog-speaker{color:#ffe66d;font-weight:900;font-size:18px;margin:0 0 8px}
+.unified-cafe-dialog .dialog-line{margin:0;white-space:pre-wrap;line-height:1.5}
+@media(max-width:480px){#storyDialog .modal{grid-template-columns:72px minmax(0,1fr);column-gap:10px;padding:14px 10px}#storyDialog #dialogPortrait{width:72px;height:72px}.unified-cafe-dialog{gap:10px}.unified-cafe-dialog .dialog-face{flex-basis:76px;width:76px;height:76px}.unified-cafe-dialog .dialog-speaker{font-size:15px}}
 ::selection{background:#ffe66d;color:#211733}
 @media(max-width:600px){.panel{border-radius:2px}.modal{border-radius:3px}}
 
@@ -331,7 +345,7 @@ function drawBonusIgor(x,y){g.fillStyle='#171521';g.fillRect(x-27,y+7,54,58);g.f
 function drawDialogPortrait(speaker){
 const c=$('dialogPortrait'),ctx=c.getContext('2d');c.width=144;c.height=144;ctx.clearRect(0,0,144,144);
 const p=(x,y,w,h,col)=>{ctx.fillStyle=col;ctx.fillRect(x*3,y*3,w*3,h*3)};
-const name=speaker.toLowerCase();let kind=name.includes('лиз')?'lisa':name.includes('игор')?'igor':name.includes('слав')?'slava':name.includes('менедж')?'manager':name.includes('александр')?'alexander':name.includes('вова')?'vova':name.includes('олег')?'oleg':name.includes('флюровна')?'fluorovna':name.includes('люба')?'lyuba':name.includes('стаж')?'intern':'';
+const name=String(speaker||'').toLowerCase();let kind=name.includes('лиз')?'lisa':name.includes('игор')?'igor':name.includes('слав')?'slava':name.includes('менедж')||name.includes('валер')?'manager':name.includes('александр')?'alexander':name.includes('вова')?'vova':name.includes('олег')?'oleg':name.includes('флюровна')?'fluorovna':name.includes('люба')?'lyuba':name.includes('стаж')?'intern':'';
 if(!kind){c.style.display='none';return}
 c.style.display='block';p(0,0,48,48,'#21183a');p(2,3,44,42,'#292044');p(3,33,42,13,'#44345f');
 /* portraits use a 48x48 logical canvas with 3px pixel blocks for finer detail */
@@ -639,7 +653,20 @@ const cafeQuestions=[
 ['После обеда надо сходить на склад, поможешь мне убраться там?',['Мне менеджер сказал посуду натирать.','А я после обеда домой ухожу.','Конечно, я ещё не был на складе.'],2],
 ['Ты какой-то щуплый, не думал качаться в зале?',['Ну если у тебя есть что предложить?','Я приседаю утром, и пью коровье молоко.','Я не щуплый, просто генетика такая.'],0]];
 let cafeLevelState={startXP:0,round:0,selected:[],sympathy:0,mazeStart:0,mazeWindow:0,mazeDone:false,mazeTimer:null};
-function cafeDialog(speaker,line,next){touchColleague(speaker);const v=cafeScreen(speaker,'<p>'+line+'</p>',[{label:'Продолжить',run:next}]);drawDialogPortrait(speaker);const portrait=$('dialogPortrait');if(portrait&&portrait.style.display!=='none'){const wrap=document.createElement('div');wrap.style.cssText='display:flex;justify-content:center;margin:4px auto 12px';if(String(speaker).toLowerCase().includes('вова')){const avatar=document.createElement('div');avatar.textContent='🧑🏻‍🍳';avatar.setAttribute('aria-label','Вова');avatar.style.cssText='display:grid;place-items:center;width:112px;height:112px;font-size:76px;line-height:1;border:2px solid #8e7bab;background:#21183a';wrap.appendChild(avatar)}else{const img=portrait.cloneNode(true);img.style.cssText='display:block;width:112px;height:112px;image-rendering:pixelated;border:2px solid #8e7bab;background:#21183a';wrap.appendChild(img)}v.body.prepend(wrap)}}
+function cafeDialog(speaker,line,next){
+ touchColleague(speaker);
+ const v=cafeScreen('', '<p></p>', [{label:'Продолжить',run:next}]);
+ const heading=v.el.querySelector('h2');if(heading)heading.style.display='none';
+ drawDialogPortrait(speaker);
+ const portrait=$('dialogPortrait');
+ const layout=document.createElement('div');layout.className='unified-cafe-dialog';
+ const face=portrait.cloneNode(true);face.className='dialog-face';face.style.cssText='display:block;width:112px;height:112px;image-rendering:pixelated;border:2px solid #8e7bab;background:#21183a;flex:0 0 112px';
+ face.setAttribute('aria-label','Портрет: '+speaker);
+ const copy=document.createElement('div');copy.className='dialog-copy';
+ const name=document.createElement('div');name.className='dialog-speaker';name.textContent=speaker;
+ const text=document.createElement('p');text.className='dialog-line';text.textContent=line;
+ copy.append(name,text);layout.append(face,copy);v.body.replaceChildren(layout);
+}
 function startCafeLevel(){beginRelationTask('Валерий');cafeLevelState={startXP:xp,round:0,selected:[],sympathy:0,mazeStart:0,mazeWindow:0,mazeDone:false,mazeTimer:null};$('intro').style.display='none';$('result').style.display='none';mode='play';cafeDialog('Валерий','В нашей работе иногда надо и покушать. У нас есть столовая. Главное, чтобы не толпой ходили, а то я потом никого не могу найти на этаже.',cafeMealPreview)}
 function cafeMealPreview(){const s=cafeLevelState,m=cafeMeals[s.round];const v=cafeScreen('Обед в столовой','<p>Запомни обед на подносе — он исчезнет через <b id="cafeCount">3</b> секунды.</p><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">'+m.map((x,i)=>'<div style="border:2px solid #8e7bab;padding:12px"><b>'+['🥗 Салат','🍛 Гарнир и основное','🥤 Напиток','🍲 Суп'][i]+'</b><p>'+x+'</p></div>').join('')+'</div>');let n=3;const tick=()=>{if(!v.el.isConnected)return;n--;const e=v.body.querySelector('#cafeCount');if(e)e.textContent=n;if(n<=0){v.el.remove();cafeMealChoose()}else setTimeout(tick,1000)};setTimeout(tick,1000)}
 function cafeMealChoose(){const s=cafeLevelState,m=cafeMeals[s.round],labels=['Салат','Гарнир и основное','Напиток','Суп'];const v=cafeScreen('Обед в столовой','<p>Раунд '+(s.round+1)+' из 5. Выбери все четыре компонента.</p><div id="cafeMealInputs" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px"></div>');const area=v.body.querySelector('#cafeMealInputs');s.selected=[];labels.forEach((label,i)=>{const wrap=document.createElement('label');wrap.textContent=label;const sel=document.createElement('select');sel.style.cssText='display:block;width:100%;padding:8px;background:#17102a;color:#fff;border-radius:8px';sel.add(new Option('Выбрать…',''));cafeMeals.forEach(row=>sel.add(new Option(row[i],row[i])));sel.onchange=()=>s.selected[i]=sel.value;wrap.appendChild(sel);area.appendChild(wrap)});const b=document.createElement('button');b.textContent='Готово';b.onclick=()=>{if(s.selected.filter(Boolean).length<4){alert('Выбери все четыре компонента.');return}let wrong=0;m.forEach((x,i)=>{if(s.selected[i]!==x)wrong++});const delta=40-13*wrong;xp+=delta;ui();v.el.remove();cafeScreen('Раунд '+(s.round+1)+' из 5','<p>'+(wrong===0?'Верно! +10 очков.':'Ошибок: '+wrong+'. '+delta+' очков.')+'</p><p>Правильный обед: '+m.join(' · ')+'</p>',[{label:'Далее',run:()=>{s.round++;if(s.round<5)cafeMealPreview();else {recordRelationTask(true);beginRelationTask('Вова');cafeDialog('Валерий','Приятного аппетита, надеюсь сегодня будет всё свежее, хотя я давно не помню, чтобы здесь было так.',()=>cafeDialog('Вова','Наш менеджер редко здесь питается, хотя мне здесь нравится. Смотри, видишь какой салат вялый, а рис уже высох. Но зато здесь всегда дают одно и тоже. Раньше было лучше, хотя бы всё давали свежее.',cafeVovaQuestion))}}}])};v.actions.appendChild(b)}
