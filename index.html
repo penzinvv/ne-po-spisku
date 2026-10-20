@@ -104,22 +104,28 @@ body.game-active #actionMobile{display:none;position:fixed;right:22px;bottom:cal
 }
 @media(max-width:380px){#mobileJoystick{width:112px;height:112px;left:14px;bottom:calc(18px + env(safe-area-inset-bottom))}.joystick-knob{width:48px;height:48px;left:32px;top:32px}#actionMobile{right:14px;bottom:calc(142px + env(safe-area-inset-bottom));min-width:112px;min-height:52px}}
 
-/* Mobile controls: use a viewport-level layer so the panel/canvas overflow
-   cannot clip the joystick. Keep it independent of the gameplay panel layout. */
+/* Mobile controls live directly under body to avoid clipping by the game panel. */
 #mobileControls{display:none}
+#mobileJoystick{display:none}
 #actionMobile{display:none!important}
 @media(max-width:800px){
   body.game-active #mobileControls{
     display:block!important;position:fixed!important;inset:0!important;
-    width:100vw!important;height:100dvh!important;padding:0!important;margin:0!important;
-    border:0!important;border-radius:0!important;background:transparent!important;
-    box-shadow:none!important;transform:none!important;overflow:visible!important;
-    pointer-events:none!important;z-index:1100!important;
+    width:100vw!important;height:100vh!important;height:100dvh!important;
+    padding:0!important;margin:0!important;border:0!important;border-radius:0!important;
+    background:transparent!important;box-shadow:none!important;transform:none!important;
+    overflow:visible!important;pointer-events:none!important;z-index:2147483000!important;
   }
-  body.game-active #mobileJoystick{display:block!important;pointer-events:auto!important}
-  body.game-active #actionMobile{pointer-events:auto!important}
+  body.game-active #mobileJoystick{
+    display:block!important;position:fixed!important;left:18px!important;
+    bottom:calc(22px + env(safe-area-inset-bottom))!important;
+    width:132px!important;height:132px!important;z-index:2147483001!important;
+    pointer-events:auto!important;touch-action:none!important;
+  }
+  body.game-active #actionMobile{pointer-events:auto!important;z-index:2147483002!important}
   body.game-active.action-available #actionMobile{display:block!important}
 }
+@media(max-width:380px){body.game-active #mobileJoystick{left:12px!important;width:112px!important;height:112px!important;bottom:calc(16px + env(safe-area-inset-bottom))!important}}
 
 #cleanupIntro{position:fixed;inset:0;z-index:60;background:#100b20ef;display:none;align-items:center;justify-content:center;padding:18px}#cleanupIntro .panel{max-width:520px;background:#211a36;border:3px solid #9b80b7;border-radius:8px;padding:24px;text-align:center;color:#eee;font-size:18px}#cleanupIntro h2{color:#ffe56b}
 
@@ -588,7 +594,7 @@ const storyScenes=[
 function showStoryScene(index,onDone){setMusicScene('calm');const sc=storyScenes[index];if(!sc){$('storyDialog').style.display='none';onDone();return}$('intro').style.display='none';mode='dialog';drawDialogPortrait(sc.speaker);$('storySpeaker').textContent=sc.speaker;$('storyTitle').textContent=sc.title;$('storyLine').textContent=sc.line;const box=$('storyChoices');box.innerHTML='';sc.choices.forEach((choice,i)=>{const b=document.createElement('button');b.type='button';b.textContent=choice;b.onclick=()=>{xp+=i===0?5:2;$('storyLine').textContent=sc.replies[i];box.innerHTML='';const next=document.createElement('button');next.type='button';next.textContent='Продолжить';next.onclick=()=>{$('storyDialog').style.display='none';onDone();setMusicScene(mode==='dialog'?'calm':'active');ui()};box.appendChild(next)};box.appendChild(b)});const skip=document.createElement('button');skip.type='button';skip.className='secondary';skip.textContent='Начать смену';skip.onclick=()=>{$('storyDialog').style.display='none';onDone();setMusicScene(mode==='dialog'?'calm':'active');ui()};box.appendChild(skip);$('storyDialog').style.display='flex'}
 function showStory(){$('intro').style.display='none';if(currentLevel===2){showSimpleDialogue('Олег','65 тату','Если поможешь мне, то набью твоё имя татуировкой на руке, будет 65 тату.',()=>startShift());return}if(currentLevel===3){showSimpleDialogue('Лиза','Дополнительный стол','У нас гости захотели ещё один стол, засервируй его, ты же знаешь как сервировать столы?',()=>startShift());return}if(currentLevel===4){showSimpleDialogue('Менеджер','Бонус: чистая посуда','Сегодня у тебя первый день, посмотрим как ты умеешь натирать посуду. На кухне стоит большая стопка тарелок, иди туда и натри их. Тебе поможет Игорь.',()=>showSimpleDialogue('Игорь','Покажу как надо','Я буду натирать посуду рядом. Смотри внимательно: пятна убирай нажатием, а если посуда чистая — жми кнопку «Чистая тарелка».',()=>startShift()));return}showStoryScene(0,()=>startShift())}
 function startShift(){const entered=$('playerName').value.trim()||playerProfile.name||playerName;if(!entered||entered==='Гость'){$('playerName').focus();$('playerName').placeholder='Сначала введи имя';return}rememberPlayerName(entered);$('playerName').value=playerName;if(!runActive){xp=0;recordSubmitted=false;scoreSaved=false;window.__banquetScoreSessionId='';window.__banquetAutoSavedKeys={};window.__banquetAutoSavePromises={}}if(!window.__banquetScoreSessionId)window.__banquetScoreSessionId=getPlayerScoreId();runActive=true;setMobileControls(currentLevel===1&&stage<2,currentLevel===1&&stage<2);mode='play';setMusicScene('active');$('intro').style.display='none';$('result').style.display='none';$('cleanupIntro').style.display='none';$('storyDialog').style.display='none';$('landingPage').style.display='none';if(currentLevel===2){beginRelationTask('Олег');stage=2;level2Step=1;serveCount=0;servingMistakes=0;servingItems.forEach(it=>{it.found=false;it.bad=false});miniTime=35;$('taskTitle').textContent='1. Сервировка стола';$('taskDesc').textContent='Найди 5 нужных предметов среди 12 за 35 секунд. Лишние предметы отнимают время и .';$('objective').textContent='Найди 5 предметов сервировки';$('hint').textContent='Ищи тарелку, вилку, нож, бокал и салфетку. Не нажимай на посторонние вещи!';$('statusText').textContent='Официант, подготовь стол к приходу гостей.'}else if(currentLevel===3){startLevel3Puzzle()}else if(currentLevel===4){startBonusGame()}};$('again').onclick=()=>{if(runActive&&currentLevel<4){currentLevel=Math.min(4,currentLevel+1);reset(true);$('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';showStory()}else{runActive=false;recordSubmitted=false;scoreSaved=false;playerName='Гость';currentLevel=1;reset(false);$('landingPage').style.display='flex';$('intro').style.display='none';setMobileControls(false,false)}};$('saveLevelScore').onclick=()=>{saveRunResult(false);$('resultText').textContent=playerName+', общий результат сохранён: '+xp+' очков. Можно продолжить игру.'};$('actionMobile').onclick=interact;
-const joystick=$('mobileJoystick'),knob=$('joystickKnob');
+const mobileControls=$('mobileControls'); if(mobileControls&&mobileControls.parentElement!==document.body)document.body.appendChild(mobileControls); const joystick=$('mobileJoystick'),knob=$('joystickKnob');
 function setMobileControls(active,showAction=false){document.body.classList.toggle('game-active',!!active);document.body.classList.toggle('action-available',!!active&&!!showAction)}
 setMobileControls(false);
 if(joystick&&knob){
