@@ -243,7 +243,7 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
     </section>
     <section class="home-office panel"><h2 class="office-heading">🏢 ОФИС МЕНЕДЖЕРА</h2><p>Общий онлайн-чат сотрудников отеля «Гранд»</p><div id="homeChatMount"></div></section>
   </section>
-  <section class="home-ranking panel"><section class="home-online-ranking"><h2>🏆 Общий онлайн-рейтинг · ТОП 25</h2><p id="homeOnlineStatus">Загружаем результаты игроков…</p><ol id="landingScoreList"><li>Загрузка…</li></ol></section></section>
+  <section class="home-ranking panel"><section class="home-online-ranking"><h2>🏆 Общий онлайн-рейтинг</h2><p id="homeOnlineStatus">Загружаем результаты игроков…</p><ol id="landingScoreList"><li>Загрузка…</li></ol></section></section>
 </div>
 <div class="landing-footer"><span>Разработчик: Валерий DOS, 2026</span><span>Внимательность, скорость и аккуратность делают из новичка профи.</span><span>Банкетная служба · версия 0.9</span></div>
 </div></div>
@@ -471,7 +471,7 @@ async function renderScores(){
       target.appendChild(li);
       return;
     }
-    items.slice(0,25).forEach((item,index)=>{
+    items.slice(0,(target.id==='landingScoreList'?50:25)).forEach((item,index)=>{
       const li=document.createElement('li');
       if(index===0)li.classList.add('rank-first');else if(index===1)li.classList.add('rank-second');else if(index===2)li.classList.add('rank-third');
       if(local){
@@ -485,7 +485,9 @@ async function renderScores(){
     });
   };
   const localScores=getScores().slice().sort((a,b)=>(Number(b.xp)||0)-(Number(a.xp)||0));
-  paint(list,localScores,true);paint(landing,localScores,true);
+  paint(list,localScores,true);
+  let cachedAtStart=[];try{cachedAtStart=JSON.parse(localStorage.getItem('banquetCachedOnlineScores')||'[]')}catch(e){}
+  paint(landing,cachedAtStart,false);
   if(status)status.textContent='Загружаем общий онлайн-рейтинг…';if(homeStatus)homeStatus.textContent='Загружаем общий онлайн-рейтинг…';
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),5000);
@@ -494,7 +496,7 @@ async function renderScores(){
     if(!response.ok)throw new Error('HTTP '+response.status);
     const data=await response.json();
     if(!Array.isArray(data.scores))throw new Error('Некорректный ответ рейтинга');
-    const onlineScores=data.scores.slice().sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0)).slice(0,25);try{localStorage.setItem('banquetCachedOnlineScores',JSON.stringify(onlineScores))}catch(e){}paint(list,onlineScores,false);paint(landing,onlineScores,false);
+    const onlineScores=data.scores.slice().sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));try{localStorage.setItem('banquetCachedOnlineScores',JSON.stringify(onlineScores.slice(0,50)))}catch(e){}paint(list,onlineScores,false);paint(landing,onlineScores,false);
     if(status)status.textContent='Общий рейтинг игроков · обновлено сейчас';if(homeStatus)homeStatus.textContent='Общий рейтинг игроков · обновлено сейчас';
   }catch(error){
     clearTimeout(timeout);console.error('Online ranking load failed:',error);
