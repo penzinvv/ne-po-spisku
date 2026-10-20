@@ -184,6 +184,7 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
 #homeChatMount #playerChat{position:relative;right:auto;bottom:auto;z-index:1;width:100%;height:520px;max-height:calc(100vh - 300px);display:flex;flex-direction:column;box-sizing:border-box;border:1px solid #8066a1;box-shadow:none}
 #homeChatMount #playerChat.open{display:flex}
 #homeChatMount #chatClose{display:none}
+.home-online-ranking{margin-top:18px;padding:16px;border:2px solid #8066a1;background:#17102a}.home-online-ranking h2{margin:0 0 6px;text-align:center;color:#ffe66d;font-size:clamp(18px,2vw,23px)}.home-online-ranking p{margin:0 0 8px;text-align:center;color:#c4b9dd;font-size:12px}.home-online-ranking ol{margin:0;padding-left:28px}.home-online-ranking li{padding:8px 2px;border-bottom:1px solid #49365e;overflow-wrap:anywhere}
 .story-notebook-modal{width:min(760px,100%);max-height:92vh;overflow:auto}
 .story-notebook-modal textarea{display:block;width:100%;box-sizing:border-box;margin:10px 0 14px;background:#120d22;color:#fff4d6;border:2px solid #8066a1;padding:12px;font:14px "Courier New",monospace;resize:vertical}
 .story-notebook-modal label{color:#ffe66d}
@@ -208,7 +209,7 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
       <button type="button" data-home-action="about">ℹ️<strong>О разработчике</strong><small>Информация об авторе</small></button>
     </section>
   </section>
-  <section class="home-ranking panel"><h2 class="office-heading">🏢 ОФИС МЕНЕДЖЕРА</h2><p>Общий онлайн-чат сотрудников отеля «Гранд»</p><div id="homeChatMount"></div></section>
+  <section class="home-ranking panel"><h2 class="office-heading">🏢 ОФИС МЕНЕДЖЕРА</h2><p>Общий онлайн-чат сотрудников отеля «Гранд»</p><div id="homeChatMount"></div><section class="home-online-ranking"><h2>🏆 Общий онлайн-рейтинг</h2><p id="homeOnlineStatus">Загружаем результаты игроков…</p><ol id="landingScoreList"><li>Загрузка…</li></ol></section></section>
 </div>
 <div class="landing-footer"><span>Разработчик: Валерий DOS, 2026</span><span>Внимательность, скорость и аккуратность делают из новичка профи.</span><span>Банкетная служба · версия 0.9</span></div>
 </div></div>
@@ -417,7 +418,7 @@ function interact(){if(mode!=='play')return;if(stage===0&&!carrying&&Math.hypot(
 function getScores(){try{return JSON.parse(localStorage.getItem('nePoSpiskuScores')||'[]')}catch(e){return []}}
 function renderLocalScores(){const list=$('scoreList');if(!list)return;const scores=getScores().sort((a,b)=>b.xp-a.xp).slice(0,5);list.innerHTML='';if(!scores.length){list.innerHTML='<li>Пока нет результатов</li>';return}scores.forEach(s=>{const li=document.createElement('li');li.textContent=`${s.name} — ${s.xp} очк. (${s.success?'успех':'смена не завершена'})`;list.appendChild(li)})}
 async function renderScores(){
-  const list=$('scoreList'),status=$('onlineStatus'),landing=$('landingScoreList');
+  const list=$('scoreList'),status=$('onlineStatus'),landing=$('landingScoreList'),homeStatus=$('homeOnlineStatus');
   if(!list)return;
   const paint=(target,items,local=false)=>{
     if(!target)return;
@@ -442,7 +443,7 @@ async function renderScores(){
   };
   const localScores=getScores().slice().sort((a,b)=>(Number(b.xp)||0)-(Number(a.xp)||0));
   paint(list,localScores,true);paint(landing,localScores,true);
-  if(status)status.textContent='Загружаем общий онлайн-рейтинг…';
+  if(status)status.textContent='Загружаем общий онлайн-рейтинг…';if(homeStatus)homeStatus.textContent='Загружаем общий онлайн-рейтинг…';
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),5000);
   try{
@@ -451,10 +452,10 @@ async function renderScores(){
     const data=await response.json();
     if(!Array.isArray(data.scores))throw new Error('Некорректный ответ рейтинга');
     paint(list,data.scores,false);paint(landing,data.scores,false);
-    if(status)status.textContent='Общий рейтинг игроков';
+    if(status)status.textContent='Общий рейтинг игроков';if(homeStatus)homeStatus.textContent='Общий рейтинг игроков';
   }catch(error){
     paint(list,localScores,true);paint(landing,localScores,true);
-    if(status)status.textContent='Онлайн-рейтинг недоступен; показаны сохранённые на устройстве результаты.';
+    if(status)status.textContent='Онлайн-рейтинг недоступен; показаны сохранённые на устройстве результаты.';if(homeStatus)homeStatus.textContent='Онлайн-рейтинг недоступен; показаны сохранённые на устройстве результаты.';
     console.warn('Leaderboard unavailable:',error);
   }finally{clearTimeout(timeout)}
 }
@@ -466,8 +467,9 @@ async function submitOnlineScore(){
   if(!response.ok)throw new Error('Не удалось сохранить результат: HTTP '+response.status);
   await renderScores();
 }
-function persistLifetimeXP(){try{const value=Number(localStorage.getItem('banquetLifetimeXP'))||0;const delta=Math.max(0,Number(xp)||0);const stamp=String(currentLevel)+':'+String(delta)+':'+String(playerName)+':'+String(Date.now());if(!window.__lifetimeAwardStamp||window.__lifetimeAwardStamp!==stamp){localStorage.setItem('banquetLifetimeXP',String(value+delta));window.__lifetimeAwardStamp=stamp}const el=document.getElementById('homeXP');if(el)el.textContent=String(Number(localStorage.getItem('banquetLifetimeXP'))||0)}catch(e){}}
+function persistLifetimeXP(){try{const value=Number(localStorage.getItem('banquetLifetimeXP'))||0;const current=Math.max(0,Number(xp)||0);const previous=Math.max(0,Number(window.__banquetLastPersistedRunXP)||0);const delta=Math.max(0,current-previous);if(delta>0){localStorage.setItem('banquetLifetimeXP',String(value+delta));window.__banquetLastPersistedRunXP=current}const total=Number(localStorage.getItem('banquetLifetimeXP'))||0;const el=document.getElementById('homeXP');if(el)el.textContent=String(total);return total}catch(e){return 0}}
 function end(success,title,text){persistLifetimeXP();if(!activeTaskRelationRecorded&&activeTaskColleagues.length){let taskPointDelta=xp-activeTaskStartXP;if(success&&taskPointDelta<=0)taskPointDelta=5;activeTaskColleagues.forEach(name=>changeColleaguePoints(name,taskPointDelta));activeTaskRelationRecorded=true}setMusicScene('calm');if(success&&currentLevel===1&&!window.__alexanderReactionShown){window.__alexanderReactionShown=true;showStoryScene(2,()=>{mode='play';end(success,title,text)});return}mode='end';const earned=[];if(success&&collisions===0)earned.push('🛡️ Без столкновений');if(success&&caught>=12)earned.push('🍽️ Спаситель посуды');if(success&&currentLevel===3)earned.push('👑 Банкетный герой');if(success&&currentLevel===4)earned.push('✨ Мастер чистоты');if(success&&currentLevel===unlockedLevel&&unlockedLevel<5){unlockedLevel++;try{localStorage.setItem('nePoSpiskuUnlockedLevel',String(unlockedLevel))}catch(e){}renderLevels();text+=` Открыт уровень ${unlockedLevel}!`;}if(earned.length){let all=[];try{all=JSON.parse(localStorage.getItem('nePoSpiskuAchievements')||'[]')}catch(e){}const fresh=earned.filter(a=>!all.includes(a));all=[...new Set([...all,...earned])];try{localStorage.setItem('nePoSpiskuAchievements',JSON.stringify(all))}catch(e){}text+=` Достижения: ${earned.join(', ')}.`;if(fresh.length)text+=` Новые награды: ${fresh.join(', ')}!`;}setMobileControls(false);$('result').classList.toggle('result-success',!!success);$('result').classList.toggle('result-fail',!success);$('resultTitle').textContent=`${success?'🎉':'💥'} ${title}`;$('resultText').textContent=`${playerName}, ${text} Итоговый счёт: ${xp} очк.`;$('again').textContent=success?'Продолжить на следующий уровень':'Продолжить игру';$('result').style.display='flex'}
+setInterval(()=>{if(runActive)persistLifetimeXP()},500);
 function update(dt){if(mode!=='play')return;elapsed+=dt;if(stage===3&&currentLevel===1&&cleanupActive){let dx=0,dy=0;if(keys.ArrowLeft||keys.a||keys.A)dx--;if(keys.ArrowRight||keys.d||keys.D)dx++;if(keys.ArrowUp||keys.w||keys.W)dy--;if(keys.ArrowDown||keys.s||keys.S)dy++;if(dx||dy){if(Math.abs(dx)>Math.abs(dy)){const next={x:dx>0?1:-1,y:0};if(!(cleanupTrail.length>1&&next.x===-cleanupDir.x&&next.y===-cleanupDir.y))cleanupDir=next;}else{const next={x:0,y:dy>0?1:-1};if(!(cleanupTrail.length>1&&next.x===-cleanupDir.x&&next.y===-cleanupDir.y))cleanupDir=next;}}cleanupMove+=dt;if(cleanupMove>.12){cleanupMove=0;var h={x:cleanupHead.x+cleanupDir.x*18,y:cleanupHead.y+cleanupDir.y*18};var obs=[[130,90,100,65],[570,70,130,75],[220,300,110,70],[590,300,120,70],[60,350,70,40]];if(h.x<10||h.x>W-10||h.y<10||h.y>H-10||obs.some(o=>h.x>o[0]-8&&h.x<o[0]+o[2]+8&&h.y>o[1]-8&&h.y<o[1]+o[3]+8)||cleanupTrail.slice(0,-1).some(p=>Math.hypot(p.x-h.x,p.y-h.y)<10)){finishCleanup();return}cleanupTrail.unshift(h);cleanupHead=h;var si=cleanupShards.findIndex(s=>Math.hypot(s.x-h.x,s.y-h.y)<16);if(si>=0){cleanupShards.splice(si,1);cleanupStep++;xp+=3;spawnShard();$('statusText').textContent='Осколок собран! +3 очка. Хвост вырос на одну клетку.'}else{cleanupTrail.pop()}ui()}return;}if(flash>0)flash=Math.max(0,flash-dt*2);
 if(stage!==2){time-=dt;if(time<=0){time=0;ui();end(false,'Банкет пошёл не по плану',`Время вышло. Опыт: ${xp}. Репутация: ${rep}%. Флюровна просит «зайти на минутку».`);return}
 let dx=0,dy=0;if(keys.ArrowLeft||keys.a||keys.A)dx--;if(keys.ArrowRight||keys.d||keys.D)dx++;if(keys.ArrowUp||keys.w||keys.W)dy--;if(keys.ArrowDown||keys.s||keys.S)dy++;if(stage===3&&currentLevel===1){if(dx||dy){if(Math.abs(dx)>Math.abs(dy))cleanupDir={x:dx>0?1:-1,y:0};else cleanupDir={x:0,y:dy>0?1:-1}}}if(dx&&dy){dx*=.707;dy*=.707}
@@ -581,7 +583,7 @@ updateLandingScores();
   currentLevel=n;
   const name=playerProfile.name||$('playerName').value.trim();
   if(name)rememberPlayerName(name);
-  xp=0;runActive=true;recordSubmitted=false;scoreSaved=false;activeTaskStartXP=0;activeTaskRelationRecorded=false;activeTaskColleagues=[];activeTaskColleague=n===1?(i===0?'Валерий':i===1?'Лиза':'Люба'):n===2?(i===0?'Олег':i===1?'Флюровна':'Вова'):n===3?(i===0?'Лиза':i===1?'Игорь':'Слава'):n===4?'Валерий':n===5?(i===0?'Валерий':i===1?'Вова':'Александр'):'Валерий';activeTaskColleagues=n===4?['Валерий','Игорь']:[activeTaskColleague];activeTaskColleagues.forEach(touchColleague);
+  xp=0;window.__banquetLastPersistedRunXP=0;runActive=true;recordSubmitted=false;scoreSaved=false;activeTaskStartXP=0;activeTaskRelationRecorded=false;activeTaskColleagues=[];activeTaskColleague=n===1?(i===0?'Валерий':i===1?'Лиза':'Люба'):n===2?(i===0?'Олег':i===1?'Флюровна':'Вова'):n===3?(i===0?'Лиза':i===1?'Игорь':'Слава'):n===4?'Валерий':n===5?(i===0?'Валерий':i===1?'Вова':'Александр'):'Валерий';activeTaskColleagues=n===4?['Валерий','Игорь']:[activeTaskColleague];activeTaskColleagues.forEach(touchColleague);
   $('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';
   reset(true);$('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';
   mode='play';setMusicScene('active');
