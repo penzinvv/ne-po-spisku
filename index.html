@@ -477,6 +477,7 @@ async function renderScores(){
     console.warn('Leaderboard unavailable:',error);
   }finally{clearTimeout(timeout)}
 }
+/* Stable browser identity keeps cumulative leaderboard updates on one row. */
 const PLAYER_SCORE_ID_KEY='banquetPlayerScoreId';
 function getPlayerScoreId(){
   try{
