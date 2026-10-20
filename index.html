@@ -104,14 +104,20 @@ body.game-active #actionMobile{display:none;position:fixed;right:22px;bottom:cal
 }
 @media(max-width:380px){#mobileJoystick{width:112px;height:112px;left:14px;bottom:calc(18px + env(safe-area-inset-bottom))}.joystick-knob{width:48px;height:48px;left:32px;top:32px}#actionMobile{right:14px;bottom:calc(142px + env(safe-area-inset-bottom));min-width:112px;min-height:52px}}
 
-/* Mobile controls: keep the joystick visible during every gameplay task.
-   The ID selector above (#mobileControls) otherwise overrides the older
-   body.game-active selector, leaving the whole controls container hidden. */
+/* Mobile controls: use a viewport-level layer so the panel/canvas overflow
+   cannot clip the joystick. Keep it independent of the gameplay panel layout. */
 #mobileControls{display:none}
 #actionMobile{display:none!important}
 @media(max-width:800px){
-  body.game-active #mobileControls{display:block!important}
-  body.game-active #mobileJoystick{display:block!important}
+  body.game-active #mobileControls{
+    display:block!important;position:fixed!important;inset:0!important;
+    width:100vw!important;height:100dvh!important;padding:0!important;margin:0!important;
+    border:0!important;border-radius:0!important;background:transparent!important;
+    box-shadow:none!important;transform:none!important;overflow:visible!important;
+    pointer-events:none!important;z-index:1100!important;
+  }
+  body.game-active #mobileJoystick{display:block!important;pointer-events:auto!important}
+  body.game-active #actionMobile{pointer-events:auto!important}
   body.game-active.action-available #actionMobile{display:block!important}
 }
 
