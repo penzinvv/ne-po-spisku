@@ -785,9 +785,12 @@ document.addEventListener('click',function(event){
   const intro=document.getElementById('intro');
   if(landing)landing.style.display='none';
   if(intro){intro.style.display='flex';intro.style.zIndex='1000'}
-  window.scrollTo(0,0);
+  const profileName=(()=>{try{return String(JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}').name||'').trim()}catch(e){return ''}})();
   const name=document.getElementById('playerName');
-  if(name)setTimeout(()=>name.focus({preventScroll:true}),0);
+  const label=document.getElementById('savedPlayerName');
+  if(name&&profileName){name.value=profileName;name.readOnly=true;name.style.display='none';if(label)label.textContent='Игрок: '+profileName;}
+  else if(name){name.style.display='';name.readOnly=false;setTimeout(()=>name.focus({preventScroll:true}),0)}
+  window.scrollTo(0,0);
  }else{
   const launcher=document.getElementById('chatLauncher');
   if(launcher)launcher.click();
