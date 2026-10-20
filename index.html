@@ -599,7 +599,7 @@ let touchSteerPointer=null,touchSteerX=0,touchSteerY=0;
 function clearTouchSteer(){keys.ArrowLeft=false;keys.ArrowRight=false;keys.ArrowUp=false;keys.ArrowDown=false;touchSteerPointer=null}
 c.addEventListener('pointerdown',e=>{
  if(e.pointerType!=='touch'||mode!=='play')return;
- if(!((stage===0||stage===1)&&currentLevel<=3) && !(stage===3&&currentLevel===1&&cleanupActive))return;
+ if(!((stage===0||stage===1)&&currentLevel<=3) && !(stage===2&&currentLevel===1) && !(stage===3&&currentLevel===1&&cleanupActive))return;
  touchSteerPointer=e.pointerId;touchSteerX=e.clientX;touchSteerY=e.clientY;
  try{c.setPointerCapture(e.pointerId)}catch(err){}
 },{passive:true});
@@ -610,6 +610,9 @@ c.addEventListener('pointermove',e=>{
  if(stage===3&&currentLevel===1&&cleanupActive){
   if(Math.abs(dx)>Math.abs(dy)){const next={x:dx>0?1:-1,y:0};if(!(cleanupTrail.length>1&&next.x===-cleanupDir.x&&next.y===-cleanupDir.y))cleanupDir=next;}
   else{const next={x:0,y:dy>0?1:-1};if(!(cleanupTrail.length>1&&next.x===-cleanupDir.x&&next.y===-cleanupDir.y))cleanupDir=next;}
+ }else if(stage===2&&currentLevel===1){
+  // The plate-catching cart only moves horizontally; use the finger's horizontal drag.
+  keys.ArrowLeft=dx < -8;keys.ArrowRight=dx > 8;keys.ArrowUp=false;keys.ArrowDown=false;
  }else{
   keys.ArrowLeft=dx < -8;keys.ArrowRight=dx > 8;keys.ArrowUp=dy < -8;keys.ArrowDown=dy > 8;
  }
