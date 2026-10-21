@@ -691,6 +691,7 @@ updateLandingScores();
   if(n===4){startBonusGame();return}
   if(n===5){if(i===0)startCafeLevel();else if(i===1){cafeLevelState={startXP:xp,round:0,selected:[],sympathy:0,mazeStart:0,mazeWindow:0,mazeDone:false,mazeTimer:null};cafeVovaQuestion()}else{cafeLevelState={startXP:xp,round:0,selected:[],sympathy:0,mazeStart:0,mazeWindow:0,mazeDone:false,mazeTimer:null};cafeMazeStart()}return}
  }
+ document.addEventListener('click',e=>{const start=e.target.closest('#landingStart');if(!start)return;e.preventDefault();e.stopImmediatePropagation();const landing=document.getElementById('landingPage');if(landing)landing.style.display='none';const intro=document.getElementById('intro');if(intro)intro.style.display='none';window.__openAssignmentPicker()},true);
  document.addEventListener('click',e=>{
   const b=e.target.closest('[data-level]');if(!b)return;
   e.preventDefault();e.stopImmediatePropagation();
