@@ -158,8 +158,13 @@ body.game-active header{display:none}
 body.game-active .layout{display:block;width:100%;margin:0}
 body.game-active .layout>section.panel{width:100%;max-width:none;border:0;box-shadow:none;border-radius:0;background:transparent}
 body.game-active .layout>aside{display:none!important}
-body.game-active .canvaswrap{width:100%;display:flex;justify-content:center;align-items:center;background:#17102a}
-body.game-active canvas#game{width:min(100vw,calc((100vh - 8px)*1.53846));height:auto;max-height:calc(100vh - 8px);object-fit:contain}
+body.game-active .canvaswrap{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;min-height:100dvh!important;display:flex!important;justify-content:center!important;align-items:center!important;overflow:hidden!important;background:#17102a!important;z-index:1!important}
+body.game-active canvas#game{display:block;width:min(100vw,calc(100dvh * 1.53846))!important;height:auto!important;max-width:100vw!important;max-height:100dvh!important;object-fit:contain;touch-action:none}
+body.game-active #gameControls,body.game-active #assignmentOfficeSection,body.game-active #taskPicker{display:none!important}
+body.game-active #menuButton{position:fixed!important;display:block!important;top:10px!important;left:10px!important;z-index:2147483647!important;padding:10px 14px!important;min-height:42px!important;touch-action:manipulation}
+body.game-active .overlay{position:fixed!important;inset:0!important;z-index:2147483000!important}
+body.game-active #mobileControls{z-index:2147483500!important}
+body.game-active #gameMenu{z-index:2147483600!important}
 body.game-active .controls{display:none!important}
 body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px!important}
 @media(max-width:800px){body.game-active canvas#game{width:100vw;max-height:100dvh}body.game-active .canvaswrap{min-height:100dvh}}
@@ -672,7 +677,7 @@ updateLandingScores();
  window.__openAssignmentPicker=()=>{const box=document.getElementById('taskPickerButtons');box.innerHTML='';assignments.forEach((task,index)=>{const btn=document.createElement('button');btn.type='button';btn.style.cssText='text-align:left;white-space:normal;line-height:1.25;padding:8px;font-size:clamp(11px,1.15vw,14px);min-height:42px';btn.textContent=(index+1)+'. '+task.character+' — «'+task.title+'»';btn.onclick=()=>launch(task);box.appendChild(btn)});const chat=document.getElementById('playerChat'),mount=document.getElementById('assignmentOfficeChatMount'),office=document.getElementById('assignmentOfficeSection');if(chat&&mount){mount.appendChild(chat);chat.classList.add('open');chat.setAttribute('aria-hidden','false');chat.style.cssText='position:relative;right:auto;bottom:auto;z-index:1;width:100%;height:360px;max-height:none;display:flex;flex-direction:column;box-sizing:border-box;border:1px solid #8066a1;box-shadow:none;margin:0';const launcher=document.getElementById('chatLauncher');if(launcher)launcher.style.display='none'}if(office)office.style.display='block';const controls=document.getElementById('gameControls');if(controls)controls.style.display='none';picker.style.display='flex';const canvas=document.querySelector('.canvaswrap');if(canvas)canvas.style.position='relative'};
  function launch(task){
   const n=task.level,i=task.slot;
-  picker.style.display='none';const office=document.getElementById('assignmentOfficeSection');if(office)office.style.display='none';const controls=document.getElementById('gameControls');if(controls)controls.style.display='flex';window.__assignmentMode=true;window.__currentAssignment=task;currentLevel=n;
+  picker.style.display='none';const office=document.getElementById('assignmentOfficeSection');if(office)office.style.display='none';const controls=document.getElementById('gameControls');if(controls)controls.style.display='flex';document.body.classList.add('game-active');window.__assignmentMode=true;window.__currentAssignment=task;currentLevel=n;
   const name=playerProfile.name||($('playerName')&&$('playerName').value.trim())||'НОВЫЙ СОТРУДНИК';
   if(name)rememberPlayerName(name);
   xp=0;window.__banquetLastPersistedRunXP=0;window.__banquetScoreSessionId='';window.__banquetAutoSavedKeys={};window.__banquetAutoSavePromises={};runActive=true;recordSubmitted=false;scoreSaved=false;activeTaskStartXP=0;activeTaskRelationRecorded=false;activeTaskColleagues=[task.character];activeTaskColleagues.forEach(touchColleague);
@@ -743,7 +748,7 @@ function cafeFinish(bonus){recordRelationTask(true);const v=cafeScreen('Врем
 const cafeOriginalShowStory=showStory;showStory=function(){if(currentLevel===5){startCafeLevel();return}cafeOriginalShowStory()};
 const cafeOriginalRenderLevels=renderLevels;renderLevels=function(){cafeOriginalRenderLevels();const b=$('levelGrid')?.querySelector('[data-level="5"]');if(b){b.disabled=false;b.classList.toggle('selected',currentLevel===5);const small=b.querySelector('small');if(small)small.textContent=levelInfo[5].name}};
 const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,text);if(success&&currentLevel===4&&unlockedLevel<5){unlockedLevel=5;try{localStorage.setItem('nePoSpiskuUnlockedLevel','5')}catch(e){}renderLevels()}};
-const assignmentOriginalEnd=end;end=function(success,title,text){assignmentOriginalEnd(success,title,text);if(window.__assignmentMode){const again=$('again');if(again){again.textContent='Вернуться к заданиям';again.onclick=()=>{persistLifetimeXP();$('result').style.display='none';const cafe=document.getElementById('cafeGameOverlay');if(cafe)cafe.remove();const intro=$('intro');if(intro)intro.style.display='none';const landing=$('landingPage');if(landing)landing.style.display='none';window.__openAssignmentPicker();mode='end';setMobileControls(false,false)}}}};
+const assignmentOriginalEnd=end;end=function(success,title,text){assignmentOriginalEnd(success,title,text);if(window.__assignmentMode){const again=$('again');if(again){again.textContent='Вернуться к заданиям';again.onclick=()=>{persistLifetimeXP();document.body.classList.remove('game-active');$('result').style.display='none';const cafe=document.getElementById('cafeGameOverlay');if(cafe)cafe.remove();const intro=$('intro');if(intro)intro.style.display='none';const landing=$('landingPage');if(landing)landing.style.display='none';window.__openAssignmentPicker();mode='end';setMobileControls(false,false)}}}};
 
 // Expose only the two functions used by the profile UI in the following script.
 window.submitOnlineScore=submitOnlineScore;
