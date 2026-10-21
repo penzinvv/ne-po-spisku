@@ -743,7 +743,7 @@ const cafeQuestions=[
 let cafeLevelState={startXP:0,round:0,selected:[],sympathy:0,mazeStart:0,mazeWindow:0,mazeDone:false,mazeTimer:null};
 function cafeDialog(speaker,line,next){
  touchColleague(speaker);
- const v=cafeScreen('', '<p></p>', [{label:'Продолжить',run:next}]);
+ const v=cafeScreen('', '<p></p>', [{label:'Продолжить',run:()=>{v.el.remove();next()}}]);
  const heading=v.el.querySelector('h2');if(heading)heading.style.display='none';
  drawDialogPortrait(speaker);
  const portrait=$('dialogPortrait');
