@@ -685,7 +685,7 @@ updateLandingScores();
   reset(true);$('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';
   mode='play';setMusicScene('active');
   if(n===1){
-   if(i===0){stage=0;carrying=false;player.x=110;player.y=410;showStory();return}
+   if(i===0){stage=0;carrying=false;player.x=110;player.y=410;showSimpleDialogue('Валерий','Отнеси посуду в зал','Отнеси поднос с посудой из кухни в зал. Аккуратнее на поворотах — не разбей.',()=>{startShift();mode='play';setMusicScene('active');ui()});return}
    if(i===1){stage=2;startShift();return}
    if(i===2){stage=3;startShift();startCleanup();return}
   }
