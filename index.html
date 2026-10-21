@@ -666,14 +666,16 @@ updateLandingScores();
   {character:'Вова',title:'Общение с коллегой',level:5,slot:1},
   {character:'Александр',title:'Найди мою женщину',level:5,slot:2}
  ];
+ window.__assignmentMode=false;
  const picker=document.createElement('div');
  picker.id='taskPicker';picker.className='overlay';picker.style.display='none';picker.style.zIndex='1100';
  picker.innerHTML='<div class="modal"><h2 id="taskPickerTitle">Выбор задания</h2><p>Выбери задание из списка.</p><div id="taskPickerButtons" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px"></div><div class="actions"><button type="button" id="taskPickerCancel">Назад</button></div></div>';
  document.body.appendChild(picker);
  document.getElementById('taskPickerCancel').onclick=()=>{picker.style.display='none'};
+ window.__openAssignmentPicker=()=>{const box=document.getElementById('taskPickerButtons');box.innerHTML='';assignments.forEach((task,index)=>{const btn=document.createElement('button');btn.type='button';btn.style.cssText='text-align:left;white-space:normal;line-height:1.3;padding:10px';btn.textContent=(index+1)+'. '+task.character+' — «'+task.title+'»';btn.onclick=()=>launch(task);box.appendChild(btn)});picker.style.display='flex'};
  function launch(task){
   const n=task.level,i=task.slot;
-  picker.style.display='none';currentLevel=n;
+  picker.style.display='none';window.__assignmentMode=true;window.__currentAssignment=task;currentLevel=n;
   const name=playerProfile.name||($('playerName')&&$('playerName').value.trim())||'НОВЫЙ СОТРУДНИК';
   if(name)rememberPlayerName(name);
   xp=0;window.__banquetLastPersistedRunXP=0;window.__banquetScoreSessionId='';window.__banquetAutoSavedKeys={};window.__banquetAutoSavePromises={};runActive=true;recordSubmitted=false;scoreSaved=false;activeTaskStartXP=0;activeTaskRelationRecorded=false;activeTaskColleagues=[task.character];activeTaskColleagues.forEach(touchColleague);
@@ -693,9 +695,7 @@ updateLandingScores();
  document.addEventListener('click',e=>{
   const b=e.target.closest('[data-level]');if(!b)return;
   e.preventDefault();e.stopImmediatePropagation();
-  const box=document.getElementById('taskPickerButtons');box.innerHTML='';
-  assignments.forEach((task,index)=>{const btn=document.createElement('button');btn.type='button';btn.style.cssText='text-align:left;white-space:normal;line-height:1.3;padding:10px';btn.textContent=(index+1)+'. '+task.character+' — «'+task.title+'»';btn.onclick=()=>launch(task);box.appendChild(btn)});
-  picker.style.display='flex';
+  window.__openAssignmentPicker();
  },true);
 })();
 $('landingStart').addEventListener('click',()=>{musicUnlocked=true;stopLandingMusic();if(musicEnabled&&!songPlaylistEnabled){musicScene='calm';bgAudio.src=musicFiles.calm;bgAudio.load();bgAudio.play().catch(err=>{console.warn('Музыка на стартовом экране не запустилась:',err);const retry=()=>bgAudio.play().catch(e=>console.warn('Повторный запуск музыки не удался:',e));document.addEventListener('pointerdown',retry,{once:true});document.addEventListener('keydown',retry,{once:true})})}$('landingPage').style.display='none';$('intro').style.display='flex';$('intro').style.zIndex='1000';const savedName=(playerProfile.name||'').trim();const nameField=$('playerName');if(savedName){playerName=savedName;if(nameField){nameField.value=savedName;nameField.readOnly=true;nameField.style.display='none'}const savedLabel=$('savedPlayerName');if(savedLabel)savedLabel.textContent='Игрок: '+savedName}else if(nameField){nameField.style.display='';nameField.readOnly=false;setTimeout(()=>nameField.focus({preventScroll:true}),0)}window.scrollTo(0,0)});
@@ -745,6 +745,7 @@ function cafeFinish(bonus){recordRelationTask(true);const v=cafeScreen('Врем
 const cafeOriginalShowStory=showStory;showStory=function(){if(currentLevel===5){startCafeLevel();return}cafeOriginalShowStory()};
 const cafeOriginalRenderLevels=renderLevels;renderLevels=function(){cafeOriginalRenderLevels();const b=$('levelGrid')?.querySelector('[data-level="5"]');if(b){b.disabled=false;b.classList.toggle('selected',currentLevel===5);const small=b.querySelector('small');if(small)small.textContent=levelInfo[5].name}};
 const cafeOldEnd=end;end=function(success,title,text){cafeOldEnd(success,title,text);if(success&&currentLevel===4&&unlockedLevel<5){unlockedLevel=5;try{localStorage.setItem('nePoSpiskuUnlockedLevel','5')}catch(e){}renderLevels()}};
+const assignmentOriginalEnd=end;end=function(success,title,text){assignmentOriginalEnd(success,title,text);if(window.__assignmentMode){const again=$('again');if(again){again.textContent='Вернуться к заданиям';again.onclick=()=>{persistLifetimeXP();$('result').style.display='none';const cafe=document.getElementById('cafeGameOverlay');if(cafe)cafe.remove();const intro=$('intro');if(intro)intro.style.display='none';const landing=$('landingPage');if(landing)landing.style.display='none';window.__openAssignmentPicker();mode='end';setMobileControls(false,false)}}}};
 
 // Expose only the two functions used by the profile UI in the following script.
 window.submitOnlineScore=submitOnlineScore;
