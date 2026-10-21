@@ -148,6 +148,9 @@ canvas{background:#263744;image-rendering:pixelated;image-rendering:crisp-edges}
 #chatForm button{padding:8px}
 #chatDisclaimer{font-size:10px;color:#c4b9dd;line-height:1.3}
 @media(max-width:600px){#chatLauncher{right:10px;bottom:10px}#playerChat{right:8px;bottom:64px;height:min(68dvh,500px)}}
+/* Keep the chat reachable above the full-screen game overlay; move it out of hidden home mounts while playing. */
+body.game-active #chatLauncher{z-index:2147483550!important;display:block!important;position:fixed!important;right:12px!important;bottom:12px!important}
+body.game-active #playerChat{z-index:2147483550!important}
 
 .landing-office{display:block;width:100%;margin-top:12px;background:linear-gradient(180deg,#72e58b,#32b85b);color:#102b19;border:3px solid #b6ffc4;border-radius:4px;padding:22px 18px;font-size:clamp(18px,2.6vw,25px);font-weight:900;letter-spacing:1px;box-shadow:0 5px 0 #166d35,0 0 22px #42d36b33;cursor:pointer;text-align:center}
 .landing-office:hover{filter:brightness(1.06);transform:translateY(-1px)}
@@ -803,7 +806,7 @@ window.renderScores=renderScores;
   try { if(nameInput)nameInput.value=localStorage.getItem('banquetChatName')||''; } catch(e) {}
   function setOpen(open){panel.classList.toggle('open',open);panel.setAttribute('aria-hidden',String(!open));launcher.setAttribute('aria-expanded',String(open));if(open){if(!loaded)loadHistory();else loadHistory(true);setTimeout(()=>textInput.focus(),80)}}
   const homeMount=$chat('homeChatMount');if(homeMount){homeMount.appendChild(panel);panel.classList.add('open');panel.setAttribute('aria-hidden','false');panel.style.cssText='position:relative;right:auto;bottom:auto;z-index:1;width:100%;height:360px;max-height:none;display:flex;flex-direction:column;box-sizing:border-box;border:1px solid #8066a1;box-shadow:none;margin:0'}
-  launcher.addEventListener('click',()=>setOpen(!panel.classList.contains('open')));
+  launcher.addEventListener('click',()=>{if(document.body.classList.contains('game-active')&&panel.parentElement!==document.body){document.body.appendChild(panel);panel.style.cssText='';}setOpen(!panel.classList.contains('open'))});
   $chat('chatClose').addEventListener('click',()=>{setOpen(false);const launcher=$chat('chatLauncher');if(window.__chatReturnToPicker){const mount=$chat('assignmentOfficeChatMount');if(mount)mount.appendChild(panel);panel.style.cssText='position:relative;right:auto;bottom:auto;z-index:1;width:100%;height:360px;max-height:none;display:flex;flex-direction:column;box-sizing:border-box;border:1px solid #8066a1;box-shadow:none;margin:0';panel.classList.add('open');panel.setAttribute('aria-hidden','false');window.__chatReturnToPicker=false}else{document.body.appendChild(panel);panel.style.cssText='';if(launcher)launcher.style.display='';}});
   function safeText(el,value){el.textContent=value}
   function addMessage(row){
