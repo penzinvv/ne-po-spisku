@@ -372,6 +372,25 @@ body.game-active .canvaswrap::after{
   body.game-active .canvaswrap::after{inset:3px;border-width:1px}
 }
 
+
+/* Background polish: keep the task board, office and Top-10 art intact. */
+body.assignment-picker-open{
+  background:
+    linear-gradient(180deg,rgba(16,10,29,.68),rgba(16,10,29,.82)),
+    url('/images/backgrounds/main-menu.png') center top / cover fixed,
+    #17102a;
+}
+body.assignment-picker-open .canvaswrap{
+  background:
+    linear-gradient(180deg,rgba(16,10,29,.30),rgba(16,10,29,.52)),
+    url('/images/backgrounds/main-menu.png') center / cover no-repeat,
+    #17102a;
+}
+/* The picker keeps task-board.png; manager-office and Top-10 retain their own backgrounds. */
+@media(max-width:800px){
+  body.assignment-picker-open{background-attachment:scroll;background-position:center top}
+  body.assignment-picker-open .canvaswrap{background-position:center top}
+}
 </style></head>
 <body><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
