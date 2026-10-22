@@ -917,8 +917,8 @@ document.addEventListener('click',function(event){
  event.stopImmediatePropagation();
  const menu=document.getElementById('gameMenu');
  if(!menu)return;
- if(menu.style.display==='flex'){menu.style.display='none';if(window.__banquetPausedByMenu){window.__banquetPausedByMenu=false;}}
- else{const score=document.getElementById('menuScoreLine');if(score){const canvas=document.getElementById('game');score.textContent='Текущий счёт: '+(window.__banquetXP||0)+' очков';}const feedback=document.getElementById('menuFeedback');if(feedback)feedback.textContent='';menu.style.display='flex';}
+ if(menu.style.display==='flex'){menu.style.display='none';if(window.__pickerWasOpenForMenu){window.__pickerWasOpenForMenu=false;const picker=document.getElementById('taskPicker');if(picker)picker.style.display='flex';document.body.classList.add('assignment-picker-open');const office=document.getElementById('assignmentOfficeSection');if(office)office.style.display='block';}if(window.__banquetPausedByMenu){window.__banquetPausedByMenu=false;}}
+ else{const picker=document.getElementById('taskPicker');window.__pickerWasOpenForMenu=!!(picker&&getComputedStyle(picker).display!=='none');if(window.__pickerWasOpenForMenu){picker.style.display='none';document.body.classList.remove('assignment-picker-open');const office=document.getElementById('assignmentOfficeSection');if(office)office.style.display='none';}const score=document.getElementById('menuScoreLine');if(score){const canvas=document.getElementById('game');score.textContent='Текущий счёт: '+(window.__banquetXP||0)+' очков';}const feedback=document.getElementById('menuFeedback');if(feedback)feedback.textContent='';menu.style.display='flex';}
 },true);
 document.addEventListener('click',function(event){
  const button=event.target.closest('#landingStart, #landingOffice');
