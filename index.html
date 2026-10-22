@@ -287,6 +287,22 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
 .home-online-ranking h2,
 .home-online-ranking p,
 .home-online-ranking ol{position:relative}
+/* Matching Top-10 artwork in the assignment-screen sidebar; text stays on a dark overlay. */
+.layout aside .scores{
+  background:
+    linear-gradient(180deg,rgba(20,13,34,.93),rgba(20,13,34,.96)),
+    url('/images/backgrounds/top10-background.png') center 18% / cover;
+  background-color:#17102a;
+  border:1px solid #79558e;
+  border-radius:10px;
+  padding:12px;
+}
+.layout aside .scores .sideTitle,
+.layout aside .scores small,
+.layout aside .scores ol{position:relative}
+@media(max-width:800px){
+  .layout aside .scores{background-position:center 18%;}
+}
 body.assignment-picker-open .canvaswrap{
   background:
     linear-gradient(rgba(18,10,29,.56),rgba(18,10,29,.68)),
