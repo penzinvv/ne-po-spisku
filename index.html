@@ -309,6 +309,36 @@ body.game-active .canvaswrap{
     url('/images/backgrounds/game-background.png') center / cover no-repeat,
     #17102a;
 }
+/* Фон офиса менеджера на экране выбора заданий; чат оставляем на тёмной подложке для читаемости. */
+body.assignment-picker-open #assignmentOfficeSection{
+  position:relative;
+  isolation:isolate;
+  background:
+    linear-gradient(180deg,rgba(23,16,42,.58),rgba(23,16,42,.76)),
+    url('/images/backgrounds/manager-office.png') center 42% / cover no-repeat,
+    #201b36 !important;
+  border-top-color:#a17ab4 !important;
+}
+body.assignment-picker-open #assignmentOfficeSection > h2,
+body.assignment-picker-open #assignmentOfficeSection > p{
+  position:relative;
+  z-index:1;
+  text-shadow:0 2px 4px #10091c;
+}
+body.assignment-picker-open #assignmentOfficeChatMount #playerChat{
+  position:relative;
+  z-index:1;
+  background:rgba(24,17,39,.97) !important;
+  border-color:#8066a1;
+}
+@media(max-width:800px){
+  body.assignment-picker-open #assignmentOfficeSection{
+    background:
+      linear-gradient(180deg,rgba(23,16,42,.66),rgba(23,16,42,.82)),
+      url('/images/backgrounds/manager-office.png') center / cover no-repeat,
+      #201b36 !important;
+  }
+}
 body.game-active .canvaswrap::after{
   content:"";
   position:absolute;
