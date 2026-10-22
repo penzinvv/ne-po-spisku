@@ -233,6 +233,30 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
 @media(max-width:620px){.avatar-dialog{padding:14px}.avatar-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.home-profile{flex-wrap:wrap}.home-profile-actions{min-width:100%}}
 
 
+
+/* Manager office background refinement */
+.home-office{
+  background:
+    linear-gradient(135deg,rgba(23,19,43,.48),rgba(23,19,43,.66)),
+    url('/images/backgrounds/manager-office.png') center 44% / cover;
+  border-color:#a17ab4;
+  box-shadow:0 10px 28px rgba(0,0,0,.24);
+}
+.home-office #homeChatMount{
+  position:relative;
+  isolation:isolate;
+}
+#homeChatMount #playerChat{
+  background:rgba(24,17,39,.96);
+}
+@media(max-width:800px){
+  .home-office{
+    background:
+      linear-gradient(135deg,rgba(23,19,43,.58),rgba(23,19,43,.72)),
+      url('/images/backgrounds/manager-office.png') center / cover;
+  }
+}
+
 /* Banquet backgrounds integration v1 */
 .home-dashboard{
   background:
