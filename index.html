@@ -931,7 +931,11 @@ document.addEventListener('click',function(event){
   const landing=document.getElementById('landingPage');
   const intro=document.getElementById('intro');
   if(landing)landing.style.display='none';
-  if(intro){intro.style.display='flex';intro.style.zIndex='1000'}
+  if(intro){intro.style.display='none';intro.style.zIndex='1000'}
+  const result=document.getElementById('result');if(result)result.style.display='none';
+  document.body.classList.remove('game-active');
+  window.__assignmentMode=false;
+  if(typeof window.__openAssignmentPicker==='function'){const picker=document.getElementById('taskPickerOverlay');if(picker)picker.style.display='flex';window.__openAssignmentPicker()}
   const profileName=(()=>{try{return String(JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}').name||'').trim()}catch(e){return ''}})();
   const name=document.getElementById('playerName');
   const label=document.getElementById('savedPlayerName');
