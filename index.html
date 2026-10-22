@@ -224,7 +224,7 @@ body.game-active #menuButton{z-index:2600!important;top:10px!important;left:10px
 .avatar-close{min-width:42px;padding:6px 10px}
 .avatar-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
 .avatar-choice{background:#282044;border:2px solid #8052a8;border-radius:10px;padding:7px 4px;color:#f8d8ff;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;box-shadow:none}
-.avatar-choice .avatar-face{width:100%;aspect-ratio:1/1;display:grid;place-items:center;font-size:clamp(34px,6vw,58px);border-radius:7px;background:radial-gradient(circle at 50% 25%,#574079,#241737 72%)}
+.avatar-choice .avatar-face{width:100%;aspect-ratio:1/1;display:grid;place-items:center;overflow:hidden;font-size:clamp(34px,6vw,58px);border-radius:7px;background:radial-gradient(circle at 50% 25%,#574079,#241737 72%)} .avatar-choice .avatar-face img{width:100%;height:100%;object-fit:cover;display:block}.home-avatar img{width:100%;height:100%;object-fit:cover;display:block}.home-avatar:has(img){padding:0;overflow:hidden}
 .avatar-choice small{font-size:11px;font-weight:800}
 .avatar-choice.selected{border-color:var(--gold);box-shadow:0 0 0 2px #ffda5966,inset 0 0 20px #ffe66d22;color:var(--gold)}
 .avatar-save-row{display:flex;justify-content:center;gap:10px;margin-top:18px}
@@ -1011,19 +1011,26 @@ document.addEventListener('click',function(event){
 <script>
 (function(){
  const avatars=[
-  {face:'👩🏻‍🍳',label:'Официант 1'},{face:'👱🏻‍♀️',label:'Официант 2'},{face:'👨🏻‍🍳',label:'Официант 3'},
-  {face:'👩🏻‍🦰',label:'Официант 4'},{face:'🤓',label:'Официант 5'},{face:'👨🏻',label:'Официант 6'},
-  {face:'👱🏻',label:'Официант 7'},{face:'👩🏻',label:'Официант 8'},{face:'😎',label:'Официант 9'},
-  {face:'👩🏼‍🦱',label:'Официант 10'},{face:'🧑🏻‍🦱',label:'Официант 11'}
+  {face:'👩🏻‍🍳',label:'Официант 1',src:'images/profile/profile_01.jpg'},
+  {face:'👱🏻‍♀️',label:'Официант 2',src:'images/profile/profile_02.jpg'},
+  {face:'👨🏻‍🍳',label:'Официант 3',src:'images/profile/profile_03.jpg'},
+  {face:'👩🏻‍🦰',label:'Официант 4',src:'images/profile/profile_04.jpg'},
+  {face:'🤓',label:'Официант 5',src:'images/profile/profile_05.jpg'},
+  {face:'👨🏻',label:'Официант 6',src:'images/profile/profile_06.jpg'},
+  {face:'👱🏻',label:'Официант 7',src:'images/profile/profile_07.jpg'},
+  {face:'👩🏻',label:'Официант 8',src:'images/profile/profile_08.jpg'},
+  {face:'😎',label:'Официант 9',src:'images/profile/profile_09.jpg'},
+  {face:'👩🏼‍🦱',label:'Официант 10',src:'images/profile/profile_10.jpg'},
+  {face:'🧑🏻‍🦱',label:'Официант 11',src:'images/profile/default.jpg'}
  ];
  const modal=document.getElementById('avatarModal'),grid=document.getElementById('avatarGrid'),icon=document.getElementById('homeAvatar');
  if(!modal||!grid||!icon)return;
  let chosen=0;
  try{chosen=Math.max(0,Math.min(10,Number(JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}').avatar)||0))}catch(e){}
- function draw(){grid.replaceChildren();avatars.forEach((a,i)=>{const b=document.createElement('button');b.type='button';b.className='avatar-choice'+(i===chosen?' selected':'');b.setAttribute('aria-pressed',String(i===chosen));const face=document.createElement('span');face.className='avatar-face';face.textContent=a.face;const label=document.createElement('small');label.textContent=a.label;b.append(face,label);b.addEventListener('click',()=>{chosen=i;draw()});grid.appendChild(b)})}
+ function draw(){grid.replaceChildren();avatars.forEach((a,i)=>{const b=document.createElement('button');b.type='button';b.className='avatar-choice'+(i===chosen?' selected':'');b.setAttribute('aria-pressed',String(i===chosen));const face=document.createElement('span');face.className='avatar-face';if(a.src){const img=document.createElement('img');img.src=a.src;img.alt=a.label;img.loading='lazy';img.onerror=()=>{face.textContent=a.face};face.appendChild(img)}else face.textContent=a.face;const label=document.createElement('small');label.textContent=a.label;b.append(face,label);b.addEventListener('click',()=>{chosen=i;draw()});grid.appendChild(b)})}
  function show(){try{const p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}');chosen=Math.max(0,Math.min(10,Number(p.avatar)||0))}catch(e){}draw();modal.style.display='flex'}
  function hide(){modal.style.display='none'}
- function apply(){icon.textContent=avatars[chosen].face;icon.setAttribute('aria-label','Выбран аватар: '+avatars[chosen].label)}
+ function apply(){const a=avatars[chosen];icon.replaceChildren();if(a.src){const img=document.createElement('img');img.src=a.src;img.alt=a.label;img.onerror=()=>{icon.textContent=a.face};icon.appendChild(img)}else icon.textContent=a.face;icon.setAttribute('aria-label','Выбран аватар: '+a.label)}
  icon.addEventListener('click',show);document.getElementById('avatarClose').addEventListener('click',hide);
  modal.addEventListener('click',e=>{if(e.target===modal)hide()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});
