@@ -391,6 +391,22 @@ body.assignment-picker-open .canvaswrap{
   body.assignment-picker-open{background-attachment:scroll;background-position:center top}
   body.assignment-picker-open .canvaswrap{background-position:center top}
 }
+
+/* Game artwork frames the playable canvas; the canvas and its in-game visuals stay untouched. */
+body.game-active .canvaswrap{
+  background-color:#17102a !important;
+  background-image:
+    linear-gradient(90deg,rgba(18,10,30,.18),rgba(18,10,30,0) 18%,rgba(18,10,30,0) 82%,rgba(18,10,30,.18)),
+    url('/images/backgrounds/game-background.png') !important;
+  background-size:100% 100%, cover !important;
+  background-position:center, center !important;
+  background-repeat:no-repeat !important;
+}
+body.game-active canvas#game{
+  position:relative;
+  z-index:1;
+}
+
 </style></head>
 <body><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
