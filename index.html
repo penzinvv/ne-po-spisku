@@ -406,6 +406,12 @@ body.game-active canvas#game{
   position:relative;
   z-index:1;
 }
+@media(max-width:800px){
+  body.game-active canvas#game{
+    width:calc(100vw - 24px) !important;
+    max-width:calc(100vw - 24px) !important;
+  }
+}
 
 </style></head>
 <body><div class="landing home-dashboard" id="landingPage">
