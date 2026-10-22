@@ -680,7 +680,7 @@ function launch(task){
   if(name)rememberPlayerName(name);
   xp=0;window.__banquetLastPersistedRunXP=0;window.__banquetScoreSessionId='';window.__banquetAutoSavedKeys={};window.__banquetAutoSavePromises={};runActive=true;recordSubmitted=false;scoreSaved=false;activeTaskStartXP=0;activeTaskRelationRecorded=false;activeTaskColleagues=[task.character];activeTaskColleagues.forEach(touchColleague);
   $('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';
-  reset(true);if(task.id==='task-01')player.speed=600;$('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';
+  reset(true);if(task.id==='task-01')player.speed=300;$('intro').style.display='none';$('result').style.display='none';$('landingPage').style.display='none';
   const beginTask=()=>{
    if(task.id==='task-14'||task.id==='task-15'){startCustomAssignment(task);return}
    mode='play';setMusicScene('active');
