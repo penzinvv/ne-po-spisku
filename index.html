@@ -393,23 +393,23 @@ body.assignment-picker-open .canvaswrap{
 }
 
 /* Game artwork frames the playable canvas; the canvas and its in-game visuals stay untouched. */
+/* Keep the game image on the outer frame only; never paint over the playfield. */
 body.game-active .canvaswrap{
-  background-color:#17102a !important;
-  background-image:
-    linear-gradient(90deg,rgba(18,10,30,.18),rgba(18,10,30,0) 18%,rgba(18,10,30,0) 82%,rgba(18,10,30,.18)),
-    url('/images/backgrounds/game-background.png') !important;
-  background-size:100% 100%, cover !important;
-  background-position:center, center !important;
-  background-repeat:no-repeat !important;
+  background:#17102a url('/images/backgrounds/game-background.png') center / cover no-repeat !important;
 }
 body.game-active canvas#game{
   position:relative;
   z-index:1;
+  width:min(92vw, calc(88dvh * 1.53846)) !important;
+  max-width:92vw !important;
+  height:auto !important;
+  margin-inline:auto !important;
 }
 @media(max-width:800px){
   body.game-active canvas#game{
-    width:calc(100vw - 24px) !important;
-    max-width:calc(100vw - 24px) !important;
+    width:min(92vw, calc(88dvh * 1.53846)) !important;
+    max-width:92vw !important;
+    max-height:88dvh !important;
   }
 }
 
