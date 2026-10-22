@@ -935,7 +935,7 @@ document.addEventListener('click',function(event){
   const result=document.getElementById('result');if(result)result.style.display='none';
   document.body.classList.remove('game-active');
   window.__assignmentMode=false;
-  if(typeof window.__openAssignmentPicker==='function'){const picker=document.getElementById('taskPickerOverlay');if(picker)picker.style.display='flex';window.__openAssignmentPicker()}
+  if(typeof window.__openAssignmentPicker==='function'){const picker=document.getElementById('taskPicker');if(picker)picker.style.display='flex';window.__openAssignmentPicker()}
   const profileName=(()=>{try{return String(JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}').name||'').trim()}catch(e){return ''}})();
   const name=document.getElementById('playerName');
   const label=document.getElementById('savedPlayerName');
