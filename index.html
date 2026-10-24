@@ -1248,7 +1248,7 @@ document.addEventListener('click',function(event){
 <!-- VK account cloud save: only active for a verified VK Mini App launch. -->
 <script>
 (function(){
-  var launchParams=window.location.search.replace(/^\\?/,"");
+  var launchParams=window.location.search.replace(/^\?/,"");
   var parsed=new URLSearchParams(launchParams);
   var isVk=parsed.get("vk_app_id")==="54842965" && /^\\d+$/.test(parsed.get("vk_user_id")||"") && !!parsed.get("sign");
   if(!isVk)return;
