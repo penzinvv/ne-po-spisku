@@ -1,14 +1,14 @@
 const APP_ID = "54842965";
 const cors = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type","Access-Control-Allow-Methods":"GET, POST, OPTIONS","Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"};
 const json = (data,status=200)=>new Response(JSON.stringify(data),{status,headers:cors});
-const enc = v=>encodeURIComponent(v).replace(/%20/g,"+").replace(/[!'()~]/g,c=>"%"+c.charCodeAt(0).toString(16).toUpperCase()).replace(/\*/g,"%2A");
+const enc = v=>encodeURIComponent(v).replace(/%20/g,"+").replace(/[!'()]/g,c=>"%"+c.charCodeAt(0).toString(16).toUpperCase()).replace(/\*/g,"%2A");
 async function verify(raw){
   const secret=Netlify.env.get("VK_APP_SECRET");
   if(!secret) throw new Error("Missing VK_APP_SECRET");
   const p=new URLSearchParams(String(raw||"").replace(/^\?/,""));
   const sign=p.get("sign")||"", app=p.get("vk_app_id")||"", uid=p.get("vk_user_id")||"";
   if(app!==APP_ID||!/^\d{1,20}$/.test(uid)||!sign)return null;
-  const canonical=[...p.entries()].filter(([k])=>k.startsWith("vk_")).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>enc(k)+"="+enc(v)).join("&");
+  const canonical=[...p.entries()].filter(([k])=>k.startsWith("vk_")).sort(([a],[b])=>a<b?-1:a>b?1:0).map(([k,v])=>enc(k)+"="+enc(v)).join("&");
   const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
   const digest=new Uint8Array(await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(canonical)));
   let bin="";digest.forEach(b=>bin+=String.fromCharCode(b));
