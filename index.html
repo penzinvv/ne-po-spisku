@@ -1281,6 +1281,13 @@ document.addEventListener('click',function(event){
       if(!/^(banquet|nePoSpisku)/i.test(key)||typeof data[key]!=="string")return;
       try{localStorage.setItem(key,data[key]);}catch(e){}
     });
+    try{
+      var profile=JSON.parse(localStorage.getItem("banquetPlayerProfile")||"{}");
+      var label=document.getElementById("homePlayerName");
+      if(label&&profile.name)label.textContent=profile.name;
+      var rename=document.getElementById("homeChangeName");
+      if(rename)rename.hidden=(Number(profile.nameChanges)||0)>=1;
+    }catch(e){}
   }
   async function save(){
     if(!active||saving)return;
