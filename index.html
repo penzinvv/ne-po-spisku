@@ -413,12 +413,13 @@ body.game-active canvas#game{
   }
 }
 
+#homeFullscreenToggle{white-space:nowrap;cursor:pointer} .home-audio{display:flex;align-items:flex-start;justify-content:flex-end;gap:8px;flex-wrap:wrap} @media(max-width:600px){#homeFullscreenToggle{font-size:12px;padding:8px 10px}}
 </style></head>
 <body><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
 <header class="home-header">
   <div><div class="landing-brand">БАНКЕТНАЯ<br>СЛУЖБА</div><div class="landing-sub">АРКАДНАЯ СМЕНА · ОТЕЛЬ «ГРАНД» · ПИКСЕЛЬНОЕ ПРИКЛЮЧЕНИЕ</div></div>
-  <div class="home-audio"><div id="homeMusicMount"></div></div>
+  <div class="home-audio"><div id="homeMusicMount"></div><button id="homeFullscreenToggle" class="music-secondary" type="button" aria-label="Развернуть игру на весь экран" title="На весь экран">⛶ На весь экран</button></div>
 </header>
 <div class="home-grid">
   <section class="home-primary">
@@ -1323,4 +1324,34 @@ document.addEventListener('click',function(event){
 })();
 </script>
 
+<script>
+(function(){
+  var button=document.getElementById("homeFullscreenToggle");
+  if(!button)return;
+  function sync(){
+    var active=!!document.fullscreenElement;
+    button.textContent=active?"⛶ Выйти из полного экрана":"⛶ На весь экран";
+    button.title=active?"Выйти из полного экрана":"Развернуть игру на весь экран";
+    button.setAttribute("aria-label",button.title);
+  }
+  button.addEventListener("click",async function(){
+    try{
+      if(document.fullscreenElement){
+        await document.exitFullscreen();
+      }else{
+        var target=document.documentElement;
+        if(target.requestFullscreen)await target.requestFullscreen();
+        else if(target.webkitRequestFullscreen)target.webkitRequestFullscreen();
+        else {button.textContent="Полный экран не поддерживается";return;}
+      }
+    }catch(error){
+      button.textContent="Полный экран недоступен";
+      button.title="Возможно, платформа не разрешает полный экран во встроенном окне";
+      setTimeout(sync,2200);
+    }
+  });
+  document.addEventListener("fullscreenchange",sync);
+  sync();
+})();
+</script>
 </body></html>
