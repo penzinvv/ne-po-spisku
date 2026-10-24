@@ -413,6 +413,13 @@ body.game-active canvas#game{
   }
 }
 
+/* VK fullscreen: keep the dashboard and manager chat scrollable when the whole document is fullscreen. */
+html:fullscreen, html:-webkit-full-screen{overflow-y:auto!important;height:auto!important;min-height:100%!important}
+body:fullscreen, body:-webkit-full-screen{overflow-y:auto!important;height:auto!important;min-height:100dvh!important;overscroll-behavior-y:contain}
+.home-dashboard:fullscreen, .home-dashboard:-webkit-full-screen{height:auto!important;min-height:100dvh!important;overflow:visible!important}
+.home-office, .home-office #homeChatMount{min-height:0}
+#homeChatMount #playerChat{flex-shrink:0}
+#homeChatMount #chatMessages{min-height:100px;overflow-y:auto!important;overscroll-behavior:contain}
 #homeFullscreenToggle{white-space:nowrap;cursor:pointer} .home-audio{display:flex;align-items:flex-start;justify-content:flex-end;gap:8px;flex-wrap:wrap} @media(max-width:600px){#homeFullscreenToggle{font-size:12px;padding:8px 10px}}
 </style></head>
 <body><div class="landing home-dashboard" id="landingPage">
