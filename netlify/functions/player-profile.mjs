@@ -29,14 +29,28 @@ export default async request=>{
   const headers={apikey:service,Authorization:"Bearer "+service,"Content-Type":"application/json",Accept:"application/json"};
   try{
     if(request.method==="GET"){
-      const r=await fetch(endpoint+"?vk_user_id=eq."+encodeURIComponent(uid)+"&select=vk_user_id,profile_name,save_data,updated_at&limit=1",{headers});
-      if(!r.ok){console.error("Profile read:",r.status,(await r.text()).slice(0,300));return json({error:"Could not load profile"},502)}
-      const rows=await r.json();return json({ok:true,exists:rows.length>0,profile:rows[0]||null});
+      const rpc=await fetch(db.replace(/\\/+$/,"")+"/rest/v1/rpc/ensure_player_profile",{
+        method:"POST",headers,body:JSON.stringify({p_vk_user_id:uid})
+      });
+      if(!rpc.ok){console.error("Ensure profile:",rpc.status,(await rpc.text()).slice(0,300));return json({error:"Could not create or load profile"},502)}
+      const rows=await rpc.json();
+      const profile=rows&&rows[0];
+      if(!profile)return json({error:"Profile was not returned"},502);
+      const data=profile.save_data&&typeof profile.save_data==="object"&&!Array.isArray(profile.save_data)?{...profile.save_data}:{};
+      let localProfile={};
+      try{localProfile=JSON.parse(data.banquetPlayerProfile||"{}")}catch(e){}
+      if(!localProfile.name)localProfile.name=profile.profile_name||("НОВЫЙ СОТРУДНИК "+profile.player_number);
+      if(typeof localProfile.nameChanges!=="number")localProfile.nameChanges=0;
+      data.banquetPlayerProfile=JSON.stringify(localProfile);
+      data.banquetPlayerName=String(localProfile.name);
+      data.nePoSpiskuPlayerName=String(localProfile.name);
+      data.banquetPlayerNumber=String(profile.player_number);
+      return json({ok:true,exists:true,profile:{vk_user_id:profile.vk_user_id,player_number:profile.player_number,profile_name:profile.profile_name,save_data:data,updated_at:profile.updated_at}});
     }
     const data=body.save_data;
     if(!data||typeof data!=="object"||Array.isArray(data)||JSON.stringify(data).length>180000)return json({error:"Invalid or too large profile data"},400);
     const n=data.banquetPlayerProfile&&data.banquetPlayerProfile.name;
-    const name=(typeof n==="string"?n:"НОВЫЙ СОТРУДНИК").trim().slice(0,18)||"НОВЫЙ СОТРУДНИК";
+    const name=(typeof n==="string"?n:"НОВЫЙ СОТРУДНИК").trim().slice(0,60)||"НОВЫЙ СОТРУДНИК";
     const r=await fetch(endpoint+"?on_conflict=vk_user_id",{method:"POST",headers:{...headers,Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify({vk_user_id:uid,profile_name:name,save_data:data,updated_at:new Date().toISOString()})});
     if(!r.ok){console.error("Profile save:",r.status,(await r.text()).slice(0,300));return json({error:"Could not save profile"},502)}
     return json({ok:true,saved:true});
