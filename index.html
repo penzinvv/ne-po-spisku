@@ -1250,7 +1250,7 @@ document.addEventListener('click',function(event){
 (function(){
   var launchParams=window.location.search.replace(/^\?/,"");
   var parsed=new URLSearchParams(launchParams);
-  var isVk=parsed.get("vk_app_id")==="54842965" && /^\\d+$/.test(parsed.get("vk_user_id")||"") && !!parsed.get("sign");
+  var isVk=parsed.get("vk_app_id")==="54842965" && /^\d+$/.test(parsed.get("vk_user_id")||"") && !!parsed.get("sign");
   if(!isVk)return;
 
   var status=document.createElement("p");
