@@ -1245,4 +1245,82 @@ document.addEventListener('click',function(event){
 })();
 </script>
 
+<!-- VK account cloud save: only active for a verified VK Mini App launch. -->
+<script>
+(function(){
+  var launchParams=window.location.search.replace(/^\\?/,"");
+  var parsed=new URLSearchParams(launchParams);
+  var isVk=parsed.get("vk_app_id")==="54842965" && /^\\d+$/.test(parsed.get("vk_user_id")||"") && !!parsed.get("sign");
+  if(!isVk)return;
+
+  var status=document.createElement("p");
+  status.id="vkCloudStatus";
+  status.textContent="Подключаем сохранение профиля VK…";
+  status.style.cssText="font-size:12px;color:#d5cbe8;margin:8px 0;grid-column:1/-1";
+  var profileCard=document.querySelector(".home-profile");
+  if(profileCard)profileCard.appendChild(status);
+  function setStatus(text,ok){if(status){status.textContent=text;status.style.color=ok?"#80f0a8":"#ffd66b";}}
+
+  var api="https://banquetgang.netlify.app/.netlify/functions/player-profile";
+  var active=false, timer=0, saving=false;
+  function getData(){
+    var out={};
+    try{
+      for(var i=0;i<localStorage.length&&Object.keys(out).length<100;i++){
+        var key=localStorage.key(i);
+        if(!key||!(/^(banquet|nePoSpisku)/i).test(key))continue;
+        var value=localStorage.getItem(key);
+        if(value&&value.length<60000)out[key]=value;
+      }
+    }catch(e){}
+    return out;
+  }
+  function applyData(data){
+    if(!data||typeof data!=="object")return;
+    Object.keys(data).forEach(function(key){
+      if(!/^(banquet|nePoSpisku)/i.test(key)||typeof data[key]!=="string")return;
+      try{localStorage.setItem(key,data[key]);}catch(e){}
+    });
+  }
+  async function save(){
+    if(!active||saving)return;
+    saving=true;
+    try{
+      var r=await fetch(api,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({launch_params:launchParams,save_data:getData()}),cache:"no-store"});
+      var d=await r.json();
+      if(!r.ok||!d.ok)throw new Error(d.error||"save failed");
+      setStatus("Прогресс сохраняется в аккаунт VK",true);
+    }catch(e){setStatus("Не удалось сохранить в VK. Локальное сохранение работает.",false);console.warn("VK cloud save:",e.message);}
+    finally{saving=false;}
+  }
+  function schedule(){if(!active)return;clearTimeout(timer);timer=setTimeout(save,1200);}
+  var originalSetItem=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(key,value){
+    originalSetItem.call(this,key,value);
+    if(this===localStorage&&/^(banquet|nePoSpisku)/i.test(String(key)))schedule();
+  };
+  window.addEventListener("beforeunload",function(){if(active)save();});
+
+  (async function(){
+    try{
+      var url=api+"?launch_params="+encodeURIComponent(launchParams);
+      var response=await fetch(url,{cache:"no-store"});
+      var result=await response.json();
+      if(!response.ok||!result.ok)throw new Error(result.error||"load failed");
+      if(result.exists&&result.profile&&result.profile.save_data){
+        applyData(result.profile.save_data);
+        setStatus("Профиль VK загружен. Прогресс сохраняется автоматически.",true);
+      }else{
+        setStatus("Создаём облачное сохранение VK…",true);
+      }
+      active=true;
+      await save();
+    }catch(e){
+      setStatus("VK-профиль пока недоступен. Прогресс остаётся в этом браузере.",false);
+      console.warn("VK cloud profile load:",e.message);
+    }
+  })();
+})();
+</script>
+
 </body></html>
