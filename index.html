@@ -414,8 +414,11 @@ body.game-active canvas#game{
 }
 
 /* VK fullscreen: keep the dashboard and manager chat scrollable when the whole document is fullscreen. */
-html:fullscreen, html:-webkit-full-screen{overflow-y:auto!important;height:auto!important;min-height:100%!important}
-body:fullscreen, body:-webkit-full-screen{overflow-y:auto!important;height:auto!important;min-height:100dvh!important;overscroll-behavior-y:contain}
+html:fullscreen, html:-webkit-full-screen{overflow-y:auto!important;height:100%!important;min-height:100%!important;overscroll-behavior-y:contain}
+body:fullscreen, body:-webkit-full-screen{overflow-y:visible!important;height:auto!important;min-height:100dvh!important;overscroll-behavior-y:contain}
+body.assignment-picker-open{min-height:100dvh;overflow-y:auto!important}
+body.assignment-picker-open .canvaswrap{overflow:visible!important}
+body.assignment-picker-open #taskPicker{max-height:100dvh;overscroll-behavior-y:contain}
 .home-dashboard:fullscreen, .home-dashboard:-webkit-full-screen{height:auto!important;min-height:100dvh!important;overflow:visible!important}
 .home-office, .home-office #homeChatMount{min-height:0}
 #homeChatMount #playerChat{flex-shrink:0}
@@ -828,6 +831,17 @@ updateLandingScores();
  picker.id='taskPicker';picker.className='assignment-board';picker.style.display='none';picker.style.zIndex='1100';picker.style.cssText="position:absolute;inset:0;z-index:1100;overflow:auto;background:linear-gradient(rgba(18,10,29,.22),rgba(18,10,29,.34)),url('/images/backgrounds/task-board.png') center / cover no-repeat,#17102a;padding:12px;display:none;align-items:stretch;justify-content:center;box-sizing:border-box;";
  picker.innerHTML='<div class="assignment-board-inner" style="width:100%;max-width:760px;margin:auto;background:rgba(27,20,43,.20);border:3px solid #a68bbd;padding:12px;box-shadow:6px 6px 0 #0b0817;backdrop-filter:blur(0px);text-shadow:0 1px 3px #10091c"><h2 style="margin:0 0 5px;color:#ffe66d;text-align:center">Выбор задания</h2><p style="margin:0 0 8px;text-align:center">Выбери задание из списка.</p><div id="taskPickerButtons" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px"></div></div>';
  document.querySelector('.canvaswrap').appendChild(picker);
+/* В полноэкранном режиме колесо мыши сначала прокручивает список заданий. Когда список дошёл до конца, продолжаем прокручивать саму страницу к офисному чату и рейтингу. */
+picker.addEventListener('wheel',function(event){
+ if(event.deltaY<=0)return;
+ const atBottom=picker.scrollTop+picker.clientHeight>=picker.scrollHeight-2;
+ if(atBottom){
+  const root=document.fullscreenElement||document.documentElement;
+  const before=window.scrollY;
+  window.scrollBy({top:event.deltaY,left:0,behavior:'auto'});
+  if(window.scrollY===before&&root&&root.scrollTop!==undefined)root.scrollTop+=event.deltaY;
+ }
+},{passive:true});
 
  function readCompletedAssignments(){let saved=[];try{saved=JSON.parse(localStorage.getItem('banquetCompletedAssignments')||'[]')}catch(e){}if(!Array.isArray(saved))saved=[];const migrated=assignments.map(task=>saved.includes(task.id)||saved.includes(task.title));const prefix=[];for(let i=0;i<migrated.length&&migrated[i];i++)prefix.push(assignments[i].id);return prefix}
  function nextAssignmentIndex(completedIds){let i=0;while(i<assignments.length&&completedIds.includes(assignments[i].id))i++;return i}
@@ -878,7 +892,7 @@ function launch(task){
    if(n===2){if(i===0){level2Step=1;startShift()}else if(i===1){beginRelationTask('Флюровна');beginLevel2Fold()}else{beginRelationTask('Вова');beginLevel2Memory()}return}
    if(n===3){if(i===0)startLevel3Puzzle();else if(i===1)startLevel3Cloakroom();else startLevel3Wine();return}
    if(n===4){startBonusGame();return}
-   if(n===5){cafeLevelState={startXP:xp,round:0,selected:[],sympathy:0,mazeStart:0,mazeWindow:0,mazeDone:false,mazeTimer:null};if(i===0)startCafeLevel();else if(i===1)cafeVovaQuestion();else cafeMazeStart();return}
+   if(n===5){cafeLevelState={startXP:xp,round:0,selected:[],sympathy:0,mazeStart:0,mazeWindow:0,mazeDone:false,mazeTimer:null};if(i===0)startCafeLevel();else if(i===1)cafeVovaQuestion();else{beginRelationTask('Александр');cafeMazeStart()}return}
   };
   const lines={
    'Отнеси посуду в зал':'Начнём твой день с самого интересного. Надо натёртые бокалы разнести в залы. Завтра у нас мероприятие, поэтому постарайся не врезаться в кого-нибудь.',
