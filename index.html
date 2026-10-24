@@ -1218,4 +1218,31 @@ document.addEventListener('click',function(event){
  apply();
 })();
 </script>
+
+<!-- VK iframe initialization: keep the game usable outside VK too. -->
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  window.__vkLaunchParams = {
+    appId: params.get('vk_app_id') || '',
+    userId: params.get('vk_user_id') || '',
+    platform: params.get('vk_platform') || '',
+    ref: params.get('vk_ref') || ''
+  };
+  function initVkBridge() {
+    try {
+      if (window.vkBridge && typeof window.vkBridge.send === 'function') {
+        window.vkBridge.send('VKWebAppInit').catch(function () {});
+      }
+    } catch (e) {}
+  }
+  var bridge = document.createElement('script');
+  bridge.src = 'https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js';
+  bridge.async = true;
+  bridge.onload = initVkBridge;
+  bridge.onerror = function () {};
+  document.head.appendChild(bridge);
+})();
+</script>
+
 </body></html>
