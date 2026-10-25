@@ -435,6 +435,12 @@ body.assignment-picker-open #pickerQuickControls{display:flex}
 @media(max-width:600px){#pickerQuickControls{top:8px;right:8px;gap:5px;padding:5px}#pickerQuickControls button{font-size:11px;padding:7px 8px}}
 
 /* Hotel shop polish */
+
+.hotel-shop-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.hotel-shop-tab{min-height:42px;border:1px solid #79539b;border-radius:10px;background:#241a35;color:#d9c8ef;font-weight:900;letter-spacing:.04em;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.hotel-shop-tab:hover{border-color:#ffe66d;transform:translateY(-1px)}
+.hotel-shop-tab.active{color:#281638;border-color:#fff0a3;background:linear-gradient(135deg,#fff19a,#ffd34d);box-shadow:0 2px 0 #9c6123}
+
 .hotel-shop-button{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;padding:8px 14px!important;overflow:hidden;border:1px solid #ffe78a!important;border-radius:11px!important;background:linear-gradient(135deg,#fff19a 0%,#ffd34d 48%,#e9a92e 100%)!important;color:#241331!important;font-weight:1000!important;letter-spacing:.055em;text-shadow:0 1px #fff9;box-shadow:0 3px 0 #9c6123,0 0 18px #ffda5933,inset 0 1px #fff9!important;transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
 .hotel-shop-button::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(110deg,transparent 15%,#fff8 48%,transparent 72%);transform:translateX(-120%);transition:transform .45s ease}
 .hotel-shop-button:hover{filter:brightness(1.06);transform:translateY(-2px);box-shadow:0 5px 0 #9c6123,0 0 24px #ffda5966!important}
@@ -1514,15 +1520,15 @@ document.addEventListener('click',function(event){
 
 <div class="avatar-modal" id="prefixModal" role="dialog" aria-modal="true" aria-labelledby="prefixTitle">
  <div class="avatar-dialog">
-  <div class="avatar-dialog-head"><div style="flex:1"><h2 id="prefixTitle">МАГАЗИН ПРЕФИКСОВ</h2></div><button class="secondary avatar-close" id="prefixClose" type="button" aria-label="Закрыть">✕</button></div>
-  <p style="color:#d5cbe8;margin:8px 0 12px">Каждый префикс стоит 15 000 очков. Купленные префиксы остаются у тебя навсегда. Нажми на активный ещё раз, чтобы отключить его.</p>
-  <div class="avatar-grid" id="prefixGrid"></div>
+  <div class="avatar-dialog-head"><div style="flex:1"><h2 id="prefixTitle">МАГАЗИН ОТЕЛЯ</h2></div><button class="secondary avatar-close" id="prefixClose" type="button" aria-label="Закрыть">✕</button></div>
+  <p style="color:#d5cbe8;margin:8px 0 12px">Выбирай аватарки и префиксы, покупай их за очки и собирай свою коллекцию. Купленные предметы остаются у тебя навсегда.</p>
+  <div class="hotel-shop-tabs" role="group" aria-label="Разделы магазина"><button type="button" class="hotel-shop-tab active" id="hotelShopPrefixes">🏷️ ПРЕФИКСЫ</button><button type="button" class="hotel-shop-tab" id="hotelShopAvatars">🖼️ АВАТАРКИ</button></div><div class="avatar-grid" id="prefixGrid"></div>
  </div>
 </div>
 <script>
 (function(){
  const items=['ЛЕГЕНДА','МАРМЕЛАДНЫЙ','БУТЫЛКА','ДОСТАТОЧНО ХОРОШ','ВЕЧНЫЙ СТАЖЁР','КЛОУН','МОНОПОЛИСТ','БОРОДАТЫЙ'];
- const modal=document.getElementById('prefixModal'),grid=document.getElementById('prefixGrid'),open=document.getElementById('homePrefixShop');
+ const modal=document.getElementById('prefixModal'),grid=document.getElementById('prefixGrid'),open=document.getElementById('homePrefixShop'),avatarTab=document.getElementById('hotelShopAvatars'),prefixTab=document.getElementById('hotelShopPrefixes'),avatarModal=document.getElementById('avatarModal');
  if(!modal||!grid||!open)return;
  const balanceKey='banquetShopBalance',ownedKey='banquetShopOwnedPrefixes',activeKey='banquetActivePrefix',price=15000;
  const balance=()=>Math.max(0,Math.floor(Number(localStorage.getItem(balanceKey))||0));
@@ -1559,7 +1565,7 @@ document.addEventListener('click',function(event){
   if(!badge){badge=document.createElement('span');badge.id='homeActivePrefix';badge.style.cssText='display:inline-block;margin-left:8px;padding:3px 7px;border-radius:7px;border:1px solid #b98bff;background:#2b2040;color:#ffe66d;font-size:11px;vertical-align:middle';profile.insertAdjacentElement('afterend',badge)}
   const value=active();badge.textContent=value||'';badge.hidden=!value;profile.setAttribute('aria-label',value?'Игрок с префиксом '+value:profile.textContent)
  }
- open.addEventListener('click',show);document.getElementById('prefixClose').addEventListener('click',hide);
+ open.addEventListener('click',show);if(avatarTab)avatarTab.addEventListener('click',()=>{hide();if(avatarModal)avatarModal.style.display='flex'});if(prefixTab)prefixTab.addEventListener('click',()=>{if(avatarModal)avatarModal.style.display='none';show()});document.getElementById('prefixClose').addEventListener('click',hide);
  modal.addEventListener('click',e=>{if(e.target===modal)hide()});document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});
  window.__banquetPrefixRefresh=()=>{draw();apply()};apply();
 })();
