@@ -7,7 +7,7 @@ export default async request=>{
  const db=Netlify.env.get('SUPABASE_URL'),key=Netlify.env.get('SUPABASE_SECRET_KEY');
  if(!db||!key)return json({error:'Server configuration is missing'},500);
  const headers={apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json',Accept:'application/json'};
- const endpoint=db.replace(/\\/+$/,'')+'/rest/v1/game_player_cosmetics';
+ const endpoint=db.replace(/\/+$/,'')+'/rest/v1/game_player_cosmetics';
  try{
   let body={};
   if(request.method==='POST'){try{body=await request.json()}catch{return json({error:'Invalid JSON'},400)}}
