@@ -1649,4 +1649,51 @@ document.addEventListener('click',function(event){
  refresh();load();
 })();
 </script>
+
+<style id="banquet-relax-match3-style">
+#banquetRelaxBtn{margin:10px auto 0;display:flex;align-items:center;justify-content:center;gap:9px;width:min(100%,440px);min-height:58px;font-size:1.05rem}
+#banquetRelaxBtn small{display:block;font-size:.75rem;font-weight:500;opacity:.85}
+#banquetRelaxOverlay{position:fixed;inset:0;z-index:100000;background:#080816ed;display:none;align-items:center;justify-content:center;padding:12px;overflow:auto}
+#banquetRelaxOverlay.open{display:flex}
+#banquetRelaxModal{width:min(100%,560px);max-height:96vh;overflow:auto;background:linear-gradient(145deg,#27284b,#141529);border:1px solid #7771b6;border-radius:20px;padding:18px;box-shadow:0 20px 80px #000b;color:#fff8e7}
+#banquetRelaxModal h2{margin:0 0 6px;text-align:center;color:#ffe66d}
+#banquetRelaxModal .relax-sub{text-align:center;color:#c8c8e4;font-size:.9rem;margin:0 0 12px}
+#banquetRelaxStats{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:10px 0;font-weight:800}
+#banquetRelaxBoard{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;touch-action:manipulation}
+.banquet-relax-cell{aspect-ratio:1;padding:0;min-width:0;border:1px solid #64648f;border-radius:9px;background:linear-gradient(145deg,#38395f,#252642);box-shadow:0 2px 0 #121326;font-size:clamp(1.05rem,5.4vw,1.8rem);display:flex;align-items:center;justify-content:center;line-height:1}
+.banquet-relax-cell.selected{outline:3px solid #ffe66d;outline-offset:-3px;filter:brightness(1.3)}
+#banquetRelaxMessage{text-align:center;min-height:24px;color:#c8f9e9;margin:10px 0}
+#banquetRelaxActions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+#banquetRelaxActions button{min-height:42px}
+#banquetRelaxRules{font-size:.82rem;color:#c8c8e4;line-height:1.45;margin:12px 0}
+#banquetRelaxFinish{display:none;text-align:center;padding:20px 10px}
+#banquetRelaxFinish h2{font-size:clamp(1.8rem,7vw,2.7rem);color:#ff6b9a}
+@media(max-width:420px){#banquetRelaxModal{padding:12px}#banquetRelaxBoard{gap:3px}.banquet-relax-cell{border-radius:6px}}
+</style>
+<script id="banquet-relax-match3">
+(function(){
+'use strict';
+const icons=['🍋','🍓','🍇','🍒','🍊','🍐'];
+let board=[],selected=-1,points=0,locked=false,finished=false;
+const $=id=>document.getElementById(id);
+function lifetime(){try{return Math.max(0,Number(localStorage.getItem('banquetLifetimeXP'))||0)}catch(e){return 0}}
+function setLifetime(v){try{localStorage.setItem('banquetLifetimeXP',String(v))}catch(e){}const home=$('homeXP');if(home)home.textContent=String(v);const hud=$('xp');if(hud)hud.textContent=String(v)}
+function addPoints(amount){const earned=Math.min(amount,1000-points);if(earned<=0)return;points+=earned;setLifetime(lifetime()+earned);$('banquetRelaxScore').textContent=points;$('banquetRelaxTotal').textContent=lifetime();if(points>=1000)finish()}
+function rand(){return Math.floor(Math.random()*icons.length)}
+function createBoard(){board=Array.from({length:64},()=>rand());for(let i=0;i<64;i++){while((i%8>=2&&board[i]===board[i-1]&&board[i]===board[i-2])||(i>=16&&board[i]===board[i-8]&&board[i]===board[i-16]))board[i]=rand()}selected=-1;render()}
+function render(){const root=$('banquetRelaxBoard');if(!root)return;root.replaceChildren();board.forEach((v,i)=>{const b=document.createElement('button');b.type='button';b.className='banquet-relax-cell'+(selected===i?' selected':'');b.textContent=icons[v];b.setAttribute('aria-label','Фишка '+(i+1));b.disabled=locked||finished;b.addEventListener('click',()=>pick(i));root.appendChild(b)});$('banquetRelaxScore').textContent=points;$('banquetRelaxTotal').textContent=lifetime()}
+function matches(){const found=new Set();for(let r=0;r<8;r++)for(let c=0;c<8;c++){const i=r*8+c,v=board[i];if(c<6&&v===board[i+1]&&v===board[i+2]){let k=c;while(k<8&&board[r*8+k]===v)found.add(r*8+k++);}if(r<6&&v===board[i+8]&&v===board[i+16]){let k=r;while(k<8&&board[k*8+c]===v)found.add(k++*8+c)}}return found}
+function adjacent(a,b){return Math.abs(Math.floor(a/8)-Math.floor(b/8))+Math.abs(a%8-b%8)===1}
+function pick(i){if(locked||finished)return;if(selected<0){selected=i;render();return}if(selected===i){selected=-1;render();return}if(!adjacent(selected,i)){selected=i;render();return}const a=selected,b=i;selected=-1;[board[a],board[b]]=[board[b],board[a]];const found=matches();if(!found.size){[board[a],board[b]]=[board[b],board[a]];$('banquetRelaxMessage').textContent='Нужно собрать минимум три одинаковых фишки.';render();return}locked=true;render();clearMatches()}
+function clearMatches(){if(finished)return;const found=matches();if(!found.size){locked=false;render();return}found.forEach(i=>board[i]=-1);addPoints(found.size*10);if(finished)return;render();setTimeout(()=>{for(let c=0;c<8;c++){let stack=[];for(let r=7;r>=0;r--){const v=board[r*8+c];if(v>=0)stack.push(v)}while(stack.length<8)stack.push(rand());for(let r=7;r>=0;r--)board[r*8+c]=stack[7-r]}render();setTimeout(clearMatches,90)},130)}
+function finish(){finished=true;locked=true;$('banquetRelaxBoard').style.display='none';$('banquetRelaxFinish').style.display='block';$('banquetRelaxMessage').textContent='Цель выполнена. Очки добавлены в общий счёт.';const all=document.querySelectorAll('#banquetRelaxBoard button');all.forEach(b=>b.disabled=true)}
+function open(){points=0;selected=-1;locked=false;finished=false;$('banquetRelaxOverlay').classList.add('open');$('banquetRelaxOverlay').setAttribute('aria-hidden','false');$('banquetRelaxBoard').style.display='grid';$('banquetRelaxFinish').style.display='none';$('banquetRelaxMessage').textContent='Собирай одинаковые фишки!';createBoard()}
+function close(){ $('banquetRelaxOverlay').classList.remove('open');$('banquetRelaxOverlay').setAttribute('aria-hidden','true')}
+function home(){close();const landing=$('landingPage');if(landing){landing.style.display='';landing.scrollIntoView({behavior:'smooth',block:'start'})}}
+function install(){const landing=$('landingPage');if(!landing||$('banquetRelaxBtn'))return;const btn=document.createElement('button');btn.id='banquetRelaxBtn';btn.type='button';btn.innerHTML='🧩 РАССЛАБИТЬСЯ <small>Три в ряд · набери 1000 очков</small>';btn.addEventListener('click',open);const start=$('landingStart');if(start&&start.parentNode)start.insertAdjacentElement('afterend',btn);else landing.appendChild(btn);
+const overlay=document.createElement('div');overlay.id='banquetRelaxOverlay';overlay.setAttribute('aria-hidden','true');overlay.innerHTML='<section id="banquetRelaxModal" role="dialog" aria-modal="true" aria-labelledby="banquetRelaxTitle"><h2 id="banquetRelaxTitle">🧩 ТРИ В РЯД</h2><p class="relax-sub">Небольшой отдых сотрудника отеля «Гранд»</p><div id="banquetRelaxStats"><span>Очки игры: <b id="banquetRelaxScore">0</b> / 1000</span><span>Общий счёт: <b id="banquetRelaxTotal">0</b> ⭐</span></div><div id="banquetRelaxBoard"></div><p id="banquetRelaxMessage" aria-live="polite">Собирай одинаковые фишки!</p><div id="banquetRelaxFinish"><h2>ПОРА РАБОТАТЬ</h2><p>Ты набрал 1000 очков. Награда уже добавлена в общий счёт!</p><button id="banquetRelaxHome" type="button">Вернуться на стартовую страницу</button></div><p id="banquetRelaxRules"><b>Правила:</b> нажми на фишку, затем на соседнюю, чтобы поменять их местами. Собирай 3 и более одинаковых фрукта по горизонтали или вертикали. За каждую убранную фишку начисляется 10 очков в общий счёт. Набери 1000 очков — и отдых окончен!</p><div id="banquetRelaxActions"><button id="banquetRelaxClose" class="secondary" type="button">Выйти на стартовую</button><button id="banquetRelaxRestart" class="secondary" type="button">Начать заново</button></div></section>';document.body.appendChild(overlay);$('banquetRelaxClose').addEventListener('click',home);$('banquetRelaxHome').addEventListener('click',home);$('banquetRelaxRestart').addEventListener('click',open);overlay.addEventListener('click',e=>{if(e.target===overlay)home()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('open'))home()})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+
 </body></html>
