@@ -1217,7 +1217,7 @@ window.renderScores=renderScores;
       if(error)throw error;
       textInput.value='';status.textContent='● Сообщение отправлено';loadHistory(true);textInput.focus();
     }catch(error){
-      status.textContent='Не удалось отправить. Проверь подключение и попробуй ещё раз.';
+      status.textContent='Не удалось отправить: '+String(error&&error.message?error.message:'ошибка сети').slice(0,180);
       console.error('Chat send error',error);lastSentAt=0;
     }finally{
       sendButton.disabled=false;sendButton.textContent='Отправить';
