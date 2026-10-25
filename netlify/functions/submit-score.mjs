@@ -93,6 +93,31 @@ export default async (request, context) => {
       return json({ error: "Invalid player name, player id or score" }, 400);
     }
 
+    if (!playerId) {
+      return json({ error: "Для регистрации имени нужен идентификатор игрока. Перезагрузи игру и попробуй снова." }, 400);
+    }
+
+    const claimResponse = await fetch(`${supabaseUrl.replace(/\\/+$/, "")}/rest/v1/rpc/claim_player_name`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ p_player_id: playerId, p_display_name: playerName })
+    });
+    if (!claimResponse.ok) {
+      const details = await claimResponse.text();
+      console.error("Name claim RPC error:", claimResponse.status, details);
+      return json({ error: "Не удалось проверить уникальность имени. Попробуй ещё раз." }, 502);
+    }
+    const claimRows = await claimResponse.json();
+    const claim = Array.isArray(claimRows) ? claimRows[0] : claimRows;
+    if (!claim || !claim.ok) {
+      return json({
+        error: claim?.reason === "taken"
+          ? "ИГРОК С ТАКИМ ИМЕНЕМ УЖЕ ЕСТЬ, ПРИДУМАЙ ДРУГОЕ"
+          : "Не удалось сохранить имя. Проверь его и попробуй снова.",
+        code: claim?.reason === "taken" ? "NAME_TAKEN" : "INVALID_NAME"
+      }, 409);
+    }
+
     const saveUrl = playerId ? `${endpoint}?on_conflict=player_id` : endpoint;
     const response = await fetch(saveUrl, {
       method: "POST",
