@@ -1310,7 +1310,7 @@ document.addEventListener('click',function(event){
  <div class="avatar-dialog">
   <div class="avatar-dialog-head"><div style="flex:1"><h2 id="avatarTitle">ВЫБЕРИ СВОЮ АВАТАРКУ</h2></div><button class="secondary avatar-close" id="avatarClose" type="button" aria-label="Закрыть">✕</button></div>
   <p>Выбери портрет официанта. Аватар сохранится в профиле на этом устройстве.</p>
-  <div class="avatar-grid" id="avatarGrid"></div>
+  <div class="hotel-shop-tabs" role="group" aria-label="Разделы магазина"><button type="button" class="hotel-shop-tab" id="avatarShopPrefixes">🏷️ ПРЕФИКСЫ</button><button type="button" class="hotel-shop-tab active" id="avatarShopAvatars">🖼️ АВАТАРКИ</button></div><div class="avatar-grid" id="avatarGrid"></div>
   <div class="avatar-save-row"><button id="avatarSave" type="button">💾 СОХРАНИТЬ</button></div>
  </div>
 </div>
@@ -1358,13 +1358,13 @@ document.addEventListener('click',function(event){
  function show(){try{const p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}');chosen=Math.max(0,Math.min(avatars.length-1,Number(p.avatar)||0))}catch(e){}draw();modal.style.display='flex'}
  function hide(){modal.style.display='none'}
  function apply(){const av=avatars[chosen]||avatars[0];icon.replaceChildren();const img=document.createElement('img');img.src=av.src;img.alt=av.label;img.onerror=()=>{icon.textContent=av.face};icon.appendChild(img);icon.setAttribute('aria-label','Выбран аватар: '+av.label)}
- icon.addEventListener('click',show);document.getElementById('avatarClose').addEventListener('click',hide);
+ icon.addEventListener('click',show);const prefixTabFromAvatar=document.getElementById('avatarShopPrefixes');if(prefixTabFromAvatar)prefixTabFromAvatar.addEventListener('click',()=>{hide();const pm=document.getElementById('prefixModal');if(pm){pm.style.display='flex';if(typeof window.__banquetPrefixRefresh==='function')window.__banquetPrefixRefresh()}});document.getElementById('avatarClose').addEventListener('click',hide);
  modal.addEventListener('click',e=>{if(e.target===modal)hide()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});
  document.getElementById('avatarSave').addEventListener('click',()=>{
    try{const owned=getOwned();if(!owned.includes(chosen)){alert('Сначала купи эту аватарку.');return}const p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}');p.avatar=chosen;localStorage.setItem('banquetPlayerProfile',JSON.stringify(p));apply();hide()}catch(e){alert('Не удалось сохранить аватар. Проверь настройки браузера.')}
  });
- window.__banquetShopRefresh=draw;
+ window.__banquetShopRefresh=draw;window.__banquetAvatarShopOpen=show;
  apply();
 })();
 </script>
@@ -1565,7 +1565,7 @@ document.addEventListener('click',function(event){
   if(!badge){badge=document.createElement('span');badge.id='homeActivePrefix';badge.style.cssText='display:inline-block;margin-left:8px;padding:3px 7px;border-radius:7px;border:1px solid #b98bff;background:#2b2040;color:#ffe66d;font-size:11px;vertical-align:middle';profile.insertAdjacentElement('afterend',badge)}
   const value=active();badge.textContent=value||'';badge.hidden=!value;profile.setAttribute('aria-label',value?'Игрок с префиксом '+value:profile.textContent)
  }
- open.addEventListener('click',show);if(avatarTab)avatarTab.addEventListener('click',()=>{hide();if(avatarModal)avatarModal.style.display='flex'});if(prefixTab)prefixTab.addEventListener('click',()=>{if(avatarModal)avatarModal.style.display='none';show()});document.getElementById('prefixClose').addEventListener('click',hide);
+ open.addEventListener('click',show);if(avatarTab)avatarTab.addEventListener('click',()=>{hide();if(typeof window.__banquetAvatarShopOpen==='function')window.__banquetAvatarShopOpen();else if(avatarModal)avatarModal.style.display='flex'});if(prefixTab)prefixTab.addEventListener('click',()=>{if(avatarModal)avatarModal.style.display='none';show()});document.getElementById('prefixClose').addEventListener('click',hide);
  modal.addEventListener('click',e=>{if(e.target===modal)hide()});document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});
  window.__banquetPrefixRefresh=()=>{draw();apply()};apply();
 })();
