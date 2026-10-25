@@ -1169,6 +1169,7 @@ window.renderScores=renderScores;
     lastSentAt=now;sendButton.disabled=true;sendButton.textContent='Отправляем…';
     try{localStorage.setItem('banquetChatName',playerName);if(nameInput){nameInput.value=playerName;nameInput.readOnly=true;nameInput.style.display='none'}}catch(e){}
     try{
+      if(typeof window.__savePlayerCosmetics==='function')await window.__savePlayerCosmetics();
       const {error}=await client.from('chat_messages').insert({player_name:playerName,message,avatar_index:getSelectedAvatarIndex(),active_title:getActivePlayerTitle()||null});
       if(error)throw error;
       textInput.value='';status.textContent='● Сообщение отправлено';loadHistory(true);textInput.focus();
@@ -1372,7 +1373,7 @@ document.addEventListener('click',function(event){
  modal.addEventListener('click',e=>{if(e.target===modal)hide()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});
  document.getElementById('avatarSave').addEventListener('click',()=>{
-   try{const owned=getOwned();if(!owned.includes(chosen)){alert('Сначала купи эту аватарку.');return}const p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}');p.avatar=chosen;localStorage.setItem('banquetPlayerProfile',JSON.stringify(p));apply();hide()}catch(e){alert('Не удалось сохранить аватар. Проверь настройки браузера.')}
+   try{const owned=getOwned();if(!owned.includes(chosen)){alert('Сначала купи эту аватарку.');return}const p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}');p.avatar=chosen;localStorage.setItem('banquetPlayerProfile',JSON.stringify(p));apply();if(typeof window.__savePlayerCosmetics==='function')window.__savePlayerCosmetics();hide()}catch(e){alert('Не удалось сохранить аватар. Проверь настройки браузера.')}
  });
  window.__banquetShopRefresh=draw;window.__banquetAvatarShopOpen=show;
  apply();
@@ -1564,7 +1565,7 @@ document.addEventListener('click',function(event){
       const current=balance();if(current<price){alert('Не хватает '+(price-current).toLocaleString('ru-RU')+' очков.');return}
       localStorage.setItem(balanceKey,String(current-price));have.push(label);localStorage.setItem(ownedKey,JSON.stringify(have));localStorage.setItem('banquetShopTotalSpent',String(Math.max(0,Math.floor(Number(localStorage.getItem('banquetShopTotalSpent'))||0))+price));localStorage.setItem(activeKey,label)
      }else{localStorage.setItem(activeKey,active()===label?'':label)}
-     draw();if(typeof window.__banquetShopRefresh==='function')window.__banquetShopRefresh();apply()
+     draw();if(typeof window.__banquetShopRefresh==='function')window.__banquetShopRefresh();apply();if(typeof window.__savePlayerCosmetics==='function')window.__savePlayerCosmetics()
     }catch(e){alert('Не удалось сохранить звание. Проверь настройки браузера.')}
    });grid.appendChild(b)
   })
@@ -1581,4 +1582,18 @@ document.addEventListener('click',function(event){
 })();
 </script>
 
+<script>
+(function(){
+ const api='/.netlify/functions/player-cosmetics',allowed=['ЛЕГЕНДА','МАРМЕЛАДНЫЙ','БУТЫЛКА','ДОСТАТОЧНО ХОРОШ','ВЕЧНЫЙ СТАЖЁР','КЛОУН','МОНОПОЛИСТ','БОРОДАТЫЙ'];
+ function playerId(){try{if(typeof getPlayerScoreId==='function')return getPlayerScoreId()}catch(e){}return ''}
+ function profile(){try{return JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}')}catch(e){return {}}}
+ function title(){const t=localStorage.getItem('banquetActivePrefix')||'';return allowed.includes(t)?t:''}
+ function avatarSrc(n){return n<10?'images/profile/profile_'+String(n+1).padStart(2,'0')+'.jpg':n===10?'images/profile/default.jpg':n<21?'images/shop-avatars/shopavatar'+(n-10)+'_5000.png':'images/shop-avatars/shopavatar'+(n-20)+'_10000.png'}
+ function refresh(){const p=profile(),n=Number.isInteger(Number(p.avatar))?Math.max(0,Math.min(25,Number(p.avatar))):0;const icon=document.getElementById('homeAvatar');if(icon){let img=icon.querySelector('img');if(!img){icon.replaceChildren();img=document.createElement('img');icon.appendChild(img)}img.src=avatarSrc(n);img.alt='Выбранный аватар'}const name=document.getElementById('homePlayerName');if(name){let badge=document.getElementById('homeActivePrefix');if(!badge){badge=document.createElement('span');badge.id='homeActivePrefix';badge.className='player-title-badge';name.insertAdjacentElement('afterend',badge)}badge.textContent=title();badge.hidden=!title()}}
+ let saving=Promise.resolve();
+ window.__savePlayerCosmetics=function(){const id=playerId();if(!id)return Promise.resolve(false);const p=profile(),now=Date.now();localStorage.setItem('banquetCosmeticsLocalUpdatedAt',String(now));const payload={player_id:id,player_name:String(p.name||'Гость').trim().slice(0,18)||'Гость',avatar_index:Number.isInteger(Number(p.avatar))?Math.max(0,Math.min(25,Number(p.avatar))):0,active_title:title()};saving=saving.catch(()=>{}).then(()=>fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),cache:'no-store'})).then(async r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(d=>!!d.ok).catch(e=>{console.warn('Не удалось сохранить аватар и звание на сервере:',e);return false});return saving};
+ async function load(){const id=playerId();if(!id)return;try{const r=await fetch(api+'?player_id='+encodeURIComponent(id),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();if(!d.ok||!d.exists||!d.profile)return;const server=d.profile,localAt=Number(localStorage.getItem('banquetCosmeticsLocalUpdatedAt'))||0,serverAt=Date.parse(server.updated_at)||0;if(localAt>serverAt){await window.__savePlayerCosmetics();return}const p=profile();p.avatar=Number(server.avatar_index)||0;localStorage.setItem('banquetPlayerProfile',JSON.stringify(p));if(server.active_title&&allowed.includes(server.active_title))localStorage.setItem('banquetActivePrefix',server.active_title);else localStorage.removeItem('banquetActivePrefix');localStorage.setItem('banquetCosmeticsLocalUpdatedAt',String(serverAt||Date.now()));refresh()}catch(e){console.warn('Серверное сохранение аватара недоступно; используется локальный профиль:',e)}}
+ refresh();load();
+})();
+</script>
 </body></html>
