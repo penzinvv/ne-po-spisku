@@ -43,7 +43,7 @@ export default async (request, context) => {
   try {
     if (request.method === "GET") {
       const response = await fetch(
-        `${endpoint}?select=player_name,score,created_at&order=score.desc,created_at.asc&limit=10`,
+        `${endpoint}?select=player_name,score,created_at,avatar_index&order=score.desc,created_at.asc&limit=10`,
         { headers }
       );
 
@@ -76,13 +76,16 @@ export default async (request, context) => {
         : "";
     const playerId = typeof body?.player_id === "string" ? body.player_id.trim() : "";
     const score = body?.score;
+    const avatarIndex = body?.avatar_index;
+    const hasAvatarIndex = Number.isInteger(avatarIndex) && avatarIndex >= 0 && avatarIndex <= 10;
 
     if (
       !playerName ||
       !Number.isInteger(score) ||
       score < -1000000 ||
       score > 1000000 ||
-      (playerId && !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(playerId))
+      (playerId && !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(playerId)) ||
+      (avatarIndex !== undefined && avatarIndex !== null && !hasAvatarIndex)
     ) {
       return json({ error: "Invalid player name, player id or score" }, 400);
     }
@@ -97,10 +100,12 @@ export default async (request, context) => {
       body: JSON.stringify(playerId ? {
         player_id: playerId,
         player_name: playerName,
-        score
+        score,
+        ...(hasAvatarIndex ? { avatar_index: avatarIndex } : {})
       } : {
         player_name: playerName,
-        score
+        score,
+        ...(hasAvatarIndex ? { avatar_index: avatarIndex } : {})
       })
     });
 
