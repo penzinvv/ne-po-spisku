@@ -7,7 +7,7 @@ export default async request=>{
  if(!url||!key)return json({error:"Server configuration is missing"},500);
  let body;try{body=await request.json()}catch{return json({error:"Invalid JSON"},400)}
  const playerId=String(body.player_id||"").trim(),name=String(body.player_name||"").trim();
- if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(playerId))return json({error:"Не удалось проверить идентификатор игрока. Обнови страницу и попробуй снова."},400);
+ if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(playerId)){console.error("Invalid player id format",JSON.stringify({playerIdLength:playerId.length,playerIdPrefix:playerId.slice(0,8)}));return json({error:"Идентификатор игрока повреждён. Обнови страницу через Ctrl+F5; имя и очки не удалятся."},400);}
  if(!name||name.length>18||/[<>\u0000-\u001f]/.test(name))return json({error:"Некорректное имя игрока: имя должно содержать до 18 символов."},400);
  try{
   const r=await fetch(url.replace(/\/+$/,"")+"/rest/v1/rpc/claim_player_name",{method:"POST",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify({p_player_id:playerId,p_display_name:name})});
