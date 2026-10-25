@@ -472,7 +472,7 @@ body.assignment-picker-open #pickerQuickControls{display:flex}
 </header>
 <div class="home-grid">
   <section class="home-primary">
-    <div class="home-profile panel"><button class="home-avatar" id="homeAvatar" type="button" aria-label="Выбрать аватарку" title="Нажми, чтобы выбрать аватарку">🧑‍🍳</button><div class="home-profile-copy"><span class="home-eyebrow">ТВОЙ ПРОФИЛЬ</span><h2 id="homePlayerName">Новый сотрудник</h2><p>⭐ Общие баллы: <b id="homeXP">0</b> · готов к смене</p><small id="homeScoreFeedback" aria-live="polite"></small></div><div class="home-profile-actions"><button id="homeSubmitScore" type="button">🏆 Отправить результат в онлайн-рейтинг</button><button id="homeChangeName" class="secondary" type="button">Изменить имя</button><button id="homePrefixShop" class="hotel-shop-button" type="button"><span class="hotel-shop-icon">✦</span><span>МАГАЗИН ОТЕЛЯ</span><small>Аватарки · префиксы · стиль</small></button><button type="button" data-home-action="story">📖 Сюжет пройденных заданий</button></div></div>
+    <div class="home-profile panel"><button class="home-avatar" id="homeAvatar" type="button" aria-label="Выбрать аватарку" title="Нажми, чтобы выбрать аватарку">🧑‍🍳</button><div class="home-profile-copy"><span class="home-eyebrow">ТВОЙ ПРОФИЛЬ</span><h2 id="homePlayerName">Новый сотрудник</h2><p>⭐ Общие баллы: <b id="homeXP">0</b> · готов к смене</p><small id="homeScoreFeedback" aria-live="polite"></small></div><div class="home-profile-actions"><button id="homeSubmitScore" type="button">🏆 Отправить результат в онлайн-рейтинг</button><button id="homeChangeName" class="secondary" type="button">Изменить имя</button><button id="homePrefixShop" class="hotel-shop-button" type="button"><span class="hotel-shop-icon">✦</span><span>МАГАЗИН ОТЕЛЯ</span><small>Аватарки · звания · стиль</small></button><button type="button" data-home-action="story">📖 Сюжет пройденных заданий</button></div></div>
     <button class="landing-start home-start" id="landingStart">▶ НАЧАТЬ ИГРУ <small>Выбрать следующее задание</small></button>
     
     <section class="home-quicknav" aria-label="Разделы игры">
@@ -1310,7 +1310,7 @@ document.addEventListener('click',function(event){
  <div class="avatar-dialog">
   <div class="avatar-dialog-head"><div style="flex:1"><h2 id="avatarTitle">ВЫБЕРИ СВОЮ АВАТАРКУ</h2></div><button class="secondary avatar-close" id="avatarClose" type="button" aria-label="Закрыть">✕</button></div>
   <p>Выбери портрет официанта. Аватар сохранится в профиле на этом устройстве.</p>
-  <div class="hotel-shop-tabs" role="group" aria-label="Разделы магазина"><button type="button" class="hotel-shop-tab" id="avatarShopPrefixes">🏷️ ПРЕФИКСЫ</button><button type="button" class="hotel-shop-tab active" id="avatarShopAvatars">🖼️ АВАТАРКИ</button></div><div class="avatar-grid" id="avatarGrid"></div>
+  <div class="hotel-shop-tabs" role="group" aria-label="Разделы магазина"><button type="button" class="hotel-shop-tab" id="avatarShopPrefixes">🏷️ ЗВАНИЯ</button><button type="button" class="hotel-shop-tab active" id="avatarShopAvatars">🖼️ АВАТАРКИ</button></div><div class="avatar-grid" id="avatarGrid"></div>
   <div class="avatar-save-row"><button id="avatarSave" type="button">💾 СОХРАНИТЬ</button></div>
  </div>
 </div>
@@ -1521,8 +1521,8 @@ document.addEventListener('click',function(event){
 <div class="avatar-modal" id="prefixModal" role="dialog" aria-modal="true" aria-labelledby="prefixTitle">
  <div class="avatar-dialog">
   <div class="avatar-dialog-head"><div style="flex:1"><h2 id="prefixTitle">МАГАЗИН ОТЕЛЯ</h2></div><button class="secondary avatar-close" id="prefixClose" type="button" aria-label="Закрыть">✕</button></div>
-  <p style="color:#d5cbe8;margin:8px 0 12px">Выбирай аватарки и префиксы, покупай их за очки и собирай свою коллекцию. Купленные предметы остаются у тебя навсегда.</p>
-  <div class="hotel-shop-tabs" role="group" aria-label="Разделы магазина"><button type="button" class="hotel-shop-tab active" id="hotelShopPrefixes">🏷️ ПРЕФИКСЫ</button><button type="button" class="hotel-shop-tab" id="hotelShopAvatars">🖼️ АВАТАРКИ</button></div><div class="avatar-grid" id="prefixGrid"></div>
+  <p style="color:#d5cbe8;margin:8px 0 12px">Выбирай аватарки и звания, покупай их за очки и собирай свою коллекцию. Купленные предметы остаются у тебя навсегда.</p>
+  <div class="hotel-shop-tabs" role="group" aria-label="Разделы магазина"><button type="button" class="hotel-shop-tab active" id="hotelShopPrefixes">🏷️ ЗВАНИЯ</button><button type="button" class="hotel-shop-tab" id="hotelShopAvatars">🖼️ АВАТАРКИ</button></div><div class="avatar-grid" id="prefixGrid"></div>
  </div>
 </div>
 <script>
@@ -1555,7 +1555,7 @@ document.addEventListener('click',function(event){
       localStorage.setItem(balanceKey,String(current-price));have.push(label);localStorage.setItem(ownedKey,JSON.stringify(have));localStorage.setItem('banquetShopTotalSpent',String(Math.max(0,Math.floor(Number(localStorage.getItem('banquetShopTotalSpent'))||0))+price));localStorage.setItem(activeKey,label)
      }else{localStorage.setItem(activeKey,active()===label?'':label)}
      draw();if(typeof window.__banquetShopRefresh==='function')window.__banquetShopRefresh();apply()
-    }catch(e){alert('Не удалось сохранить префикс. Проверь настройки браузера.')}
+    }catch(e){alert('Не удалось сохранить звание. Проверь настройки браузера.')}
    });grid.appendChild(b)
   })
  }
@@ -1563,7 +1563,7 @@ document.addEventListener('click',function(event){
   const profile=document.getElementById('homePlayerName');if(!profile)return;
   let badge=document.getElementById('homeActivePrefix');
   if(!badge){badge=document.createElement('span');badge.id='homeActivePrefix';badge.style.cssText='display:inline-block;margin-left:8px;padding:3px 7px;border-radius:7px;border:1px solid #b98bff;background:#2b2040;color:#ffe66d;font-size:11px;vertical-align:middle';profile.insertAdjacentElement('afterend',badge)}
-  const value=active();badge.textContent=value||'';badge.hidden=!value;profile.setAttribute('aria-label',value?'Игрок с префиксом '+value:profile.textContent)
+  const value=active();badge.textContent=value||'';badge.hidden=!value;profile.setAttribute('aria-label',value?'Игрок со званием '+value:profile.textContent)
  }
  open.addEventListener('click',show);if(avatarTab)avatarTab.addEventListener('click',()=>{hide();if(typeof window.__banquetAvatarShopOpen==='function')window.__banquetAvatarShopOpen();else if(avatarModal)avatarModal.style.display='flex'});if(prefixTab)prefixTab.addEventListener('click',()=>{if(avatarModal)avatarModal.style.display='none';show()});document.getElementById('prefixClose').addEventListener('click',hide);
  modal.addEventListener('click',e=>{if(e.target===modal)hide()});document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});
