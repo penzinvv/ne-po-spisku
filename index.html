@@ -1188,6 +1188,9 @@ window.renderScores=renderScores;
     lastSentAt=now;sendButton.disabled=true;sendButton.textContent='Отправляем…';
     try{localStorage.setItem('banquetChatName',playerName);if(nameInput){nameInput.value=playerName;nameInput.readOnly=true;nameInput.style.display='none'}}catch(e){}
     try{
+      const claim=await fetch('/.netlify/functions/claim-player-name',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({player_id:typeof getPlayerScoreId==='function'?getPlayerScoreId():'',player_name:playerName}),cache:'no-store'});
+      const claimData=await claim.json().catch(()=>({}));
+      if(!claim.ok||!claimData.ok)throw new Error(claimData.error||'Не удалось проверить имя игрока.');
       if(typeof window.__savePlayerCosmetics==='function')await window.__savePlayerCosmetics();
       const {error}=await client.from('chat_messages').insert({player_name:playerName,message,avatar_index:getSelectedAvatarIndex(),active_title:getActivePlayerTitle()||null});
       if(error)throw error;
