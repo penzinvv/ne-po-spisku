@@ -1320,7 +1320,7 @@ document.addEventListener('click',function(event){
      if(av.price&&!owned.includes(i)){const price=document.createElement('small');price.textContent='🔒 '+av.price.toLocaleString('ru-RU')+' очк.';price.style.color=balance>=av.price?'#ffe66d':'#ff9ab7';b.appendChild(price);b.addEventListener('click',()=>{
        const current=getBalance();if(current<av.price){alert('Не хватает очков. Нужно ещё '+(av.price-current).toLocaleString('ru-RU')+'.');return}
        const next=getOwned();if(next.includes(i))return;
-       try{localStorage.setItem(balanceKey,String(current-av.price));next.push(i);localStorage.setItem(ownedKey,JSON.stringify(next));chosen=i;draw()}catch(e){alert('Не удалось сохранить покупку. Проверь настройки браузера.')}
+       try{localStorage.setItem(balanceKey,String(current-av.price));next.push(i);localStorage.setItem(ownedKey,JSON.stringify(next));localStorage.setItem('banquetShopTotalSpent',String(Math.max(0,Math.floor(Number(localStorage.getItem('banquetShopTotalSpent'))||0))+av.price));chosen=i;draw()}catch(e){alert('Не удалось сохранить покупку. Проверь настройки браузера.')}
      })}else{if(av.price){const ownedLabel=document.createElement('small');ownedLabel.textContent='✓ Куплено';ownedLabel.style.color='#6df7c1';b.appendChild(ownedLabel)}b.addEventListener('click',()=>{chosen=i;draw()})}
      grid.appendChild(b)
    })
@@ -1522,7 +1522,7 @@ document.addEventListener('click',function(event){
      const have=owned();
      if(!have.includes(label)){
       const current=balance();if(current<price){alert('Не хватает '+(price-current).toLocaleString('ru-RU')+' очков.');return}
-      localStorage.setItem(balanceKey,String(current-price));have.push(label);localStorage.setItem(ownedKey,JSON.stringify(have));localStorage.setItem(activeKey,label)
+      localStorage.setItem(balanceKey,String(current-price));have.push(label);localStorage.setItem(ownedKey,JSON.stringify(have));localStorage.setItem('banquetShopTotalSpent',String(Math.max(0,Math.floor(Number(localStorage.getItem('banquetShopTotalSpent'))||0))+price));localStorage.setItem(activeKey,label)
      }else{localStorage.setItem(activeKey,active()===label?'':label)}
      draw();if(typeof window.__banquetShopRefresh==='function')window.__banquetShopRefresh();apply()
     }catch(e){alert('Не удалось сохранить префикс. Проверь настройки браузера.')}
