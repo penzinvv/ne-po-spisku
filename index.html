@@ -644,9 +644,9 @@ async function renderScores(){
       }else{
         const playerName=String(item.player_name||'Гость');
         const rawAvatarIndex=Number(item.avatar_index);
-        const avatarIndex=Number.isInteger(rawAvatarIndex)?Math.max(0,Math.min(10,rawAvatarIndex)):null;
+        const avatarIndex=Number.isInteger(rawAvatarIndex)?Math.max(0,Math.min(25,rawAvatarIndex)):null;
         const avatar=document.createElement('img');avatar.className='rank-avatar';avatar.alt='';avatar.width=24;avatar.height=24;avatar.loading='lazy';
-        avatar.src=avatarIndex===null?'images/profile/default.jpg':(avatarIndex===10?'images/profile/default.jpg':'images/profile/profile_'+String(avatarIndex+1).padStart(2,'0')+'.jpg');
+        avatar.src=avatarIndex===null?'images/profile/default.jpg':avatarIndex<10?'images/profile/profile_'+String(avatarIndex+1).padStart(2,'0')+'.jpg':avatarIndex===10?'images/profile/default.jpg':avatarIndex<21?'images/shop-avatars/shopavatar'+(avatarIndex-10)+'_5000.png':'images/shop-avatars/shopavatar'+(avatarIndex-20)+'_10000.png';
         avatar.onerror=()=>{avatar.style.display='none'};
         const name=document.createElement('span');name.className='rank-name';name.textContent=playerName;
         const score=document.createElement('span');score.className='rank-score';score.textContent=' — '+(Number(item.score)||0).toLocaleString('ru-RU')+' очк.';
