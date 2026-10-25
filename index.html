@@ -464,6 +464,7 @@ body.assignment-picker-open #pickerQuickControls{display:flex}
 @media(prefers-reduced-motion:reduce){.hotel-shop-button,.hotel-shop-button::before,#prefixGrid .avatar-choice{transition:none}}
 
  .player-title-badge{display:inline-block;max-width:100%;margin:2px 5px;padding:2px 5px;border:1px solid #b98bff;background:#302044;color:#ffe66d;font-size:10px;font-weight:900;line-height:1.25;overflow-wrap:anywhere;vertical-align:middle}.chat-identity{display:flex;align-items:center;gap:7px;min-width:0;margin-bottom:4px}.chat-avatar{width:25px;height:25px;flex:0 0 25px;object-fit:cover;object-position:center 25%;border-radius:50%;border:1px solid #9a80b5;background:#28203a}.chat-identity .chat-meta{min-width:0;margin:0;overflow-wrap:anywhere}.chat-identity .player-title-badge{flex-shrink:0}.chat-message .chat-text{padding-left:32px}
+.chat-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.chat-player-name{font-weight:900;color:#fff4d6}.chat-time{font-size:10px;color:#c4b9dd;font-weight:normal}
 </style></head>
 <body><div id="pickerQuickControls" aria-label="Управление музыкой и экраном"><div id="pickerMusicMount"></div><button id="pickerFullscreenToggle" class="music-secondary" type="button" title="Развернуть игру на весь экран">⛶ На весь экран</button></div><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
@@ -1118,9 +1119,10 @@ window.renderScores=renderScores;
     avatar.src=avatarIndex===null?'images/profile/default.jpg':avatarIndex<10?'images/profile/profile_'+String(avatarIndex+1).padStart(2,'0')+'.jpg':avatarIndex===10?'images/profile/default.jpg':avatarIndex<21?'images/shop-avatars/shopavatar'+(avatarIndex-10)+'_5000.png':'images/shop-avatars/shopavatar'+(avatarIndex-20)+'_10000.png';
     avatar.onerror=()=>{avatar.src='images/profile/default.jpg';avatar.onerror=null};
     const meta=document.createElement('div');meta.className='chat-meta';
-    const date=new Date(row.created_at);meta.textContent=(row.player_name||'Игрок')+' · '+date.toLocaleString('ru-RU',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
+    const playerLabel=document.createElement('span');playerLabel.className='chat-player-name';playerLabel.textContent=row.player_name||'Игрок';meta.appendChild(playerLabel);
+    const titleText=String(row.active_title||'').trim();if(titleText){const title=document.createElement('span');title.className='player-title-badge';title.textContent=titleText;title.setAttribute('aria-label','Звание '+titleText);meta.appendChild(title)}
+    const date=new Date(row.created_at);const time=document.createElement('span');time.className='chat-time';time.textContent=' · '+date.toLocaleString('ru-RU',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});meta.appendChild(time);
     identity.append(avatar,meta);
-    const titleText=String(row.active_title||'').trim();if(titleText){const title=document.createElement('span');title.className='player-title-badge';title.textContent=titleText;title.setAttribute('aria-label','Звание '+titleText);identity.appendChild(title)}
     const body=document.createElement('div');body.className='chat-text';safeText(body,row.message||'');
     card.append(identity,body);messages.appendChild(card);
     while(messages.children.length>100)messages.firstElementChild.remove();
