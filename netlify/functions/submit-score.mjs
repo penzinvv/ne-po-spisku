@@ -77,7 +77,7 @@ export default async (request, context) => {
     const playerId = typeof body?.player_id === "string" ? body.player_id.trim() : "";
     const score = body?.score;
     const avatarIndex = body?.avatar_index;
-    const hasAvatarIndex = Number.isInteger(avatarIndex) && avatarIndex >= 0 && avatarIndex <= 10;
+    const hasAvatarIndex = Number.isInteger(avatarIndex) && avatarIndex >= 0 && avatarIndex <= 25;
 
     if (
       !playerName ||
