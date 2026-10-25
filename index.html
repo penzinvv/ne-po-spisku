@@ -1209,11 +1209,13 @@ window.renderScores=renderScores;
     lastSentAt=now;sendButton.disabled=true;sendButton.textContent='Отправляем…';
     try{localStorage.setItem('banquetChatName',playerName);if(nameInput){nameInput.value=playerName;nameInput.readOnly=true;nameInput.style.display='none'}}catch(e){}
     try{
-      let playerId=getPlayerScoreId();
+      /* Чат находится в отдельной области видимости, поэтому получает ID напрямую из того же ключа localStorage. */
+      const playerIdKey='banquetPlayerScoreId';
       const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      let playerId=localStorage.getItem(playerIdKey)||'';
       if(!uuidPattern.test(playerId)){
         playerId=typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)});
-        localStorage.setItem(PLAYER_SCORE_ID_KEY,playerId);
+        localStorage.setItem(playerIdKey,playerId);
       }
       const claim=await fetch('/.netlify/functions/claim-player-name',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({player_id:playerId,player_name:playerName}),cache:'no-store'});
       const claimData=await claim.json().catch(()=>({}));
