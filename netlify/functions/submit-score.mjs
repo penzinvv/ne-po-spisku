@@ -43,7 +43,7 @@ export default async (request, context) => {
   try {
     if (request.method === "GET") {
       const response = await fetch(
-        `${endpoint}?select=player_name,score,created_at,avatar_index&order=score.desc,created_at.asc&limit=10`,
+        `${endpoint}?select=player_name,score,created_at,avatar_index,active_title&order=score.desc,created_at.asc&limit=10`,
         { headers }
       );
 
@@ -77,6 +77,8 @@ export default async (request, context) => {
     const playerId = typeof body?.player_id === "string" ? body.player_id.trim() : "";
     const score = body?.score;
     const avatarIndex = body?.avatar_index;
+    const activeTitle = body?.active_title == null || body.active_title === "" ? null : body.active_title;
+    const allowedTitles = ["ЛЕГЕНДА", "МАРМЕЛАДНЫЙ", "БУТЫЛКА", "ДОСТАТОЧНО ХОРОШ", "ВЕЧНЫЙ СТАЖЁР", "КЛОУН", "МОНОПОЛИСТ", "БОРОДАТЫЙ"];
     const hasAvatarIndex = Number.isInteger(avatarIndex) && avatarIndex >= 0 && avatarIndex <= 25;
 
     if (
@@ -85,7 +87,8 @@ export default async (request, context) => {
       score < -1000000 ||
       score > 1000000 ||
       (playerId && !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(playerId)) ||
-      (avatarIndex !== undefined && avatarIndex !== null && !hasAvatarIndex)
+      (avatarIndex !== undefined && avatarIndex !== null && !hasAvatarIndex) ||
+      (activeTitle !== null && (typeof activeTitle !== "string" || !allowedTitles.includes(activeTitle)))
     ) {
       return json({ error: "Invalid player name, player id or score" }, 400);
     }
@@ -101,11 +104,13 @@ export default async (request, context) => {
         player_id: playerId,
         player_name: playerName,
         score,
-        ...(hasAvatarIndex ? { avatar_index: avatarIndex } : {})
+        ...(hasAvatarIndex ? { avatar_index: avatarIndex } : {}),
+        active_title: activeTitle
       } : {
         player_name: playerName,
         score,
-        ...(hasAvatarIndex ? { avatar_index: avatarIndex } : {})
+        ...(hasAvatarIndex ? { avatar_index: avatarIndex } : {}),
+        active_title: activeTitle
       })
     });
 
