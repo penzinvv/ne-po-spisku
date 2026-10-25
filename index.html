@@ -442,7 +442,7 @@ body.assignment-picker-open #pickerQuickControls{display:flex}
 </header>
 <div class="home-grid">
   <section class="home-primary">
-    <div class="home-profile panel"><button class="home-avatar" id="homeAvatar" type="button" aria-label="Выбрать аватарку" title="Нажми, чтобы выбрать аватарку">🧑‍🍳</button><div class="home-profile-copy"><span class="home-eyebrow">ТВОЙ ПРОФИЛЬ</span><h2 id="homePlayerName">Новый сотрудник</h2><p>⭐ Общие баллы: <b id="homeXP">0</b> · готов к смене</p><small id="homeScoreFeedback" aria-live="polite"></small></div><div class="home-profile-actions"><button id="homeSubmitScore" type="button">🏆 Отправить результат в онлайн-рейтинг</button><button id="homeChangeName" class="secondary" type="button">Изменить имя</button><button type="button" data-home-action="story">📖 Сюжет пройденных заданий</button></div></div>
+    <div class="home-profile panel"><button class="home-avatar" id="homeAvatar" type="button" aria-label="Выбрать аватарку" title="Нажми, чтобы выбрать аватарку">🧑‍🍳</button><div class="home-profile-copy"><span class="home-eyebrow">ТВОЙ ПРОФИЛЬ</span><h2 id="homePlayerName">Новый сотрудник</h2><p>⭐ Общие баллы: <b id="homeXP">0</b> · готов к смене</p><small id="homeScoreFeedback" aria-live="polite"></small></div><div class="home-profile-actions"><button id="homeSubmitScore" type="button">🏆 Отправить результат в онлайн-рейтинг</button><button id="homeChangeName" class="secondary" type="button">Изменить имя</button><button id="homePrefixShop" class="secondary" type="button">🏷️ Магазин префиксов</button><button type="button" data-home-action="story">📖 Сюжет пройденных заданий</button></div></div>
     <button class="landing-start home-start" id="landingStart">▶ НАЧАТЬ ИГРУ <small>Выбрать следующее задание</small></button>
     
     <section class="home-quicknav" aria-label="Разделы игры">
@@ -1487,4 +1487,58 @@ document.addEventListener('click',function(event){
   sync();
 })();
 </script>
+
+<div class="avatar-modal" id="prefixModal" role="dialog" aria-modal="true" aria-labelledby="prefixTitle">
+ <div class="avatar-dialog">
+  <div class="avatar-dialog-head"><div style="flex:1"><h2 id="prefixTitle">МАГАЗИН ПРЕФИКСОВ</h2></div><button class="secondary avatar-close" id="prefixClose" type="button" aria-label="Закрыть">✕</button></div>
+  <p style="color:#d5cbe8;margin:8px 0 12px">Каждый префикс стоит 15 000 очков. Купленные префиксы остаются у тебя навсегда. Нажми на активный ещё раз, чтобы отключить его.</p>
+  <div class="avatar-grid" id="prefixGrid"></div>
+ </div>
+</div>
+<script>
+(function(){
+ const items=['ЛЕГЕНДА','МАРМЕЛАДНЫЙ','БУТЫЛКА','ДОСТАТОЧНО ХОРОШ','ВЕЧНЫЙ СТАЖЁР','КЛОУН','МОНОПОЛИСТ','БОРОДАТЫЙ'];
+ const modal=document.getElementById('prefixModal'),grid=document.getElementById('prefixGrid'),open=document.getElementById('homePrefixShop');
+ if(!modal||!grid||!open)return;
+ const balanceKey='banquetShopBalance',ownedKey='banquetShopOwnedPrefixes',activeKey='banquetActivePrefix',price=15000;
+ const balance=()=>Math.max(0,Math.floor(Number(localStorage.getItem(balanceKey))||0));
+ function owned(){try{const a=JSON.parse(localStorage.getItem(ownedKey)||'[]');return Array.isArray(a)?[...new Set(a.filter(x=>items.includes(x)))]:[]}catch(e){return[]}}
+ function active(){const v=localStorage.getItem(activeKey)||'';return items.includes(v)&&owned().includes(v)?v:''}
+ function show(){draw();modal.style.display='flex'}
+ function hide(){modal.style.display='none'}
+ function draw(){
+  const cash=balance(),collection=owned(),selected=active();
+  let header=modal.querySelector('.prefix-balance');if(!header){header=document.createElement('div');header.className='prefix-balance';header.style.cssText='margin:10px 0 14px;padding:10px 12px;border:1px solid #8052a8;border-radius:10px;background:#211833;color:#ffe66d;font-weight:800;text-align:center';grid.before(header)}
+  header.textContent='💰 Баланс: '+cash.toLocaleString('ru-RU')+' очков';
+  grid.replaceChildren();
+  items.forEach(label=>{
+   const b=document.createElement('button');b.type='button';b.className='avatar-choice'+(selected===label?' selected':'');
+   const title=document.createElement('span');title.textContent=label;title.style.cssText='font-weight:900;font-size:13px;overflow-wrap:anywhere;text-align:center';
+   const sub=document.createElement('small');
+   if(collection.includes(label)){sub.textContent=selected===label?'✓ Активен · нажми, чтобы отключить':'✓ Куплено · нажми, чтобы применить';sub.style.color='#6df7c1'}
+   else{sub.textContent='🔒 '+price.toLocaleString('ru-RU')+' очков';sub.style.color=cash>=price?'#ffe66d':'#ff9ab7'}
+   b.append(title,sub);b.addEventListener('click',()=>{
+    try{
+     const have=owned();
+     if(!have.includes(label)){
+      const current=balance();if(current<price){alert('Не хватает '+(price-current).toLocaleString('ru-RU')+' очков.');return}
+      localStorage.setItem(balanceKey,String(current-price));have.push(label);localStorage.setItem(ownedKey,JSON.stringify(have));localStorage.setItem(activeKey,label)
+     }else{localStorage.setItem(activeKey,active()===label?'':label)}
+     draw();if(typeof window.__banquetShopRefresh==='function')window.__banquetShopRefresh();apply()
+    }catch(e){alert('Не удалось сохранить префикс. Проверь настройки браузера.')}
+   });grid.appendChild(b)
+  })
+ }
+ function apply(){
+  const profile=document.getElementById('homePlayerName');if(!profile)return;
+  let badge=document.getElementById('homeActivePrefix');
+  if(!badge){badge=document.createElement('span');badge.id='homeActivePrefix';badge.style.cssText='display:inline-block;margin-left:8px;padding:3px 7px;border-radius:7px;border:1px solid #b98bff;background:#2b2040;color:#ffe66d;font-size:11px;vertical-align:middle';profile.insertAdjacentElement('afterend',badge)}
+  const value=active();badge.textContent=value||'';badge.hidden=!value;profile.setAttribute('aria-label',value?'Игрок с префиксом '+value:profile.textContent)
+ }
+ open.addEventListener('click',show);document.getElementById('prefixClose').addEventListener('click',hide);
+ modal.addEventListener('click',e=>{if(e.target===modal)hide()});document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});
+ window.__banquetPrefixRefresh=()=>{draw();apply()};apply();
+})();
+</script>
+
 </body></html>
