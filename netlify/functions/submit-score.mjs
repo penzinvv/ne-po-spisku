@@ -97,7 +97,7 @@ export default async (request, context) => {
       return json({ error: "Для регистрации имени нужен идентификатор игрока. Перезагрузи игру и попробуй снова." }, 400);
     }
 
-    const claimResponse = await fetch(`${supabaseUrl.replace(/\\/+$/, "")}/rest/v1/rpc/claim_player_name`, {
+    const claimResponse = await fetch(`${supabaseUrl.replace(/\/+$/, "")}/rest/v1/rpc/claim_player_name`, {
       method: "POST",
       headers,
       body: JSON.stringify({ p_player_id: playerId, p_display_name: playerName })
