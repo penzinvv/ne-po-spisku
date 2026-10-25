@@ -433,6 +433,30 @@ body.assignment-picker-open #pickerQuickControls{display:flex}
 #pickerQuickControls #musicControls{display:block!important;margin:0!important}
 #pickerQuickControls #trackPicker{position:absolute;top:100%;right:0;z-index:10;width:min(290px,90vw);max-width:90vw;background:#17132b;border:1px solid #94668e;border-radius:10px;padding:10px}
 @media(max-width:600px){#pickerQuickControls{top:8px;right:8px;gap:5px;padding:5px}#pickerQuickControls button{font-size:11px;padding:7px 8px}}
+
+/* Hotel shop polish */
+.hotel-shop-button{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;padding:8px 14px!important;overflow:hidden;border:1px solid #ffe78a!important;border-radius:11px!important;background:linear-gradient(135deg,#fff19a 0%,#ffd34d 48%,#e9a92e 100%)!important;color:#241331!important;font-weight:1000!important;letter-spacing:.055em;text-shadow:0 1px #fff9;box-shadow:0 3px 0 #9c6123,0 0 18px #ffda5933,inset 0 1px #fff9!important;transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
+.hotel-shop-button::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(110deg,transparent 15%,#fff8 48%,transparent 72%);transform:translateX(-120%);transition:transform .45s ease}
+.hotel-shop-button:hover{filter:brightness(1.06);transform:translateY(-2px);box-shadow:0 5px 0 #9c6123,0 0 24px #ffda5966!important}
+.hotel-shop-button:hover::before{transform:translateX(120%)}
+.hotel-shop-button:active{transform:translateY(1px);box-shadow:0 1px 0 #9c6123!important}
+.hotel-shop-icon{font-size:18px;line-height:1}
+.hotel-shop-button small{font-size:10px;letter-spacing:0;font-weight:700;opacity:.8}
+#prefixModal .avatar-dialog{width:min(820px,100%);padding:clamp(14px,2.2vw,24px);background:radial-gradient(ellipse at top,#2d1b4a 0%,#171128 54%,#100d1d 100%);border-color:#c16aff;box-shadow:0 0 0 3px #301347,0 24px 80px #000d}
+#prefixModal .avatar-dialog-head{align-items:center}
+#prefixModal .avatar-dialog h2{letter-spacing:.035em}
+#prefixModal .avatar-dialog p{max-width:680px;margin:12px auto 16px;line-height:1.55}
+#prefixGrid.avatar-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#prefixGrid .avatar-choice{min-height:76px;justify-content:center;padding:12px 8px;border:1px solid #9361c3;border-radius:12px;background:linear-gradient(145deg,#302149,#211832);box-shadow:inset 0 1px #ffffff0b;transition:transform .15s,border-color .15s,background .15s,box-shadow .15s}
+#prefixGrid .avatar-choice:hover{transform:translateY(-2px);border-color:#ffe66d;background:linear-gradient(145deg,#42305c,#2b1e40);box-shadow:0 5px 15px #0004}
+#prefixGrid .avatar-choice.selected{border:2px solid #ffe66d;background:linear-gradient(145deg,#42321c,#302044);box-shadow:0 0 0 2px #ffe66d25,0 0 18px #ffe66d20}
+#prefixGrid .avatar-choice span{font-size:clamp(11px,1.15vw,14px)!important;line-height:1.35;letter-spacing:.015em}
+#prefixGrid .avatar-choice small{font-size:11px;line-height:1.35;text-align:center}
+#prefixModal .prefix-balance{position:sticky;top:0;z-index:2;background:linear-gradient(90deg,#241a35,#332044,#241a35)!important;border-color:#a56bd0!important;box-shadow:0 5px 15px #10091c55}
+@media(max-width:700px){#prefixGrid.avatar-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#prefixGrid .avatar-choice{min-height:72px}.hotel-shop-button small{font-size:9px}}
+@media(min-width:701px) and (max-width:900px){#prefixGrid.avatar-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.hotel-shop-button,.hotel-shop-button::before,#prefixGrid .avatar-choice{transition:none}}
+
 </style></head>
 <body><div id="pickerQuickControls" aria-label="Управление музыкой и экраном"><div id="pickerMusicMount"></div><button id="pickerFullscreenToggle" class="music-secondary" type="button" title="Развернуть игру на весь экран">⛶ На весь экран</button></div><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
@@ -442,7 +466,7 @@ body.assignment-picker-open #pickerQuickControls{display:flex}
 </header>
 <div class="home-grid">
   <section class="home-primary">
-    <div class="home-profile panel"><button class="home-avatar" id="homeAvatar" type="button" aria-label="Выбрать аватарку" title="Нажми, чтобы выбрать аватарку">🧑‍🍳</button><div class="home-profile-copy"><span class="home-eyebrow">ТВОЙ ПРОФИЛЬ</span><h2 id="homePlayerName">Новый сотрудник</h2><p>⭐ Общие баллы: <b id="homeXP">0</b> · готов к смене</p><small id="homeScoreFeedback" aria-live="polite"></small></div><div class="home-profile-actions"><button id="homeSubmitScore" type="button">🏆 Отправить результат в онлайн-рейтинг</button><button id="homeChangeName" class="secondary" type="button">Изменить имя</button><button id="homePrefixShop" class="secondary" type="button">🏷️ Магазин префиксов</button><button type="button" data-home-action="story">📖 Сюжет пройденных заданий</button></div></div>
+    <div class="home-profile panel"><button class="home-avatar" id="homeAvatar" type="button" aria-label="Выбрать аватарку" title="Нажми, чтобы выбрать аватарку">🧑‍🍳</button><div class="home-profile-copy"><span class="home-eyebrow">ТВОЙ ПРОФИЛЬ</span><h2 id="homePlayerName">Новый сотрудник</h2><p>⭐ Общие баллы: <b id="homeXP">0</b> · готов к смене</p><small id="homeScoreFeedback" aria-live="polite"></small></div><div class="home-profile-actions"><button id="homeSubmitScore" type="button">🏆 Отправить результат в онлайн-рейтинг</button><button id="homeChangeName" class="secondary" type="button">Изменить имя</button><button id="homePrefixShop" class="hotel-shop-button" type="button"><span class="hotel-shop-icon">✦</span><span>МАГАЗИН ОТЕЛЯ</span><small>Аватарки · префиксы · стиль</small></button><button type="button" data-home-action="story">📖 Сюжет пройденных заданий</button></div></div>
     <button class="landing-start home-start" id="landingStart">▶ НАЧАТЬ ИГРУ <small>Выбрать следующее задание</small></button>
     
     <section class="home-quicknav" aria-label="Разделы игры">
