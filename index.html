@@ -1221,7 +1221,9 @@ window.renderScores=renderScores;
       const claimData=await claim.json().catch(()=>({}));
       if(!claim.ok||!claimData.ok)throw new Error(claimData.error||'Не удалось проверить имя игрока.');
       if(typeof window.__savePlayerCosmetics==='function')await window.__savePlayerCosmetics();
-      const {error}=await client.from('chat_messages').insert({player_name:playerName,message,avatar_index:getSelectedAvatarIndex(),active_title:getActivePlayerTitle()||null});
+      const chatAvatarIndex=(()=>{try{const p=JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}');const n=Number(p.avatar);return Number.isInteger(n)?Math.max(0,Math.min(25,n)):0}catch(_){return 0}})();
+      const chatActiveTitle=(()=>{try{const v=localStorage.getItem('banquetActivePrefix')||'';return ['ЛЕГЕНДА','МАРМЕЛАДНЫЙ','БУТЫЛКА','ДОСТАТОЧНО ХОРОШ','ВЕЧНЫЙ СТАЖЁР','КЛОУН','МОНОПОЛИСТ','БОРОДАТЫЙ'].includes(v)?v:''}catch(_){return ''}})();
+      const {error}=await client.from('chat_messages').insert({player_name:playerName,message,avatar_index:chatAvatarIndex,active_title:chatActiveTitle||null});
       if(error)throw error;
       textInput.value='';status.textContent='● Сообщение отправлено';loadHistory(true);textInput.focus();
     }catch(error){
