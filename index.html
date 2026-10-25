@@ -426,8 +426,15 @@ body.assignment-picker-open #taskPicker{max-height:100dvh;overscroll-behavior-y:
 #homeChatMount #playerChat{flex-shrink:0}
 #homeChatMount #chatMessages{min-height:100px;overflow-y:auto!important;overscroll-behavior:contain}
 #homeFullscreenToggle{white-space:nowrap;cursor:pointer} .home-audio{display:flex;align-items:flex-start;justify-content:flex-end;gap:8px;flex-wrap:wrap} @media(max-width:600px){#homeFullscreenToggle{font-size:12px;padding:8px 10px}}
+/* Музыка и полноэкранный режим также доступны на экране выбора задания. */
+#pickerQuickControls{display:none;position:fixed;top:12px;right:14px;z-index:2147482000;align-items:flex-start;gap:8px;padding:8px;background:rgba(24,17,39,.94);border:1px solid #8066a1;border-radius:7px;box-shadow:0 4px 16px #0008}
+#pickerQuickControls button{font:700 12px Georgia,serif;padding:9px 12px;min-height:36px;cursor:pointer}
+body.assignment-picker-open #pickerQuickControls{display:flex}
+#pickerQuickControls #musicControls{display:block!important;margin:0!important}
+#pickerQuickControls #trackPicker{position:absolute;top:100%;right:0;z-index:10;width:min(290px,90vw);max-width:90vw;background:#17132b;border:1px solid #94668e;border-radius:10px;padding:10px}
+@media(max-width:600px){#pickerQuickControls{top:8px;right:8px;gap:5px;padding:5px}#pickerQuickControls button{font-size:11px;padding:7px 8px}}
 </style></head>
-<body><div class="landing home-dashboard" id="landingPage">
+<body><div id="pickerQuickControls" aria-label="Управление музыкой и экраном"><div id="pickerMusicMount"></div><button id="pickerFullscreenToggle" class="music-secondary" type="button" title="Развернуть игру на весь экран">⛶ На весь экран</button></div><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
 <header class="home-header">
   <div><div class="landing-brand">БАНКЕТНАЯ<br>СЛУЖБА</div><div class="landing-sub">АРКАДНАЯ СМЕНА · ОТЕЛЬ «ГРАНД» · ПИКСЕЛЬНОЕ ПРИКЛЮЧЕНИЕ</div></div>
@@ -1242,6 +1249,11 @@ document.addEventListener('click',function(event){
   ['tipsDialog','aboutDialog'].forEach(liftDialog);
   refreshHomeProfile();
   const music=$('musicControls'),mount=$('homeMusicMount');if(music&&mount)mount.appendChild(music);
+  const pickerMusicMount=$('pickerMusicMount'),homeMusicMount=$('homeMusicMount'),pickerFullscreen=$('pickerFullscreenToggle'),homeFullscreen=$('homeFullscreenToggle');
+  function syncPickerMusicMount(){const controls=$('musicControls');if(!controls)return;if(document.body.classList.contains('assignment-picker-open')&&pickerMusicMount){pickerMusicMount.appendChild(controls)}else if(homeMusicMount){homeMusicMount.appendChild(controls)}}
+  new MutationObserver(syncPickerMusicMount).observe(document.body,{attributes:true,attributeFilter:['class']});syncPickerMusicMount();
+  if(pickerFullscreen)pickerFullscreen.addEventListener('click',async()=>{try{if(document.fullscreenElement){await document.exitFullscreen()}else if(document.documentElement.requestFullscreen){await document.documentElement.requestFullscreen()}else if(document.documentElement.webkitRequestFullscreen){document.documentElement.webkitRequestFullscreen()}else{pickerFullscreen.textContent='Полный экран недоступен'}}catch(e){pickerFullscreen.textContent='Полный экран недоступен'}});
+  document.addEventListener('fullscreenchange',()=>{if(pickerFullscreen)pickerFullscreen.textContent=document.fullscreenElement?'⛶ Выйти из полного экрана':'⛶ На весь экран'});
   const start=$('landingStart');if(start)start.addEventListener('click',()=>setTimeout(refreshHomeProfile,100));
   const chat=$('chatLauncher'),chatPanel=$('playerChat'),chatMount=$('homeChatMount');if(chatPanel&&chatMount){chatMount.appendChild(chatPanel);chatPanel.classList.add('open');chatPanel.setAttribute('aria-hidden','false');if(chat)chat.style.display='none';}
 
