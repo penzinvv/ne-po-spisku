@@ -29,7 +29,7 @@ export default async request=>{
   const headers={apikey:service,Authorization:"Bearer "+service,"Content-Type":"application/json",Accept:"application/json"};
   try{
     if(request.method==="GET"){
-      const rpc=await fetch(db.replace(/\\/+$/,"")+"/rest/v1/rpc/ensure_player_profile",{
+      const rpc=await fetch(db.replace(/\/+$/,"")+"/rest/v1/rpc/ensure_player_profile",{
         method:"POST",headers,body:JSON.stringify({p_vk_user_id:uid})
       });
       if(!rpc.ok){console.error("Ensure profile:",rpc.status,(await rpc.text()).slice(0,300));return json({error:"Could not create or load profile"},502)}
