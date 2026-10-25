@@ -463,7 +463,27 @@ body.assignment-picker-open #pickerQuickControls,body:has(#taskPicker[style*='di
 @media(min-width:701px) and (max-width:900px){#prefixGrid.avatar-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.hotel-shop-button,.hotel-shop-button::before,#prefixGrid .avatar-choice{transition:none}}
 
- .player-title-badge{display:inline-block;max-width:100%;margin:2px 5px;padding:2px 5px;border:1px solid #b98bff;background:#302044;color:#ffe66d;font-size:10px;font-weight:900;line-height:1.25;overflow-wrap:anywhere;vertical-align:middle}.chat-identity{display:flex;align-items:center;gap:7px;min-width:0;margin-bottom:4px}.chat-avatar{width:25px;height:25px;flex:0 0 25px;object-fit:cover;object-position:center 25%;border-radius:50%;border:1px solid #9a80b5;background:#28203a}.chat-identity .chat-meta{min-width:0;margin:0;overflow-wrap:anywhere}.chat-identity .player-title-badge{flex-shrink:0}.chat-message .chat-text{padding-left:32px}
+ 
+.player-title-badge{--title-glow:#ffd65a;position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:5px;max-width:100%;margin:2px 5px;padding:4px 9px;border:1px solid color-mix(in srgb,var(--title-glow),#fff 28%);border-radius:999px;background:linear-gradient(110deg,#1a1028,#342044 45%,#171025);color:#fff2c4;font-size:10px;font-weight:1000;line-height:1.2;letter-spacing:.035em;overflow:hidden;vertical-align:middle;text-shadow:0 0 7px var(--title-glow);box-shadow:0 0 8px color-mix(in srgb,var(--title-glow),transparent 55%),inset 0 0 9px color-mix(in srgb,var(--title-glow),transparent 84%);animation:titleBadgePulse 2.8s ease-in-out infinite}
+.player-title-badge::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 15%,color-mix(in srgb,var(--title-glow),transparent 65%) 48%,transparent 75%);transform:translateX(-120%);animation:titleBadgeShimmer 4s ease-in-out infinite}
+.player-title-badge::after{content:"✦";color:var(--title-glow);font-size:9px;flex:0 0 auto}
+.title-legend{--title-glow:#ffc83d;border-color:#ffd35d;border-radius:6px 14px 6px 14px;box-shadow:0 0 10px #ffc83d88,inset 0 0 10px #ffc83d22}
+.title-marmalade{--title-glow:#ff546b;border-radius:12px;background:linear-gradient(100deg,#381020,#6a182b,#281024)}
+.title-bottle{--title-glow:#4edfff;border-radius:7px;background:linear-gradient(100deg,#102438,#153c54,#111d35)}
+.title-good{--title-glow:#f1f4ff;border-color:#d9dfff;color:#fff}
+.title-intern{--title-glow:#ffad58;border-radius:5px 14px 5px 14px}
+.title-clown{--title-glow:#ff8a32;background:linear-gradient(90deg,#43130e,#8d210d,#3b100e);border:2px dotted #ff9b38}
+.title-monopolist{--title-glow:#ffbd42;background:linear-gradient(100deg,#33200c,#62400f,#24152a)}
+.title-bearded{--title-glow:#e9b56d;border-radius:5px;border-style:double;border-width:3px}
+@keyframes titleBadgePulse{0%,100%{filter:brightness(1);box-shadow:0 0 7px color-mix(in srgb,var(--title-glow),transparent 62%),inset 0 0 8px color-mix(in srgb,var(--title-glow),transparent 88%)}50%{filter:brightness(1.22);box-shadow:0 0 15px color-mix(in srgb,var(--title-glow),transparent 38%),inset 0 0 12px color-mix(in srgb,var(--title-glow),transparent 78%)}}
+@keyframes titleBadgeShimmer{0%,65%,100%{transform:translateX(-120%)}35%{transform:translateX(120%)}}
+#prefixGrid .title-shop-art{display:flex;align-items:center;justify-content:center;position:relative;min-height:60px;width:100%;margin:0 0 7px;overflow:hidden}
+#prefixGrid .title-shop-art .player-title-badge{font-size:13px;padding:8px 12px;white-space:normal;text-align:center;min-width:75%;margin:0}
+#prefixGrid .title-shop-art .player-title-badge::after{font-size:12px}
+#prefixGrid .avatar-choice{position:relative;overflow:hidden}
+#prefixGrid .avatar-choice:has(.title-shop-art){min-height:110px;gap:4px}
+#homeActivePrefix{display:inline-flex!important;margin-top:4px;padding:5px 12px;font-size:12px}
+@media(prefers-reduced-motion:reduce){.player-title-badge,.player-title-badge::before{animation:none!important}}.chat-identity{display:flex;align-items:center;gap:7px;min-width:0;margin-bottom:4px}.chat-avatar{width:25px;height:25px;flex:0 0 25px;object-fit:cover;object-position:center 25%;border-radius:50%;border:1px solid #9a80b5;background:#28203a}.chat-identity .chat-meta{min-width:0;margin:0;overflow-wrap:anywhere}.chat-identity .player-title-badge{flex-shrink:0}.chat-message .chat-text{padding-left:32px}
 .chat-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.chat-player-name{font-weight:900;color:#fff4d6}.chat-time{font-size:10px;color:#c4b9dd;font-weight:normal}
 
 /* Assignment page: keep colleague relations in the right rail and put leaderboard below the office chat. */
@@ -482,7 +502,8 @@ body.assignment-picker-open #pickerQuickControls,body:has(#taskPicker[style*='di
 #pickerQuickControls #musicControls .actions{display:flex;gap:6px}
 #pickerQuickControls #musicToggle{white-space:nowrap}
 
-</style></head>
+</style><script>window.banquetTitleClass=function(value){const map={'ЛЕГЕНДА':'title-legend','МАРМЕЛАДНЫЙ':'title-marmalade','БУТЫЛКА':'title-bottle','ДОСТАТОЧНО ХОРОШ':'title-good','ВЕЧНЫЙ СТАЖЁР':'title-intern','КЛОУН':'title-clown','МОНОПОЛИСТ':'title-monopolist','БОРОДАТЫЙ':'title-bearded'};return map[String(value||'').trim()]||''};</script>
+</head>
 <body><div id="pickerQuickControls" aria-label="Управление музыкой и экраном"><div id="pickerMusicMount"></div><button id="pickerFullscreenToggle" class="music-secondary" type="button" title="Развернуть игру на весь экран">⛶ На весь экран</button></div><div class="landing home-dashboard" id="landingPage">
 <div class="landing-inner">
 <header class="home-header">
@@ -699,7 +720,7 @@ async function renderScores(){
         avatar.onerror=()=>{avatar.style.display='none'};
         const name=document.createElement('span');name.className='rank-name';name.textContent=playerName;
         li.append(avatar,name);
-        const titleText=String(item.active_title||'').trim();if(titleText){const title=document.createElement('span');title.className='player-title-badge';title.textContent=titleText;title.setAttribute('aria-label','Звание '+titleText);li.appendChild(title)}
+        const titleText=String(item.active_title||'').trim();if(titleText){const title=document.createElement('span');title.className='player-title-badge '+window.banquetTitleClass(titleText);title.textContent=titleText;title.setAttribute('aria-label','Звание '+titleText);li.appendChild(title)}
         const score=document.createElement('span');score.className='rank-score';score.textContent=' — '+(Number(item.score)||0).toLocaleString('ru-RU')+' очк.';li.append(score);
       }
       target.appendChild(li);
@@ -1137,7 +1158,7 @@ window.renderScores=renderScores;
     avatar.onerror=()=>{avatar.src='images/profile/default.jpg';avatar.onerror=null};
     const meta=document.createElement('div');meta.className='chat-meta';
     const playerLabel=document.createElement('span');playerLabel.className='chat-player-name';playerLabel.textContent=row.player_name||'Игрок';meta.appendChild(playerLabel);
-    const titleText=String(row.active_title||'').trim();if(titleText){const title=document.createElement('span');title.className='player-title-badge';title.textContent=titleText;title.setAttribute('aria-label','Звание '+titleText);meta.appendChild(title)}
+    const titleText=String(row.active_title||'').trim();if(titleText){const title=document.createElement('span');title.className='player-title-badge '+window.banquetTitleClass(titleText);title.textContent=titleText;title.setAttribute('aria-label','Звание '+titleText);meta.appendChild(title)}
     const date=new Date(row.created_at);const time=document.createElement('span');time.className='chat-time';time.textContent=' · '+date.toLocaleString('ru-RU',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});meta.appendChild(time);
     identity.append(avatar,meta);
     const body=document.createElement('div');body.className='chat-text';safeText(body,row.message||'');
@@ -1575,12 +1596,12 @@ document.addEventListener('click',function(event){
   header.textContent='💰 Баланс: '+cash.toLocaleString('ru-RU')+' очков';
   grid.replaceChildren();
   items.forEach(label=>{
-   const b=document.createElement('button');b.type='button';b.className='avatar-choice'+(selected===label?' selected':'');
-   const title=document.createElement('span');title.textContent=label;title.style.cssText='font-weight:900;font-size:13px;overflow-wrap:anywhere;text-align:center';
+   const b=document.createElement('button');b.type='button';b.className='avatar-choice title-card '+(selected===label?' selected':'');
+   const art=document.createElement('span');art.className='title-shop-art';const title=document.createElement('span');title.className='player-title-badge '+window.banquetTitleClass(label);title.textContent=label;title.setAttribute('aria-label','Звание '+label);art.appendChild(title);
    const sub=document.createElement('small');
    if(collection.includes(label)){sub.textContent=selected===label?'✓ Активен · нажми, чтобы отключить':'✓ Куплено · нажми, чтобы применить';sub.style.color='#6df7c1'}
    else{sub.textContent='🔒 '+price.toLocaleString('ru-RU')+' очков';sub.style.color=cash>=price?'#ffe66d':'#ff9ab7'}
-   b.append(title,sub);b.addEventListener('click',()=>{
+   b.append(art,sub);b.addEventListener('click',()=>{
     try{
      const have=owned();
      if(!have.includes(label)){
@@ -1596,7 +1617,7 @@ document.addEventListener('click',function(event){
   const profile=document.getElementById('homePlayerName');if(!profile)return;
   let badge=document.getElementById('homeActivePrefix');
   if(!badge){badge=document.createElement('span');badge.id='homeActivePrefix';badge.style.cssText='display:inline-block;margin-left:8px;padding:3px 7px;border-radius:7px;border:1px solid #b98bff;background:#2b2040;color:#ffe66d;font-size:11px;vertical-align:middle';profile.insertAdjacentElement('afterend',badge)}
-  const value=active();badge.textContent=value||'';badge.hidden=!value;profile.setAttribute('aria-label',value?'Игрок со званием '+value:profile.textContent)
+  const value=active();badge.className='player-title-badge '+window.banquetTitleClass(value);badge.textContent=value||'';badge.hidden=!value;profile.setAttribute('aria-label',value?'Игрок со званием '+value:profile.textContent)
  }
  open.addEventListener('click',show);if(avatarTab)avatarTab.addEventListener('click',()=>{hide();if(typeof window.__banquetAvatarShopOpen==='function')window.__banquetAvatarShopOpen();else if(avatarModal)avatarModal.style.display='flex'});if(prefixTab)prefixTab.addEventListener('click',()=>{if(avatarModal)avatarModal.style.display='none';show()});document.getElementById('prefixClose').addEventListener('click',hide);
  modal.addEventListener('click',e=>{if(e.target===modal)hide()});document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});
@@ -1611,7 +1632,7 @@ document.addEventListener('click',function(event){
  function profile(){try{return JSON.parse(localStorage.getItem('banquetPlayerProfile')||'{}')}catch(e){return {}}}
  function title(){const t=localStorage.getItem('banquetActivePrefix')||'';return allowed.includes(t)?t:''}
  function avatarSrc(n){return n<10?'images/profile/profile_'+String(n+1).padStart(2,'0')+'.jpg':n===10?'images/profile/default.jpg':n<21?'images/shop-avatars/shopavatar'+(n-10)+'_5000.png':'images/shop-avatars/shopavatar'+(n-20)+'_10000.png'}
- function refresh(){const p=profile(),n=Number.isInteger(Number(p.avatar))?Math.max(0,Math.min(25,Number(p.avatar))):0;const icon=document.getElementById('homeAvatar');if(icon){let img=icon.querySelector('img');if(!img){icon.replaceChildren();img=document.createElement('img');icon.appendChild(img)}img.src=avatarSrc(n);img.alt='Выбранный аватар'}const name=document.getElementById('homePlayerName');if(name){let badge=document.getElementById('homeActivePrefix');if(!badge){badge=document.createElement('span');badge.id='homeActivePrefix';badge.className='player-title-badge';name.insertAdjacentElement('afterend',badge)}badge.textContent=title();badge.hidden=!title()}}
+ function refresh(){const p=profile(),n=Number.isInteger(Number(p.avatar))?Math.max(0,Math.min(25,Number(p.avatar))):0;const icon=document.getElementById('homeAvatar');if(icon){let img=icon.querySelector('img');if(!img){icon.replaceChildren();img=document.createElement('img');icon.appendChild(img)}img.src=avatarSrc(n);img.alt='Выбранный аватар'}const name=document.getElementById('homePlayerName');if(name){let badge=document.getElementById('homeActivePrefix');if(!badge){badge=document.createElement('span');badge.id='homeActivePrefix';badge.className='player-title-badge';name.insertAdjacentElement('afterend',badge)}badge.className='player-title-badge '+window.banquetTitleClass(title());badge.textContent=title();badge.hidden=!title()}}
  let saving=Promise.resolve();
  window.__savePlayerCosmetics=function(){const id=playerId();if(!id)return Promise.resolve(false);const p=profile(),now=Date.now();localStorage.setItem('banquetCosmeticsLocalUpdatedAt',String(now));const payload={player_id:id,player_name:String(p.name||'Гость').trim().slice(0,18)||'Гость',avatar_index:Number.isInteger(Number(p.avatar))?Math.max(0,Math.min(25,Number(p.avatar))):0,active_title:title()};saving=saving.catch(()=>{}).then(()=>fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),cache:'no-store'})).then(async r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(d=>!!d.ok).catch(e=>{console.warn('Не удалось сохранить аватар и звание на сервере:',e);return false});return saving};
  async function load(){const id=playerId();if(!id)return;try{const r=await fetch(api+'?player_id='+encodeURIComponent(id),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();if(!d.ok)return;if(!d.exists||!d.profile){await window.__savePlayerCosmetics();return}const server=d.profile,localAt=Number(localStorage.getItem('banquetCosmeticsLocalUpdatedAt'))||0,serverAt=Date.parse(server.updated_at)||0;if(localAt>serverAt){await window.__savePlayerCosmetics();return}const p=profile();p.avatar=Number(server.avatar_index)||0;localStorage.setItem('banquetPlayerProfile',JSON.stringify(p));if(server.active_title&&allowed.includes(server.active_title))localStorage.setItem('banquetActivePrefix',server.active_title);else localStorage.removeItem('banquetActivePrefix');localStorage.setItem('banquetCosmeticsLocalUpdatedAt',String(serverAt||Date.now()));refresh()}catch(e){console.warn('Серверное сохранение аватара недоступно; используется локальный профиль:',e)}}
